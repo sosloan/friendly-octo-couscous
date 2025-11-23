@@ -6,13 +6,13 @@ import SwiftUI
 /// Supports iOS, macOS, and visionOS
 public struct TradingDashboardView: View {
     
-    @StateObject private var engine: ReactiveTradeEngine
-    @StateObject private var akkaBridge: AkkaBridge
+    @ObservedObject var engine: ReactiveTradeEngine
+    @ObservedObject var akkaBridge: AkkaBridge
     @State private var selectedTab: DashboardTab = .orderBook
     
     public init(engine: ReactiveTradeEngine, akkaBridge: AkkaBridge) {
-        _engine = StateObject(wrappedValue: engine)
-        _akkaBridge = StateObject(wrappedValue: akkaBridge)
+        self.engine = engine
+        self.akkaBridge = akkaBridge
     }
     
     public var body: some View {

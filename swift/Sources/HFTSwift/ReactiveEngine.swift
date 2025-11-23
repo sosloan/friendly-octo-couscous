@@ -70,14 +70,12 @@ public class ReactiveTradeEngine: ObservableObject {
     
     /// Connect to the trading system
     public func connect() {
-        queue.async { [weak self] in
-            DispatchQueue.main.async {
-                self?.connectionStatus = .connecting
-            }
-            
-            // Simulate connection delay
-            Thread.sleep(forTimeInterval: 0.5)
-            
+        DispatchQueue.main.async { [weak self] in
+            self?.connectionStatus = .connecting
+        }
+        
+        // Simulate connection delay using asyncAfter
+        queue.asyncAfter(deadline: .now() + 0.5) { [weak self] in
             DispatchQueue.main.async {
                 self?.connectionStatus = .connected
             }
