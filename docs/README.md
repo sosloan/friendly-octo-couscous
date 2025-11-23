@@ -7,7 +7,7 @@ This is a comprehensive High-Frequency Trading (HFT) system that demonstrates th
 - **Ada** 🛡️ - Type-safe, formally verified core engine
 - **Lean** 📐 - Mathematical proofs and formal verification
 - **Akka** 🌉 - Reactive, actor-based message passing
-- **Java 25** 💪 - Modern Java with virtual threads and Netty
+- **Java 21** 💪 - Modern Java with virtual threads and Netty
 - **Erlang/OTP** 🧠 - Immortal supervision and fault tolerance
 - **Netty** ⚡ - Ultra-low latency networking
 
@@ -32,7 +32,7 @@ This is a comprehensive High-Frequency Trading (HFT) system that demonstrates th
 │  ├─ Location transparency                               │
 │  └─ Reactive streams for backpressure                   │
 ├─────────────────────────────────────────────────────────┤
-│  Java 25 Powerhouse (Performance & Scalability)          │
+│  Java 21 Powerhouse (Performance & Scalability)            │
 │  ├─ Virtual threads for massive concurrency             │
 │  ├─ Modern records and pattern matching                 │
 │  └─ Netty for ultra-low latency I/O                     │
@@ -108,7 +108,7 @@ cd akka
 ./gradlew run
 ```
 
-### 4. Java 25 Powerhouse (`java/`)
+### 4. Java 21 Powerhouse (`java/`)
 
 Modern Java with virtual threads and Netty:
 
@@ -168,7 +168,7 @@ rebar3 shell
 ### Prerequisites
 - **GNAT Ada compiler** (FSF GNAT or AdaCore)
 - **Lean 4** toolchain
-- **JDK 21+** (Java 25 features)
+- **JDK 21+** (Modern Java features)
 - **Scala 2.13+** and sbt/Gradle
 - **Erlang/OTP 26+**
 - **Make**
@@ -243,7 +243,7 @@ make docs
 - **Location transparency** enables distribution
 - **Proven at scale** (used by LinkedIn, PayPal, etc.)
 
-### Java 25
+### Java 21
 - **Virtual threads** enable millions of concurrent operations
 - **Modern features** (records, pattern matching, sealed types)
 - **Netty** provides industry-leading I/O performance

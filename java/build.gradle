@@ -9,7 +9,7 @@ repositories {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21) // Java 25 not yet available, using 21
+        languageVersion = JavaLanguageVersion.of(21)  // Java 21 with preview features
     }
 }
 

@@ -72,7 +72,7 @@ theorem match_price_transitive
 theorem match_implies_positive_value 
   (buy : Order) (sell : Order)
   (hmatch : canMatch buy sell)
-  (hqty : buy.quantity > 0) :
+  (hqty : sell.quantity > 0) :
   orderValue sell > 0 := by
   unfold orderValue
   apply mul_pos

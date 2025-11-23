@@ -5,11 +5,11 @@ import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
 /**
- * Java 25 Powerhouse - Main HFT Application
- * Leverages modern Java features including Virtual Threads, Records, Pattern Matching
+ * Java Powerhouse - Main HFT Application
+ * Leverages modern Java features including Virtual Threads (Java 21+), Records, Pattern Matching
  * 
  * This is the main execution engine combining:
- * - Virtual Threads for massive concurrency
+ * - Virtual Threads for massive concurrency (Java 21 feature)
  * - Netty for ultra-low latency networking
  * - Modern Java Records and Sealed types
  */
