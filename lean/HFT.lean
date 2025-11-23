@@ -85,12 +85,12 @@ theorem price_improvement
   (hsym : o1.symbol = o2.symbol)
   (hside : o1.side = o2.side)
   (hqty : o1.quantity = o2.quantity)
+  (hqty_pos : o1.quantity > 0)
   (hprice : o1.price.val > o2.price.val) :
   orderValue o1 > orderValue o2 := by
   unfold orderValue
   rw [hqty]
-  exact mul_lt_mul_of_pos_right hprice (Nat.cast_pos.mpr (Nat.pos_of_ne_zero 
-    (fun h => by rw [h] at hprice; simp at hprice)))
+  exact mul_lt_mul_of_pos_right hprice (Nat.cast_pos.mpr hqty_pos)
 
 /-- Fair execution: matching respects price-time priority -/
 structure FairExecution where
