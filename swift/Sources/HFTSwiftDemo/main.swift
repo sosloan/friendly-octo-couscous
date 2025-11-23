@@ -14,21 +14,21 @@ import HFTSwift
 struct HFTSwiftApp: App {
     
     // Create the reactive engine and Akka bridge
-    @StateObject private var engine = ReactiveTradeEngine()
+    @StateObject private var engine: ReactiveTradeEngine
     @StateObject private var akkaBridge: AkkaBridge
     
     init() {
-        let engine = ReactiveTradeEngine()
+        let engineInstance = ReactiveTradeEngine()
         let bridge = AkkaBridge(
             configuration: AkkaBridge.Configuration(
                 akkaHost: "localhost",
                 akkaPort: 8080,
                 useHTTP: true
             ),
-            engine: engine
+            engine: engineInstance
         )
         
-        _engine = StateObject(wrappedValue: engine)
+        _engine = StateObject(wrappedValue: engineInstance)
         _akkaBridge = StateObject(wrappedValue: bridge)
     }
     
