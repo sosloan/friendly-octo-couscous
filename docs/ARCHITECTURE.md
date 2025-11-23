@@ -1,5 +1,23 @@
 # Architecture Overview
 
+---
+
+┌─────────────────────────────────────────────────────────────┐
+│                                                             │
+│  "Functional programming isn't about what you can't do—    │
+│   it's about building systems that scale fearlessly        │
+│   and fail gracefully!"                                     │
+│                                                             │
+│              ++ POLYMATH + ADA + POLYGLOT ++                │
+│                                                             │
+│   Breaking barriers between languages, disciplines,         │
+│   and expectations - just like breaking the                 │
+│   white-brown barrier.                                      │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+
+---
+
 ## System Design Philosophy
 
 This HFT system follows a **polyglot architecture** where each language is chosen for its specific strengths:
