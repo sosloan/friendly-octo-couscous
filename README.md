@@ -2,6 +2,24 @@
 
 **A polyglot High-Frequency Trading system demonstrating Ada, Lean, Akka, Java 21 (modern features), Netty, and Erlang/OTP working together in harmony.**
 
+---
+
+┌─────────────────────────────────────────────────────────────┐
+│                                                             │
+│  "Functional programming isn't about what you can't do—    │
+│   it's about building systems that scale fearlessly        │
+│   and fail gracefully!"                                     │
+│                                                             │
+│              ++ POLYMATH + ADA + POLYGLOT ++                │
+│                                                             │
+│   Breaking barriers between languages, disciplines,         │
+│   and expectations - just like breaking the                 │
+│   white-brown barrier.                                      │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+
+---
+
 [![Ada](https://img.shields.io/badge/Ada-2022-blue.svg)](https://www.adaic.org/)
 [![Lean](https://img.shields.io/badge/Lean-4-purple.svg)](https://leanprover.github.io/)
 [![Akka](https://img.shields.io/badge/Akka-2.8-red.svg)](https://akka.io/)
