@@ -156,7 +156,7 @@ make test-erlang    # Erlang tests
 | Core Engine | Ada 2022 | Type-safe order processing |
 | Message Passing | Akka 2.8 | Reactive actor system |
 | Network I/O | Netty 4.1 | Ultra-low latency networking |
-| Execution | Java 21 | Virtual threads & modern features |
+| Execution | Java 25 | Virtual threads & modern features |
 | Supervision | Erlang/OTP 26 | Fault-tolerant process management |
 
 ### 📈 Performance Characteristics

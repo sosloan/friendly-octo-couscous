@@ -1,6 +1,6 @@
 # 🚀 Complete Functional Hyper-Ultra-HFT System
 
-**A polyglot High-Frequency Trading system demonstrating Ada, Lean, Akka, Java 21 (modern features), Netty, and Erlang/OTP working together in harmony.**
+**A polyglot High-Frequency Trading system demonstrating Ada, Lean, Akka, Java 25 (modern features), Netty, and Erlang/OTP working together in harmony.**
 
 ---
 
@@ -23,7 +23,7 @@
 [![Ada](https://img.shields.io/badge/Ada-2022-blue.svg)](https://www.adaic.org/)
 [![Lean](https://img.shields.io/badge/Lean-4-purple.svg)](https://leanprover.github.io/)
 [![Akka](https://img.shields.io/badge/Akka-2.8-red.svg)](https://akka.io/)
-[![Java](https://img.shields.io/badge/Java-21-orange.svg)](https://openjdk.org/)
+[![Java](https://img.shields.io/badge/Java-25-orange.svg)](https://openjdk.org/)
 [![Erlang](https://img.shields.io/badge/Erlang-OTP26-green.svg)](https://www.erlang.org/)
 
 ## 🌟 Features
@@ -31,7 +31,7 @@
 - **🛡️ Ada Engine** - Type-safe, formally verified order processing
 - **📐 Lean Proofs** - Mathematical guarantees of correctness
 - **🌉 Akka Reactive Bridge** - Actor-based reactive architecture
-- **💪 Java 21 Powerhouse** - Virtual threads + Netty ultra-low latency
+- **💪 Java 25 Powerhouse** - Virtual threads + Netty ultra-low latency
 - **🧠 Erlang/OTP Supervisor** - Immortal fault-tolerant supervision
 - **📱 Cross-Platform** - Native support for tablets, mobile, and MacBook Air
 
@@ -83,14 +83,14 @@ Each component is production-ready and demonstrates best practices for that lang
 - **Ada**: Prevents entire classes of errors at compile time
 - **Lean**: Proves correctness mathematically
 - **Akka**: Scales to millions of actors
-- **Java 21**: Virtual threads enable massive concurrency
+- **Java 25**: Virtual threads enable massive concurrency
 - **Erlang**: Designed for 99.999% uptime
 
 ## 🔧 Prerequisites
 
 - GNAT Ada compiler (FSF or AdaCore)
 - Lean 4 toolchain
-- JDK 21+ (Modern Java features including virtual threads)
+- JDK 25+ (Modern Java features including virtual threads)
 - Scala 2.13+ and Gradle
 - Erlang/OTP 26+
 - Make
