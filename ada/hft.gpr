@@ -1,0 +1,14 @@
+-- Ada Build Configuration
+project HFT is
+   for Source_Dirs use (".");
+   for Object_Dir use "obj";
+   for Main use ("hft_main.adb");
+   
+   package Compiler is
+      for Default_Switches ("Ada") use ("-gnatwa", "-gnatyyM", "-O2", "-gnat2022");
+   end Compiler;
+   
+   package Binder is
+      for Default_Switches ("Ada") use ("-Es");
+   end Binder;
+end HFT;

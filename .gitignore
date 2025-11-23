@@ -1,0 +1,32 @@
+# Build artifacts
+*.o
+*.ali
+*.class
+*.jar
+*.beam
+.gradle/
+build/
+target/
+dist/
+out/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Dependencies
+node_modules/
+_build/
+deps/
+
+# Generated files
+*.log
+*.tmp
+*.cache
