@@ -80,13 +80,13 @@ begin
            "Buy at 150.50 should match sell at 150.25");
    
    Put_Line ("");
-   Put_Line ("Test 5: Non-matching Orders");
+   Put_Line ("Test 5: Non-matching Orders (Price Too Low)");
    declare
       Low_Buy : Order := Valid_Buy;
    begin
       Low_Buy.Price_Val := 150.00;  -- Lower than sell price
-      Assert (Can_Match (Low_Buy, Valid_Sell),
-              "Buy at 150.00 should still match sell at 150.25");
+      Assert (not Can_Match (Low_Buy, Valid_Sell),
+              "Buy at 150.00 should NOT match sell at 150.25");
    end;
    
    Put_Line ("");

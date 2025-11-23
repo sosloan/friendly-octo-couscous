@@ -1,8 +1,1 @@
-name = "hft"
-version = "0.1.0"
-edition = "2024"
-
-[[require]]
-name = "mathlib"
-git = "https://github.com/leanprover-community/mathlib4.git"
-rev = "v4.3.0"
+leanprover/lean4:v4.3.0
