@@ -18,7 +18,7 @@ public class HFTPowerhouse {
     private static final Logger logger = Logger.getLogger(HFTPowerhouse.class.getName());
     
     public static void main(String[] args) {
-        System.out.println("=== Java 25 HFT Powerhouse 💪 ===");
+        System.out.println("=== Java 21 HFT Powerhouse 💪 ===");
         System.out.println("🚀 Initializing high-performance trading engine");
         
         // Demonstrate Virtual Threads (Java 21+)

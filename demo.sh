@@ -78,7 +78,7 @@ fi
 echo ""
 
 # Java Demo
-demo_component "Java 25 Powerhouse" "💪" "Virtual threads + Netty ultra-low latency"
+demo_component "Java 21 Powerhouse" "💪" "Virtual threads + Netty ultra-low latency"
 if [ -d "java" ]; then
     cd java
     if command -v java &> /dev/null; then
