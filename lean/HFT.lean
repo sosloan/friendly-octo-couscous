@@ -79,7 +79,10 @@ theorem match_implies_positive_value
   · exact sell.price.property
   · exact Nat.cast_pos.mpr hqty
 
-/-- Price improvement: better price for the same quantity yields better value -/
+/-- Price improvement: better price for the same quantity yields better value
+    
+    Requires positive quantity (hqty_pos) to ensure the multiplication is well-defined
+    and yields a positive result for the price comparison. -/
 theorem price_improvement
   (o1 o2 : Order)
   (hsym : o1.symbol = o2.symbol)
