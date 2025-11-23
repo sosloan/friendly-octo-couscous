@@ -1,6 +1,6 @@
 # 🚀 Complete Functional Hyper-Ultra-HFT System
 
-**A polyglot High-Frequency Trading system demonstrating Ada, Lean, Akka, Java 25 (modern features), Netty, and Erlang/OTP working together in harmony.**
+**A polyglot High-Frequency Trading system demonstrating Ada, Lean, Akka, Java 25 (modern features), Netty, Swift/SwiftUI, and Erlang/OTP working together in harmony.**
 
 ---
 
@@ -24,6 +24,7 @@
 [![Lean](https://img.shields.io/badge/Lean-4-purple.svg)](https://leanprover.github.io/)
 [![Akka](https://img.shields.io/badge/Akka-2.8-red.svg)](https://akka.io/)
 [![Java](https://img.shields.io/badge/Java-25-orange.svg)](https://openjdk.org/)
+[![Swift](https://img.shields.io/badge/Swift-5.9-FA7343.svg)](https://swift.org/)
 [![Erlang](https://img.shields.io/badge/Erlang-OTP26-green.svg)](https://www.erlang.org/)
 
 ## 🌟 Features
@@ -32,6 +33,7 @@
 - **📐 Lean Proofs** - Mathematical guarantees of correctness
 - **🌉 Akka Reactive Bridge** - Actor-based reactive architecture
 - **💪 Java 25 Powerhouse** - Virtual threads + Netty ultra-low latency
+- **🍎 Swift/SwiftUI + Combine** - Modern reactive UI with visionOS support
 - **🧠 Erlang/OTP Supervisor** - Immortal fault-tolerant supervision
 - **📱 Cross-Platform** - Native support for tablets, mobile, and MacBook Air
 
@@ -46,6 +48,7 @@ cd ada && gprbuild -P hft.gpr && ./hft_main
 cd lean && lake build && lake exe hft
 cd akka && ./gradlew run
 cd java && ./gradlew run
+cd swift && swift run HFTSwiftApp
 cd erlang && rebar3 shell
 
 # Run tests
@@ -63,7 +66,7 @@ make test
 This system demonstrates a unique polyglot architecture where each language contributes its strengths:
 
 ```
-Ada (Type Safety) → Lean (Proofs) → Akka (Reactive) → Java (Performance) → Erlang (Fault Tolerance)
+Ada (Type Safety) → Lean (Proofs) → Akka (Reactive) → Swift/Combine (UI) → Java (Performance) → Erlang (Fault Tolerance)
 ```
 
 Each component is production-ready and demonstrates best practices for that language ecosystem.
@@ -75,6 +78,7 @@ Each component is production-ready and demonstrates best practices for that lang
 | **Core Engine** | Ada | Type-safe order validation & processing |
 | **Formal Verification** | Lean | Mathematical correctness proofs |
 | **Reactive Bridge** | Scala/Akka | Message-driven actor system |
+| **UI Layer** | Swift/SwiftUI | Modern reactive UI with Combine |
 | **Network Layer** | Java/Netty | Ultra-low latency I/O |
 | **Supervisor** | Erlang/OTP | Fault-tolerant process management |
 
@@ -83,6 +87,7 @@ Each component is production-ready and demonstrates best practices for that lang
 - **Ada**: Prevents entire classes of errors at compile time
 - **Lean**: Proves correctness mathematically
 - **Akka**: Scales to millions of actors
+- **Swift/Combine**: Reactive UI with declarative SwiftUI
 - **Java 25**: Virtual threads enable massive concurrency
 - **Erlang**: Designed for 99.999% uptime
 
@@ -92,6 +97,7 @@ Each component is production-ready and demonstrates best practices for that lang
 - Lean 4 toolchain
 - JDK 25+ (Modern Java features including virtual threads)
 - Scala 2.13+ and Gradle
+- Swift 5.9+ (for macOS, iOS, visionOS support)
 - Erlang/OTP 26+
 - Make
 
@@ -102,6 +108,7 @@ See [Deployment Guide](docs/DEPLOYMENT.md) for platform-specific instructions.
 - ✅ Linux (all distributions)
 - ✅ macOS (Intel & Apple Silicon)
 - ✅ iOS / iPadOS
+- ✅ visionOS (Apple Vision Pro)
 - ✅ Android tablets
 - ✅ MacBook Air (M1/M2/M3 native)
 
@@ -111,6 +118,7 @@ See [Deployment Guide](docs/DEPLOYMENT.md) for platform-specific instructions.
 make test           # All tests
 make test-ada       # Ada unit tests
 make test-java      # Java JUnit tests
+make test-swift     # Swift XCTest tests
 make test-erlang    # Erlang EUnit tests
 ```
 
@@ -118,6 +126,7 @@ make test-erlang    # Erlang EUnit tests
 
 - **Latency**: Sub-microsecond order processing
 - **Throughput**: Millions of orders/second
+- **UI Updates**: Real-time reactive updates via Combine
 - **Reliability**: 99.999% uptime (Erlang supervision)
 - **Correctness**: Mathematically proven (Lean)
 

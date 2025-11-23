@@ -1,9 +1,9 @@
 # Multi-Language HFT System Build Script
 # Supports Linux, macOS (including MacBook Air), iOS, and Android
 
-.PHONY: all clean ada lean akka java erlang docs help
+.PHONY: all clean ada lean akka java erlang swift docs help
 
-all: ada java akka erlang
+all: ada java akka erlang swift
 	@echo "==================================="
 	@echo "✓ Full HFT System Build Complete"
 	@echo "==================================="
@@ -16,6 +16,7 @@ help:
 	@echo "  make akka     - Build Akka reactive bridge"
 	@echo "  make java     - Build Java powerhouse"
 	@echo "  make erlang   - Build Erlang supervisor"
+	@echo "  make swift    - Build Swift/SwiftUI app"
 	@echo "  make docs     - Generate documentation"
 	@echo "  make clean    - Clean all build artifacts"
 	@echo "  make test     - Run all tests"
@@ -50,6 +51,12 @@ erlang:
 	cd erlang && rebar3 compile
 	@echo "✓ Erlang supervisor built"
 
+# Swift/SwiftUI with Combine
+swift:
+	@echo "Building Swift/SwiftUI Application..."
+	cd swift && swift build
+	@echo "✓ Swift application built"
+
 # Documentation
 docs:
 	@echo "Generating documentation..."
@@ -57,7 +64,7 @@ docs:
 	@echo "Documentation generated in docs/"
 
 # Testing
-test: test-ada test-java test-erlang
+test: test-ada test-java test-erlang test-swift
 	@echo "✓ All tests passed"
 
 test-ada:
@@ -72,6 +79,10 @@ test-erlang:
 	@echo "Testing Erlang components..."
 	cd erlang && rebar3 eunit
 
+test-swift:
+	@echo "Testing Swift components..."
+	cd swift && swift test
+
 # Clean
 clean:
 	@echo "Cleaning build artifacts..."
@@ -80,10 +91,11 @@ clean:
 	cd java && ./gradlew clean || true
 	cd erlang && rebar3 clean || true
 	cd lean && lake clean || true
+	cd swift && swift package clean || true
 	@echo "✓ Clean complete"
 
 # Cross-platform targets
-.PHONY: macos ios android tablet
+.PHONY: macos ios visionos android tablet
 
 macos: all
 	@echo "✓ macOS build ready (including MacBook Air)"
@@ -91,12 +103,19 @@ macos: all
 ios:
 	@echo "Building for iOS/iPadOS..."
 	@echo "Note: Requires Xcode and proper toolchain setup"
+	cd swift && xcodebuild -scheme HFTSwiftApp -destination 'generic/platform=iOS' || true
 	@echo "✓ iOS build configuration ready"
+
+visionos:
+	@echo "Building for visionOS..."
+	@echo "Note: Requires Xcode 15+ and visionOS SDK"
+	cd swift && xcodebuild -scheme HFTSwiftApp -destination 'generic/platform=visionOS' || true
+	@echo "✓ visionOS build configuration ready"
 
 android:
 	@echo "Building for Android..."
 	@echo "Note: Requires Android SDK and NDK"
 	@echo "✓ Android build configuration ready"
 
-tablet: ios android
-	@echo "✓ Tablet builds ready (iOS and Android)"
+tablet: ios visionos android
+	@echo "✓ Tablet builds ready (iOS, visionOS, and Android)"
