@@ -1,0 +1,20 @@
+{application, hft_supervisor,
+ [{description, "HFT Immortal Supervisor - Erlang/OTP Fault-Tolerant System"},
+  {vsn, "1.0.0"},
+  {modules, [
+    hft_supervisor_app,
+    hft_supervisor_sup,
+    hft_order_processor,
+    hft_match_engine,
+    hft_risk_manager
+  ]},
+  {registered, [hft_supervisor_sup]},
+  {applications, [kernel, stdlib, sasl]},
+  {mod, {hft_supervisor_app, []}},
+  {env, [
+    {max_order_size, 1000000},
+    {price_tick_size, 0.01},
+    {max_restarts, 10},
+    {max_seconds, 60}
+  ]}
+ ]}.
