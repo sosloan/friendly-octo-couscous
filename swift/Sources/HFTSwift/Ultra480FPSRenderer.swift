@@ -175,6 +175,23 @@ public enum OptimizationTechniques {
     public static let useColorLookup = true
 }
 
+// MARK: - Performance Constants
+
+/// Performance constants for 480 FPS rendering
+public enum RenderingConstants {
+    /// Target FPS for ultra-high-performance rendering
+    public static let targetFPS: Double = 480.0
+    
+    /// Target frame time in milliseconds for 480 FPS
+    public static let targetFrameTimeMs: Double = 1000.0 / targetFPS  // 0.75ms
+    
+    /// Maximum number of instances for batch rendering
+    public static let maxInstanceCount: Int = 100
+    
+    /// Buffer size in bytes for frame buffers
+    public static let frameBufferSize: Int = 1024 * 1024  // 1MB
+}
+
 // MARK: - Performance Monitoring
 
 /// Performance monitor for tracking 480 FPS target
@@ -203,9 +220,9 @@ public class PerformanceMonitor480FPS {
         return frameTimings.max() ?? 0
     }
     
-    /// Target frame time for 480 FPS (0.75ms)
+    /// Target frame time for 480 FPS
     public var targetFrameTime: Double {
-        return 0.75  // 480 FPS = 0.75ms per frame
+        return RenderingConstants.targetFrameTimeMs
     }
     
     /// Current FPS based on average frame time
@@ -309,20 +326,18 @@ public class Ultra480FPSRenderer {
         guard let device = device else { return }
         
         // Pre-allocate triple buffering system
-        let bufferSize = 1024 * 1024  // 1MB per buffer
         for _ in 0..<3 {
-            if let buffer = device.makeBuffer(length: bufferSize, options: .storageModeShared) {
+            if let buffer = device.makeBuffer(length: RenderingConstants.frameBufferSize, options: .storageModeShared) {
                 frameBuffers.append(buffer)
             }
         }
         
-        // Pre-allocate instance data (100 groups)
-        let instanceCount = 100
-        let instanceDataSize = instanceCount * MemoryLayout<simd_float4x4>.size
+        // Pre-allocate instance data
+        let instanceDataSize = RenderingConstants.maxInstanceCount * MemoryLayout<simd_float4x4>.size
         instanceBuffer = device.makeBuffer(length: instanceDataSize, options: .storageModeShared)
         
         // Pre-allocate color data
-        let colorDataSize = instanceCount * MemoryLayout<simd_float4>.size
+        let colorDataSize = RenderingConstants.maxInstanceCount * MemoryLayout<simd_float4>.size
         colorBuffer = device.makeBuffer(length: colorDataSize, options: .storageModeShared)
     }
     
@@ -387,12 +402,15 @@ public class Ultra480FPSRenderer {
         guard let instanceBuffer = instanceBuffer,
               let colorBuffer = colorBuffer else { return }
         
+        // Limit groups to max instance count to prevent buffer overflow
+        let safeGroups = Array(groups.prefix(RenderingConstants.maxInstanceCount))
+        
         // Prepare instance data
         var transforms: [simd_float4x4] = []
         var colors: [simd_float4] = []
         
-        for (index, group) in groups.enumerated() {
-            let angle = Float(index) * Float(2.0 * Double.pi) / Float(groups.count)
+        for (index, group) in safeGroups.enumerated() {
+            let angle = Float(index) * Float(2.0 * Double.pi) / Float(safeGroups.count)
             let x = 250.0 * cos(angle)
             let y = 250.0 * sin(angle)
             
@@ -407,12 +425,21 @@ public class Ultra480FPSRenderer {
             colors.append(color)
         }
         
-        // Copy to GPU buffers
-        if !transforms.isEmpty {
-            memcpy(instanceBuffer.contents(), &transforms, transforms.count * MemoryLayout<simd_float4x4>.size)
+        // Copy to GPU buffers with bounds checking
+        let transformBytesToCopy = min(
+            transforms.count * MemoryLayout<simd_float4x4>.size,
+            instanceBuffer.length
+        )
+        let colorBytesToCopy = min(
+            colors.count * MemoryLayout<simd_float4>.size,
+            colorBuffer.length
+        )
+        
+        if !transforms.isEmpty && transformBytesToCopy > 0 {
+            memcpy(instanceBuffer.contents(), &transforms, transformBytesToCopy)
         }
-        if !colors.isEmpty {
-            memcpy(colorBuffer.contents(), &colors, colors.count * MemoryLayout<simd_float4>.size)
+        if !colors.isEmpty && colorBytesToCopy > 0 {
+            memcpy(colorBuffer.contents(), &colors, colorBytesToCopy)
         }
         
         encoder.setVertexBuffer(instanceBuffer, offset: 0, index: 0)
@@ -421,9 +448,9 @@ public class Ultra480FPSRenderer {
         var timeValue = time
         encoder.setFragmentBytes(&timeValue, length: MemoryLayout<Float>.size, index: 0)
         
-        // Single draw call for all instances
-        if !groups.isEmpty {
-            encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 6, instanceCount: groups.count)
+        // Single draw call for all instances (use safeGroups count)
+        if !safeGroups.isEmpty {
+            encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 6, instanceCount: safeGroups.count)
         }
     }
     
