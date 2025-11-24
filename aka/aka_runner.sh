@@ -126,8 +126,13 @@ run_smoke_tests() {
     if [ -f "${SCRIPT_DIR}/tests/smoke/test_comprehensive_suite.sh" ]; then
         # Capture output and count tests
         COMP_OUTPUT=$(bash "${SCRIPT_DIR}/tests/smoke/test_comprehensive_suite.sh" 2>&1)
-        COMP_COUNT=$(echo "$COMP_OUTPUT" | grep -oP "Test count: \K\d+" || echo "0")
-        COMP_PASS=$(echo "$COMP_OUTPUT" | grep -oP "Pass count: \K\d+" || echo "0")
+        # Use sed for portability instead of grep -P
+        COMP_COUNT=$(echo "$COMP_OUTPUT" | sed -n 's/Test count: \([0-9]*\)/\1/p' | head -1)
+        COMP_PASS=$(echo "$COMP_OUTPUT" | sed -n 's/Pass count: \([0-9]*\)/\1/p' | head -1)
+        
+        # Default to 0 if empty
+        COMP_COUNT=${COMP_COUNT:-0}
+        COMP_PASS=${COMP_PASS:-0}
         
         # Add to total
         TOTAL_TESTS=$((TOTAL_TESTS + COMP_COUNT))

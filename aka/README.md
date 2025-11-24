@@ -58,21 +58,28 @@ cd aka
 
 ## Test Categories
 
-### 1. Smoke Tests (411 tests)
+### 1. Smoke Tests (411 tests total)
 Comprehensive validation covering:
-- Component structure validation (50 tests)
-- Order validation tests (60 tests)
-- Order matching logic (50 tests)
-- Price validation (40 tests)
-- Quantity validation (30 tests)
-- Symbol validation (20 tests)
-- Error handling (40 tests)
-- Concurrency & threading (30 tests)
-- Performance benchmarks (20 tests)
-- Cross-component integration (30 tests)
-- Network communication (20 tests)
-- Data serialization (15 tests)
-- Infrastructure validation (6 tests)
+- **Comprehensive test suite (405 tests):**
+  - Component structure validation (50 tests)
+  - Order validation tests (60 tests)
+  - Order matching logic (50 tests)
+  - Price validation (40 tests)
+  - Quantity validation (30 tests)
+  - Symbol validation (20 tests)
+  - Error handling (40 tests)
+  - Concurrency & threading (30 tests)
+  - Performance benchmarks (20 tests)
+  - Cross-component integration (30 tests)
+  - Network communication (20 tests)
+  - Data serialization (15 tests)
+- **Infrastructure validation (6 tests):**
+  - Repository structure validation
+  - Required files validation
+  - Ada test infrastructure
+  - Java test infrastructure
+  - Erlang test infrastructure
+  - AKA configuration validation
 
 ### 2. Integration Tests (2 tests)
 Cross-component tests validating the complete system flow:
