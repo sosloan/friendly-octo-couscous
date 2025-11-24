@@ -247,8 +247,11 @@ swift test
 # Run tests with verbose output
 swift test --verbose
 
-# Run specific test
-swift test --filter HFTSwiftTests.testOrderMatching
+# Run specific test categories
+swift test --filter HFTSwiftTests      # Core model tests
+swift test --filter AuditCompliance    # Audit compliance tests
+swift test --filter NILCompliance      # NIL compliance tests (requires Apple platforms)
+swift test --filter Vision             # Vision benchmarks (requires Apple platforms)
 ```
 
 Test coverage includes:
@@ -257,6 +260,100 @@ Test coverage includes:
 - Trade execution
 - Order book management
 - Reactive engine behavior
+- **77 audit compliance tests**
+- **NIL (National Instrument List) compliance** (Apple platforms)
+- **Vision-inspired performance benchmarks** (Apple platforms)
+
+**Note**: NIL compliance and Vision benchmark tests use advanced features that require Apple platforms (iOS, macOS, visionOS) for full execution. Core functionality tests run on all platforms including Linux.
+
+## NIL Compliance
+
+### National Instrument List Validation
+
+The Swift implementation includes a comprehensive NIL (National Instrument List) compliance framework:
+
+```swift
+// Create NIL checker
+let nilChecker = NILComplianceChecker()
+
+// Check compliance for a symbol
+let result = nilChecker.checkCompliance(symbol: "AAPL")
+
+switch result {
+case .approved:
+    print("Symbol approved for trading")
+case .restricted(let reasons):
+    print("Symbol restricted: \(reasons)")
+case .prohibited(let reason):
+    print("Symbol prohibited: \(reason)")
+case .unknown(let symbol):
+    print("Unknown symbol: \(symbol)")
+}
+
+// Validate order with NIL compliance
+let (isValid, reason) = nilChecker.validateOrder(order)
+
+// Submit order with NIL validation
+engine.submitOrderWithNILCompliance(
+    order,
+    nilChecker: nilChecker,
+    auditLogger: auditLogger
+)
+```
+
+**Supported Jurisdictions:**
+- US (United States)
+- EU (European Union)
+- UK (United Kingdom)
+- CA (Canada)
+- JP (Japan)
+- GLOBAL (Cross-jurisdictional)
+
+**Status Types:**
+- APPROVED - Cleared for trading
+- RESTRICTED - Trading allowed with conditions
+- PROHIBITED - Trading not permitted
+- SUSPENDED - Temporarily halted
+- PENDING - Awaiting regulatory approval
+
+## Vision-Inspired Benchmarks
+
+### Performance Metrics
+
+The Swift layer includes comprehensive performance benchmarks inspired by Apple Vision's real-time requirements:
+
+```bash
+# Run benchmarks
+cd swift && swift test --filter Vision
+```
+
+**Benchmark Categories:**
+
+1. **Latency Benchmarks**
+   - Order processing latency (target: <100μs)
+   - Order matching latency (target: <50μs)
+   - Audit logging latency (target: <200μs)
+
+2. **Throughput Benchmarks**
+   - Order processing throughput (target: >100K ops/sec)
+   - Trade execution throughput (target: >50K trades/sec)
+   - Concurrent order processing
+
+3. **Memory Benchmarks**
+   - Order book memory efficiency
+   - Memory usage per 1000 orders
+
+4. **Vision-Specific Benchmarks**
+   - Spatial computing readiness (visionOS)
+   - UI update latency (60 FPS target)
+   - 3D rendering performance
+
+**Performance Targets:**
+- Sub-microsecond order processing
+- 60 FPS UI updates for SwiftUI
+- Low memory footprint for order books
+- Thread-safe concurrent execution
+- visionOS spatial computing ready
 
 ## Human Interface Guidelines Compliance
 
