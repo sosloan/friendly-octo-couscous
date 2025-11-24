@@ -11,6 +11,9 @@ dist/
 out/
 obj/
 ada/obj/
+.build/
+*.swiftmodule
+*.swiftdoc
 
 # IDE
 .idea/
