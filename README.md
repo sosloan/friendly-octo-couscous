@@ -28,7 +28,8 @@
 
 ## 🌟 Features
 
-- **🛡️ Ada Engine** - Type-safe, formally verified order processing
+- **🛡️ Ada Engine** - Type-safe, formally verified order processing with comprehensive compliance checks
+- **✅ Ada Compliance System** - Multi-category validation (type safety, contracts, security, performance)
 - **📐 Lean Proofs** - Mathematical guarantees of correctness
 - **🌉 Akka Reactive Bridge** - Actor-based reactive architecture
 - **💪 Java 25 Powerhouse** - Virtual threads + Netty ultra-low latency
@@ -57,6 +58,7 @@ make test
 - [Complete Guide](docs/README.md) - Full system documentation
 - [Architecture](docs/ARCHITECTURE.md) - System design and data flow
 - [Deployment](docs/DEPLOYMENT.md) - Cross-platform deployment guide
+- [Ada Compliance](ada/COMPLIANCE.md) - Comprehensive Ada compliance checking system
 
 ## 🏗️ Architecture
 
@@ -73,6 +75,7 @@ Each component is production-ready and demonstrates best practices for that lang
 | Component | Language | Purpose |
 |-----------|----------|---------|
 | **Core Engine** | Ada | Type-safe order validation & processing |
+| **Compliance System** | Ada | Multi-category compliance validation |
 | **Formal Verification** | Lean | Mathematical correctness proofs |
 | **Reactive Bridge** | Scala/Akka | Message-driven actor system |
 | **Network Layer** | Java/Netty | Ultra-low latency I/O |
@@ -85,6 +88,27 @@ Each component is production-ready and demonstrates best practices for that lang
 - **Akka**: Scales to millions of actors
 - **Java 25**: Virtual threads enable massive concurrency
 - **Erlang**: Designed for 99.999% uptime
+
+## ✅ Ada Compliance Checking
+
+The Ada engine includes a comprehensive compliance checking system that validates:
+
+- **Type Safety**: Price ranges, quantity bounds, ID validity
+- **Contract Validity**: Preconditions and postconditions verification
+- **Range Safety**: Overflow detection in arithmetic operations
+- **Coding Standards**: Symbol format, naming conventions
+- **Security**: Order value limits, timestamp validation
+- **Performance**: Optimal parameter ranges for HFT
+
+Example usage:
+```ada
+Result := Run_Full_Compliance_Check (My_Order);
+if Result.Passed then
+   Execute_Trade (My_Order);
+end if;
+```
+
+See [Ada Compliance Documentation](ada/COMPLIANCE.md) for complete details.
 
 ## 🔧 Prerequisites
 
