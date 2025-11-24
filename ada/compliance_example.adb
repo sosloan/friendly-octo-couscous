@@ -5,9 +5,10 @@ with Ada.Text_IO; use Ada.Text_IO;
  
 with HFT_Engine; use HFT_Engine;
 with HFT_Compliance; use HFT_Compliance;
+with HFT_Time_Util;
 
 procedure Compliance_Example is
-   Current_Time : Timestamp := 1732479420;
+   Current_Time : constant Timestamp := Timestamp (HFT_Time_Util.Get_Unix_Timestamp);
    
    procedure Demonstrate_Type_Safety is
       Order : HFT_Engine.Order;

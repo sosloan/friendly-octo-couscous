@@ -3,6 +3,7 @@ pragma Ada_2022;
 
 with Ada.Text_IO;
 with Ada.Containers.Vectors;
+with HFT_Time_Util;
 
 package body HFT_Audit is
    use Ada.Text_IO;
@@ -26,7 +27,7 @@ package body HFT_Audit is
    begin
       Audit_History.Clear;
       Next_Event_ID := 1;
-      Audit_Start_Time := 1732479420; -- Current Unix timestamp
+      Audit_Start_Time := HFT_Engine.Timestamp (HFT_Time_Util.Get_Unix_Timestamp);
       Stats := (others => 0);
       Current_Config := (
          Enable_Audit => True,
@@ -55,7 +56,7 @@ package body HFT_Audit is
 
       -- Create event record
       Event.Event_ID := Next_Event_ID;
-      Event.Time_Stamp := 1732479420;
+      Event.Time_Stamp := HFT_Engine.Timestamp (HFT_Time_Util.Get_Unix_Timestamp);
       Event.Event_Type := Event_Type;
       Event.Severity := Severity;
       Event.Order_ID := Order_ID;
@@ -213,7 +214,7 @@ package body HFT_Audit is
       Summary : Audit_Summary;
    begin
       Summary.Start_Time := Audit_Start_Time;
-      Summary.End_Time := 1732479420;
+      Summary.End_Time := HFT_Engine.Timestamp (HFT_Time_Util.Get_Unix_Timestamp);
       Summary.Stats := Stats;
       
       if Stats.Total_Checks > 0 then

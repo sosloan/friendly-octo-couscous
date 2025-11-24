@@ -2,6 +2,7 @@
 with Ada.Text_IO; use Ada.Text_IO;
  
 with HFT_Engine; use HFT_Engine;
+with HFT_Time_Util;
 
 procedure HFT_Test is
    
@@ -19,7 +20,7 @@ procedure HFT_Test is
       end if;
    end Assert;
    
-   Current_Time : Timestamp := 1732479420;
+   Current_Time : constant Timestamp := Timestamp (HFT_Time_Util.Get_Unix_Timestamp);
    Valid_Buy : Order;
    Valid_Sell : Order;
    Invalid_Order : Order;

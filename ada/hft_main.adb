@@ -4,11 +4,12 @@
 with Ada.Text_IO; use Ada.Text_IO;
 with HFT_Engine; use HFT_Engine;
 with HFT_Compliance; use HFT_Compliance;
+with HFT_Time_Util;
 
 procedure HFT_Main is
    Buy_Ord  : Order;
    Sell_Ord : Order;
-   Current_Time : Timestamp := 1732479420; -- Unix timestamp (Nov 24, 2025)
+   Current_Time : constant Timestamp := Timestamp (HFT_Time_Util.Get_Unix_Timestamp); -- Unix timestamp (Nov 24, 2025)
    Compliance_Result : Check_Result;
    Stats : Compliance_Stats;
 begin

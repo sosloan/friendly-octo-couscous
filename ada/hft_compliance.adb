@@ -2,6 +2,7 @@
 pragma Ada_2022;
 
 with Ada.Text_IO;
+with HFT_Time_Util;
 
 package body HFT_Compliance is
 
@@ -100,8 +101,9 @@ package body HFT_Compliance is
    end Check_No_Zero_Division;
 
    function Check_Timestamp_Valid (O : HFT_Engine.Order) return Boolean is
-      Current_Time : constant Timestamp := 1732479420; -- Placeholder for current time
-      One_Day : constant Timestamp := 86400; -- 24 hours in seconds
+      Current_Time : constant HFT_Engine.Timestamp := 
+         HFT_Engine.Timestamp (HFT_Time_Util.Get_Unix_Timestamp);
+      One_Day : constant HFT_Engine.Timestamp := 86400; -- 24 hours in seconds
    begin
       -- Check that timestamp is not in the future
       if O.Time_Stamp > Current_Time then
