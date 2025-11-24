@@ -11,7 +11,7 @@ import CoreFoundation
 
 #if canImport(CoreFoundation)
 private func getCurrentTime() -> Double {
-    return getCurrentTime()
+    return CFAbsoluteTimeGetCurrent() + kCFAbsoluteTimeIntervalSince1970
 }
 #else
 private func getCurrentTime() -> Double {
@@ -362,8 +362,8 @@ public class VisionBenchmarkSuite {
             name: "UI Update Latency",
             value: avgLatencyMs,
             unit: "ms",
-            passed: avgLatencyMs < 16.67, // 60 FPS threshold
-            threshold: 16.67
+            passed: avgLatencyMs < 8.33, // 120 FPS threshold
+            threshold: 8.33
         )
         
         results.append(result)
