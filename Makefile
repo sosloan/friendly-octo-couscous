@@ -83,6 +83,17 @@ test-swift:
 	@echo "Testing Swift components..."
 	cd swift && swift test
 
+# Audit compliance
+audit: audit-swift
+	@echo "✓ All audit tests passed"
+
+audit-swift:
+	@echo "Running Swift audit compliance tests..."
+	cd swift && swift test
+	@echo ""
+	@echo "Generating audit report..."
+	cd swift && swift audit-report.swift
+
 # Clean
 clean:
 	@echo "Cleaning build artifacts..."
