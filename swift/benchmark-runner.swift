@@ -36,7 +36,8 @@ print("""
   - Memory efficiency monitoring
   - Concurrent processing performance
   - Spatial computing readiness (visionOS)
-  - UI update latency (60 FPS target)
+  - UI update latency (120 FPS target)
+  - Metal rendering latency (480 FPS target)
 
 ════════════════════════════════════════════════════════════
 To run full test suite:

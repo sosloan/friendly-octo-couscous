@@ -231,7 +231,7 @@ final class NILComplianceAndBenchmarkTests: XCTestCase {
         #if !os(Linux)
         let results = benchmarkSuite.runAllBenchmarks()
         
-        XCTAssertEqual(results.count, 9, "Should run 9 benchmarks")
+        XCTAssertEqual(results.count, 10, "Should run 10 benchmarks")
         XCTAssertTrue(results.allSatisfy { !$0.name.isEmpty }, "All benchmarks should have names")
         #else
         // On Linux, just test a few benchmarks individually
@@ -239,6 +239,15 @@ final class NILComplianceAndBenchmarkTests: XCTestCase {
         _ = benchmarkSuite.benchmarkOrderThroughput()
         XCTAssertTrue(true, "Benchmarks run on Linux")
         #endif
+    }
+    
+    func testVision11_MetalRenderingLatency() throws {
+        let result = benchmarkSuite.benchmarkMetalRenderingLatency()
+        let expectedThreshold = 1000.0 / 480.0  // 480 FPS = 0.75ms
+        
+        XCTAssertEqual(result.category, .rendering)
+        XCTAssertEqual(result.threshold!, expectedThreshold, accuracy: 0.01, "480 FPS target should be ~0.75ms")
+        XCTAssertLessThan(result.value, 10, "Metal rendering should be reasonably fast")
     }
     
     // MARK: - Integration Tests (5 tests)

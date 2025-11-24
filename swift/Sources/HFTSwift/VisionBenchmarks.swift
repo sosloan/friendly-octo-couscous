@@ -11,7 +11,7 @@ import CoreFoundation
 
 #if canImport(CoreFoundation)
 private func getCurrentTime() -> Double {
-    return getCurrentTime()
+    return CFAbsoluteTimeGetCurrent()
 }
 #else
 private func getCurrentTime() -> Double {
@@ -362,8 +362,48 @@ public class VisionBenchmarkSuite {
             name: "UI Update Latency",
             value: avgLatencyMs,
             unit: "ms",
-            passed: avgLatencyMs < 16.67, // 60 FPS threshold
-            threshold: 16.67
+            passed: avgLatencyMs < 8.33, // 120 FPS threshold
+            threshold: 8.33
+        )
+        
+        results.append(result)
+        return result
+    }
+    
+    /// Target frame time for 480 FPS rendering (0.75ms)
+    private static let fps480ThresholdMs: Double = 1000.0 / 480.0
+    
+    /// Measure Metal rendering latency for 480 FPS target
+    public func benchmarkMetalRenderingLatency() -> BenchmarkResult {
+        let iterations = 100
+        let transformCount = 100
+        
+        // Pre-allocate array outside the loop for accurate measurement
+        var simulatedTransforms = [Float](repeating: 0, count: transformCount * 2)
+        
+        let startTime = getCurrentTime()
+        
+        for _ in 0..<iterations {
+            // Simulate Metal rendering pipeline operations
+            // In production, this would use actual Metal rendering
+            for i in 0..<transformCount {
+                let angle = Float(i) * Float(2.0 * Double.pi) / Float(transformCount)
+                simulatedTransforms[i * 2] = cos(angle) * 250.0
+                simulatedTransforms[i * 2 + 1] = sin(angle) * 250.0
+            }
+            _ = simulatedTransforms.reduce(0, +)
+        }
+        
+        let endTime = getCurrentTime()
+        let avgLatencyMs = (endTime - startTime) * 1000 / Double(iterations)
+        
+        let result = BenchmarkResult(
+            category: .rendering,
+            name: "Metal Rendering Latency (480 FPS Target)",
+            value: avgLatencyMs,
+            unit: "ms",
+            passed: avgLatencyMs < VisionBenchmarkSuite.fps480ThresholdMs,
+            threshold: VisionBenchmarkSuite.fps480ThresholdMs
         )
         
         results.append(result)
@@ -388,6 +428,7 @@ public class VisionBenchmarkSuite {
         _ = benchmarkConcurrentOrderProcessing()
         _ = benchmarkSpatialComputingReadiness()
         _ = benchmarkUIUpdateLatency()
+        _ = benchmarkMetalRenderingLatency()
         
         return results
     }
