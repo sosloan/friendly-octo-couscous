@@ -9,6 +9,9 @@ build/
 target/
 dist/
 out/
+.build/
+*.swiftmodule
+*.swiftdoc
 
 # IDE
 .idea/
