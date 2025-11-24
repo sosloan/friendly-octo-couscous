@@ -13,13 +13,16 @@ package HFT_Engine is
    -- Quantity type for order volumes
    type Quantity is range 0 .. 1_000_000_000;
    
+   -- Symbol length constant
+   Symbol_Length : constant := 10;
+   
    -- Order side enumeration
    type Side is (Buy, Sell);
    
    -- Order type definition
    type Order is record
       Order_ID   : Positive;
-      Symbol     : String (1 .. 10);
+      Symbol     : String (1 .. Symbol_Length);
       Price_Val  : Price;
       Qty        : Quantity;
       Order_Side : Side;

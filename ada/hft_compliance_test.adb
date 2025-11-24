@@ -189,7 +189,7 @@ begin
       Invalid_Order : Order := Valid_Order;
       Result : Check_Result;
    begin
-      Invalid_Order.Symbol := "invalid123";
+      Invalid_Order.Symbol := "INVALID123"; -- Contains digits, violates format
       Result := Run_Full_Compliance_Check (Invalid_Order);
       Assert (not Result.Passed, 
               "Full compliance check fails for invalid order");

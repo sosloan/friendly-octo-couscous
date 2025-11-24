@@ -18,8 +18,10 @@ package body HFT_Compliance is
    end Check_Quantity_Range;
 
    function Check_Order_ID_Valid (ID : Positive) return Boolean is
+      pragma Unreferenced (ID);
    begin
-      return ID > 0;
+      -- Always true due to Positive constraint, but kept for framework completeness
+      return True;
    end Check_Order_ID_Valid;
 
    -- Contract Compliance Checks
@@ -80,7 +82,7 @@ package body HFT_Compliance is
    function Check_Order_Side_Valid (S : HFT_Engine.Side) return Boolean is
       pragma Unreferenced (S);
    begin
-      -- Side is an enumeration, so always valid by type system
+      -- Always true due to enumeration type constraint, but kept for framework completeness
       return True;
    end Check_Order_Side_Valid;
 
@@ -116,8 +118,8 @@ package body HFT_Compliance is
    -- Performance Compliance Checks
    function Check_Symbol_Length_Optimal (Symbol : String) return Boolean is
    begin
-      -- Optimal symbol length is between 1 and 10 characters
-      return Symbol'Length >= 1 and Symbol'Length <= 10;
+      -- Optimal symbol length is between 1 and Symbol_Length (defined in HFT_Engine)
+      return Symbol'Length >= 1 and Symbol'Length <= HFT_Engine.Symbol_Length;
    end Check_Symbol_Length_Optimal;
 
    function Check_Order_Size_Reasonable (Q : HFT_Engine.Quantity) return Boolean is
