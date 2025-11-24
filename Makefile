@@ -1,7 +1,7 @@
 # Multi-Language HFT System Build Script
 # Supports Linux, macOS (including MacBook Air), iOS, and Android
 
-.PHONY: all clean ada lean akka java erlang docs help
+.PHONY: all clean ada lean akka java erlang docs help test-aka test-aka-smoke test-aka-integration test-aka-performance
 
 all: ada java akka erlang
 	@echo "==================================="
@@ -19,6 +19,7 @@ help:
 	@echo "  make docs     - Generate documentation"
 	@echo "  make clean    - Clean all build artifacts"
 	@echo "  make test     - Run all tests"
+	@echo "  make test-aka - Run AKA comprehensive test suite"
 
 # Ada HFT Engine
 ada:
@@ -72,6 +73,23 @@ test-erlang:
 	@echo "Testing Erlang components..."
 	cd erlang && rebar3 eunit
 
+# AKA Testing Suite
+test-aka:
+	@echo "Running AKA Test Suite..."
+	cd aka && ./aka_runner.sh --all --report
+
+test-aka-smoke:
+	@echo "Running AKA Smoke Tests..."
+	cd aka && ./aka_runner.sh --smoke
+
+test-aka-integration:
+	@echo "Running AKA Integration Tests..."
+	cd aka && ./aka_runner.sh --integration
+
+test-aka-performance:
+	@echo "Running AKA Performance Tests..."
+	cd aka && ./aka_runner.sh --performance
+
 # Clean
 clean:
 	@echo "Cleaning build artifacts..."
@@ -80,6 +98,7 @@ clean:
 	cd java && ./gradlew clean || true
 	cd erlang && rebar3 clean || true
 	cd lean && lake clean || true
+	cd aka && rm -rf reports/* || true
 	@echo "✓ Clean complete"
 
 # Cross-platform targets
