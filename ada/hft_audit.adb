@@ -15,6 +15,7 @@ package body HFT_Audit is
 
    Audit_History : Audit_Event_Vectors.Vector;
    Next_Event_ID : Positive := 1;
+   -- Note: Not thread-safe. For multi-threaded use, add protected object or atomic operations
    Audit_Start_Time : Time;
    Current_Config : Audit_Config;
 
@@ -122,7 +123,7 @@ package body HFT_Audit is
          Compliance_Check_Started,
          Info,
          O.Order_ID,
-         Type_Safety,
+         Type_Safety,  -- Generic category for overall compliance
          "Starting compliance check for order",
          True
       );
@@ -134,7 +135,7 @@ package body HFT_Audit is
             Compliance_Check_Completed,
             Info,
             O.Order_ID,
-            Type_Safety,
+            Type_Safety,  -- Generic category for overall compliance
             "Compliance check passed",
             True
          );
@@ -142,7 +143,7 @@ package body HFT_Audit is
             Order_Accepted,
             Info,
             O.Order_ID,
-            Type_Safety,
+            Type_Safety,  -- Generic category for overall compliance
             "Order accepted - all compliance checks passed",
             True
          );
@@ -151,7 +152,7 @@ package body HFT_Audit is
             Compliance_Check_Failed,
             Error,
             O.Order_ID,
-            Type_Safety,
+            Type_Safety,  -- Generic category for overall compliance
             "Compliance check failed",
             False
          );
@@ -159,20 +160,12 @@ package body HFT_Audit is
             Order_Rejected,
             Error,
             O.Order_ID,
-            Type_Safety,
+            Type_Safety,  -- Generic category for overall compliance
             "Order rejected - compliance violations detected",
             False
          );
       end if;
    end Audit_Order_Compliance;
-
-   procedure Audit_Order_Batch (
-      Orders : in out HFT_Engine.Order;
-      Results : out HFT_Compliance.Check_Result
-   ) is
-   begin
-      Audit_Order_Compliance (Orders, Results);
-   end Audit_Order_Batch;
 
    function Get_Audit_Events_By_Order (Order_ID : Positive) return Natural is
       Count : Natural := 0;

@@ -88,11 +88,8 @@ package HFT_Audit is
       Result : out HFT_Compliance.Check_Result
    );
 
-   -- Audit multiple orders (batch processing)
-   procedure Audit_Order_Batch (
-      Orders : in out HFT_Engine.Order;
-      Results : out HFT_Compliance.Check_Result
-   );
+   -- Note: For batch processing, call Audit_Order_Compliance in a loop
+   -- Future enhancement: Add true batch processing with array of orders
 
    -- Query audit events
    function Get_Audit_Events_By_Order (Order_ID : Positive) return Natural;
