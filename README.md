@@ -112,7 +112,13 @@ make test           # All tests
 make test-ada       # Ada unit tests
 make test-java      # Java JUnit tests
 make test-erlang    # Erlang EUnit tests
+
+# AKA Testing Suite - Comprehensive test orchestration
+make test-aka       # Run full AKA test suite with reporting
+make test-aka-smoke # Quick smoke tests
 ```
+
+For more information about the AKA testing suite, see [aka/README.md](aka/README.md).
 
 ## 📊 Performance
 

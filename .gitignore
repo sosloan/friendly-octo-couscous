@@ -30,3 +30,8 @@ deps/
 *.log
 *.tmp
 *.cache
+
+# AKA test reports
+aka/reports/*.txt
+aka/reports/*.json
+aka/reports/*.html
