@@ -417,4 +417,233 @@ class DigitalOptionNodeTest {
         assertTrue(avgMicros < 100.0,
             String.format("Bulk pricing should be < 100μs per option, got %.2fμs", avgMicros));
     }
+    
+    // ========================================
+    // Time Period Tests
+    // ========================================
+    
+    @Test
+    @Order(40)
+    @DisplayName("Test 40: 30-day option pricing")
+    void test30DayOption() {
+        double time30Days = 30.0 / 365.0; // 30 days in years
+        
+        DigitalOptionNode call = DigitalOptionNode.createCall(
+            STRIKE, PAYOUT, time30Days, RATE, VOLATILITY
+        );
+        
+        DigitalOptionNode put = DigitalOptionNode.createPut(
+            STRIKE, PAYOUT, time30Days, RATE, VOLATILITY
+        );
+        
+        double callPrice = call.compute(SPOT);
+        double putPrice = put.compute(SPOT);
+        
+        // Prices should be valid
+        assertTrue(callPrice > 0 && callPrice < PAYOUT,
+            "30-day call price should be between 0 and payout");
+        assertTrue(putPrice > 0 && putPrice < PAYOUT,
+            "30-day put price should be between 0 and payout");
+        
+        // Put-call parity
+        double discountedPayout = PAYOUT * Math.exp(-RATE * time30Days);
+        assertEquals(discountedPayout, callPrice + putPrice, 0.01,
+            "30-day options should satisfy put-call parity");
+    }
+    
+    @Test
+    @Order(41)
+    @DisplayName("Test 41: 60-day option pricing")
+    void test60DayOption() {
+        double time60Days = 60.0 / 365.0; // 60 days in years
+        
+        DigitalOptionNode call = DigitalOptionNode.createCall(
+            STRIKE, PAYOUT, time60Days, RATE, VOLATILITY
+        );
+        
+        DigitalOptionNode put = DigitalOptionNode.createPut(
+            STRIKE, PAYOUT, time60Days, RATE, VOLATILITY
+        );
+        
+        double callPrice = call.compute(SPOT);
+        double putPrice = put.compute(SPOT);
+        
+        // Prices should be valid
+        assertTrue(callPrice > 0 && callPrice < PAYOUT,
+            "60-day call price should be between 0 and payout");
+        assertTrue(putPrice > 0 && putPrice < PAYOUT,
+            "60-day put price should be between 0 and payout");
+        
+        // Put-call parity
+        double discountedPayout = PAYOUT * Math.exp(-RATE * time60Days);
+        assertEquals(discountedPayout, callPrice + putPrice, 0.01,
+            "60-day options should satisfy put-call parity");
+    }
+    
+    @Test
+    @Order(42)
+    @DisplayName("Test 42: 90-day option pricing")
+    void test90DayOption() {
+        double time90Days = 90.0 / 365.0; // 90 days in years
+        
+        DigitalOptionNode call = DigitalOptionNode.createCall(
+            STRIKE, PAYOUT, time90Days, RATE, VOLATILITY
+        );
+        
+        DigitalOptionNode put = DigitalOptionNode.createPut(
+            STRIKE, PAYOUT, time90Days, RATE, VOLATILITY
+        );
+        
+        double callPrice = call.compute(SPOT);
+        double putPrice = put.compute(SPOT);
+        
+        // Prices should be valid
+        assertTrue(callPrice > 0 && callPrice < PAYOUT,
+            "90-day call price should be between 0 and payout");
+        assertTrue(putPrice > 0 && putPrice < PAYOUT,
+            "90-day put price should be between 0 and payout");
+        
+        // Put-call parity
+        double discountedPayout = PAYOUT * Math.exp(-RATE * time90Days);
+        assertEquals(discountedPayout, callPrice + putPrice, 0.01,
+            "90-day options should satisfy put-call parity");
+    }
+    
+    @Test
+    @Order(43)
+    @DisplayName("Test 43: 180-day option pricing")
+    void test180DayOption() {
+        double time180Days = 180.0 / 365.0; // 180 days in years
+        
+        DigitalOptionNode call = DigitalOptionNode.createCall(
+            STRIKE, PAYOUT, time180Days, RATE, VOLATILITY
+        );
+        
+        DigitalOptionNode put = DigitalOptionNode.createPut(
+            STRIKE, PAYOUT, time180Days, RATE, VOLATILITY
+        );
+        
+        double callPrice = call.compute(SPOT);
+        double putPrice = put.compute(SPOT);
+        
+        // Prices should be valid
+        assertTrue(callPrice > 0 && callPrice < PAYOUT,
+            "180-day call price should be between 0 and payout");
+        assertTrue(putPrice > 0 && putPrice < PAYOUT,
+            "180-day put price should be between 0 and payout");
+        
+        // Put-call parity
+        double discountedPayout = PAYOUT * Math.exp(-RATE * time180Days);
+        assertEquals(discountedPayout, callPrice + putPrice, 0.01,
+            "180-day options should satisfy put-call parity");
+    }
+    
+    @Test
+    @Order(44)
+    @DisplayName("Test 44: Time decay comparison across maturities")
+    void testTimeDecayAcrossMaturities() {
+        double time30Days = 30.0 / 365.0;
+        double time60Days = 60.0 / 365.0;
+        double time90Days = 90.0 / 365.0;
+        double time180Days = 180.0 / 365.0;
+        
+        DigitalOptionNode node30 = DigitalOptionNode.createCall(
+            STRIKE, PAYOUT, time30Days, RATE, VOLATILITY
+        );
+        DigitalOptionNode node60 = DigitalOptionNode.createCall(
+            STRIKE, PAYOUT, time60Days, RATE, VOLATILITY
+        );
+        DigitalOptionNode node90 = DigitalOptionNode.createCall(
+            STRIKE, PAYOUT, time90Days, RATE, VOLATILITY
+        );
+        DigitalOptionNode node180 = DigitalOptionNode.createCall(
+            STRIKE, PAYOUT, time180Days, RATE, VOLATILITY
+        );
+        
+        double price30 = node30.compute(SPOT);
+        double price60 = node60.compute(SPOT);
+        double price90 = node90.compute(SPOT);
+        double price180 = node180.compute(SPOT);
+        
+        // At the money, longer maturity options should have similar or slightly different prices
+        // due to more time for the underlying to move
+        assertTrue(price30 > 0 && price60 > 0 && price90 > 0 && price180 > 0,
+            "All option prices should be positive");
+        
+        System.out.printf("Price comparison - 30d: %.4f, 60d: %.4f, 90d: %.4f, 180d: %.4f%n",
+            price30, price60, price90, price180);
+    }
+    
+    @Test
+    @Order(45)
+    @DisplayName("Test 45: Greeks sensitivity across time periods")
+    void testGreeksSensitivityAcrossTimePeriods() {
+        double time30Days = 30.0 / 365.0;
+        double time60Days = 60.0 / 365.0;
+        double time180Days = 180.0 / 365.0;
+        
+        DigitalOptionNode node30 = DigitalOptionNode.createCall(
+            STRIKE, PAYOUT, time30Days, RATE, VOLATILITY
+        );
+        DigitalOptionNode node60 = DigitalOptionNode.createCall(
+            STRIKE, PAYOUT, time60Days, RATE, VOLATILITY
+        );
+        DigitalOptionNode node180 = DigitalOptionNode.createCall(
+            STRIKE, PAYOUT, time180Days, RATE, VOLATILITY
+        );
+        
+        // Calculate deltas
+        double delta30 = node30.delta(SPOT);
+        double delta60 = node60.delta(SPOT);
+        double delta180 = node180.delta(SPOT);
+        
+        // Calculate vegas
+        double vega30 = node30.vega(SPOT);
+        double vega60 = node60.vega(SPOT);
+        double vega180 = node180.vega(SPOT);
+        
+        // All deltas should be non-zero
+        assertTrue(Math.abs(delta30) > 0 && Math.abs(delta60) > 0 && Math.abs(delta180) > 0,
+            "Deltas should be non-zero for all maturities");
+        
+        // All vegas should be non-zero
+        assertTrue(Math.abs(vega30) > 0 && Math.abs(vega60) > 0 && Math.abs(vega180) > 0,
+            "Vegas should be non-zero for all maturities");
+        
+        System.out.printf("Delta comparison - 30d: %.6f, 60d: %.6f, 180d: %.6f%n",
+            delta30, delta60, delta180);
+        System.out.printf("Vega comparison - 30d: %.6f, 60d: %.6f, 180d: %.6f%n",
+            vega30, vega60, vega180);
+    }
+    
+    @Test
+    @Order(46)
+    @DisplayName("Test 46: Near-expiry vs far-expiry behavior")
+    void testNearExpiryVsFarExpiry() {
+        double timeNearExpiry = 1.0 / 365.0; // 1 day
+        double timeFarExpiry = 365.0 / 365.0; // 1 year
+        
+        DigitalOptionNode nearExpiry = DigitalOptionNode.createCall(
+            STRIKE, PAYOUT, timeNearExpiry, RATE, VOLATILITY
+        );
+        DigitalOptionNode farExpiry = DigitalOptionNode.createCall(
+            STRIKE, PAYOUT, timeFarExpiry, RATE, VOLATILITY
+        );
+        
+        // Price ITM option
+        double nearPriceITM = nearExpiry.compute(STRIKE + 5.0);
+        double farPriceITM = farExpiry.compute(STRIKE + 5.0);
+        
+        // Near expiry ITM should be closer to discounted payout
+        double nearDiscount = Math.exp(-RATE * timeNearExpiry);
+        assertTrue(nearPriceITM > 0.9 * PAYOUT * nearDiscount,
+            "Near-expiry ITM option should be close to discounted payout");
+        
+        // Far expiry has more uncertainty
+        assertTrue(farPriceITM < nearPriceITM * Math.exp(RATE * (timeFarExpiry - timeNearExpiry)) + 0.1,
+            "Far-expiry option has different pricing dynamics");
+        
+        System.out.printf("Near-expiry ITM: %.4f, Far-expiry ITM: %.4f%n",
+            nearPriceITM, farPriceITM);
+    }
 }
