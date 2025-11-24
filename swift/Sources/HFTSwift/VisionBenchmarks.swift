@@ -11,7 +11,7 @@ import CoreFoundation
 
 #if canImport(CoreFoundation)
 private func getCurrentTime() -> Double {
-    return CFAbsoluteTimeGetCurrent() + kCFAbsoluteTimeIntervalSince1970
+    return CFAbsoluteTimeGetCurrent()
 }
 #else
 private func getCurrentTime() -> Double {
