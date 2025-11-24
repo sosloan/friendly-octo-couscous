@@ -2,10 +2,8 @@
 -- Provides type-safe, formally verified high-frequency trading core
 pragma Ada_2022;
 
-with Ada.Real_Time;
-
 package HFT_Engine is
-   pragma Pure;
+   pragma Preelaborate;
 
    -- Price type with fixed-point precision for financial calculations
    type Price is delta 0.01 digits 15;
@@ -19,6 +17,9 @@ package HFT_Engine is
    -- Order side enumeration
    type Side is (Buy, Sell);
    
+   -- Timestamp as seconds since epoch (Unix timestamp)
+   type Timestamp is range 0 .. 9_999_999_999;
+   
    -- Order type definition
    type Order is record
       Order_ID   : Positive;
@@ -26,7 +27,7 @@ package HFT_Engine is
       Price_Val  : Price;
       Qty        : Quantity;
       Order_Side : Side;
-      Timestamp  : Ada.Real_Time.Time;
+      Time_Stamp : Timestamp;
    end record;
    
    -- Order validation - ensures all constraints are met

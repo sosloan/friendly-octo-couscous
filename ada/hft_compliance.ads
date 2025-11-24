@@ -2,10 +2,9 @@
 -- Provides comprehensive Ada compliance validation for HFT systems
 pragma Ada_2022;
 
-with HFT_Engine;
+with HFT_Engine; use HFT_Engine;
 
 package HFT_Compliance is
-   pragma Preelaborate;
 
    -- Compliance check result type
    type Check_Result is record
@@ -16,12 +15,13 @@ package HFT_Compliance is
 
    -- Compliance categories
    type Compliance_Category is (
-      Type_Safety,      -- Type system compliance
+      Type_Safety,       -- Type system compliance
       Contract_Validity, -- Pre/post condition checks
-      Range_Safety,     -- Range and overflow checks
-      Coding_Standards, -- Ada coding standard compliance
-      Security,         -- Security-related checks
-      Performance       -- Performance compliance
+      Range_Safety,      -- Range and overflow checks
+      Coding_Standards,  -- Ada coding standard compliance
+      Security,          -- Security-related checks
+      Performance,       -- Performance compliance
+      NIL_Safety         -- NIL/null/uninitialized value checks
    );
 
    -- Type Safety Checks
@@ -88,6 +88,21 @@ package HFT_Compliance is
       with Post => (if Check_Order_Size_Reasonable'Result then 
                      Q >= 1 and Q <= 10_000_000);
 
+   -- NIL Safety Checks
+   function Check_Symbol_Not_Empty (Symbol : String) return Boolean
+      with Pre => Symbol'Length = HFT_Engine.Symbol_Length,
+           Post => (if Check_Symbol_Not_Empty'Result then
+                     (for some C of Symbol => C /= ' '));
+
+   function Check_Price_Not_Zero (P : HFT_Engine.Price) return Boolean
+      with Post => Check_Price_Not_Zero'Result = (P /= 0.0);
+
+   function Check_Quantity_Not_Zero (Q : HFT_Engine.Quantity) return Boolean
+      with Post => Check_Quantity_Not_Zero'Result = (Q /= 0);
+
+   function Check_Timestamp_Not_Zero (T : HFT_Engine.Timestamp) return Boolean
+      with Post => Check_Timestamp_Not_Zero'Result = (T /= 0);
+
    -- Comprehensive Order Compliance Check
    function Run_Full_Compliance_Check (O : HFT_Engine.Order) return Check_Result
       with Post => (if Run_Full_Compliance_Check'Result.Passed then 
@@ -113,6 +128,7 @@ package HFT_Compliance is
       Coding_Std_Pass  : Natural := 0;
       Security_Pass    : Natural := 0;
       Performance_Pass : Natural := 0;
+      NIL_Safety_Pass  : Natural := 0;
    end record;
 
    function Get_Compliance_Statistics (O : HFT_Engine.Order) return Compliance_Stats;

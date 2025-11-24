@@ -2,12 +2,13 @@
 -- Demonstrates all compliance checking features in action
 
 with Ada.Text_IO; use Ada.Text_IO;
-with Ada.Real_Time; use Ada.Real_Time;
+ 
 with HFT_Engine; use HFT_Engine;
 with HFT_Compliance; use HFT_Compliance;
+with HFT_Time_Util;
 
 procedure Compliance_Example is
-   Current_Time : Time := Clock;
+   Current_Time : constant Timestamp := Timestamp (HFT_Time_Util.Get_Unix_Timestamp);
    
    procedure Demonstrate_Type_Safety is
       Order : HFT_Engine.Order;
@@ -21,7 +22,7 @@ procedure Compliance_Example is
          Price_Val  => 250.75,
          Qty        => 500,
          Order_Side => Buy,
-         Timestamp  => Current_Time
+         Time_Stamp => Current_Time
       );
       
       Put_Line ("Checking price range...");
@@ -55,7 +56,7 @@ procedure Compliance_Example is
          Price_Val  => 2800.50,
          Qty        => 25,
          Order_Side => Sell,
-         Timestamp  => Current_Time
+         Time_Stamp => Current_Time
       );
       
       Put_Line ("Verifying preconditions...");
@@ -85,7 +86,7 @@ procedure Compliance_Example is
          Price_Val  => 3500.25,
          Qty        => 100,
          Order_Side => Buy,
-         Timestamp  => Current_Time
+         Time_Stamp => Current_Time
       );
       
       Put_Line ("Checking multiplication overflow...");
@@ -120,7 +121,7 @@ procedure Compliance_Example is
          Price_Val  => 350.00,
          Qty        => 200,
          Order_Side => Buy,
-         Timestamp  => Current_Time
+         Time_Stamp => Current_Time
       );
       
       Put_Line ("Checking symbol format...");
@@ -148,7 +149,7 @@ procedure Compliance_Example is
          Price_Val  => 800.00,
          Qty        => 1000,
          Order_Side => Sell,
-         Timestamp  => Current_Time
+         Time_Stamp => Current_Time
       );
       
       Put_Line ("Checking order value limit...");
@@ -178,7 +179,7 @@ procedure Compliance_Example is
          Price_Val  => 450.50,
          Qty        => 150,
          Order_Side => Buy,
-         Timestamp  => Current_Time
+         Time_Stamp => Current_Time
       );
       
       Put_Line ("Checking symbol length optimization...");
@@ -208,7 +209,7 @@ procedure Compliance_Example is
          Price_Val  => 175.50,
          Qty        => 100,
          Order_Side => Buy,
-         Timestamp  => Current_Time
+         Time_Stamp => Current_Time
       );
       
       Put_Line ("Running comprehensive compliance check...");
@@ -245,7 +246,7 @@ procedure Compliance_Example is
          Price_Val  => 600.00,
          Qty        => 50,
          Order_Side => Sell,
-         Timestamp  => Current_Time
+         Time_Stamp => Current_Time
       );
       
       Put_Line ("Running category-specific checks...");
@@ -275,7 +276,7 @@ procedure Compliance_Example is
          Price_Val  => 45.25,
          Qty        => 1000,
          Order_Side => Buy,
-         Timestamp  => Current_Time
+         Time_Stamp => Current_Time
       );
       
       Print_Compliance_Report (Order);

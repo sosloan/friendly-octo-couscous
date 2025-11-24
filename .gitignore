@@ -9,6 +9,8 @@ build/
 target/
 dist/
 out/
+obj/
+ada/obj/
 .build/
 *.swiftmodule
 *.swiftdoc

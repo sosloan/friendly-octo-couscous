@@ -2,7 +2,7 @@
 pragma Ada_2022;
 
 with Ada.Text_IO;
-with Ada.Real_Time;
+with HFT_Time_Util;
 
 package body HFT_Compliance is
 
@@ -101,18 +101,21 @@ package body HFT_Compliance is
    end Check_No_Zero_Division;
 
    function Check_Timestamp_Valid (O : HFT_Engine.Order) return Boolean is
-      use Ada.Real_Time;
-      Current : Time := Clock;
-      Time_Diff : Time_Span;
+      Current_Time : constant HFT_Engine.Timestamp := 
+         HFT_Engine.Timestamp (HFT_Time_Util.Get_Unix_Timestamp);
+      One_Day : constant HFT_Engine.Timestamp := 24 * 60 * 60; -- 24 hours in seconds
    begin
       -- Check that timestamp is not in the future
-      if O.Timestamp > Current then
+      if O.Time_Stamp > Current_Time then
          return False;
       end if;
       
       -- Check that timestamp is not too old (e.g., > 24 hours)
-      Time_Diff := Current - O.Timestamp;
-      return Time_Diff <= Seconds (86400); -- 24 hours
+      if Current_Time - O.Time_Stamp > One_Day then
+         return False;
+      end if;
+      
+      return True;
    end Check_Timestamp_Valid;
 
    -- Performance Compliance Checks
@@ -127,6 +130,33 @@ package body HFT_Compliance is
       -- Reasonable order size: not too small (avoid spam) or too large (risk)
       return Q >= 1 and Q <= 10_000_000;
    end Check_Order_Size_Reasonable;
+
+   -- NIL Safety Checks
+   function Check_Symbol_Not_Empty (Symbol : String) return Boolean is
+   begin
+      -- Check that symbol has at least one non-space character
+      for C of Symbol loop
+         if C /= ' ' then
+            return True;
+         end if;
+      end loop;
+      return False; -- All spaces = empty symbol
+   end Check_Symbol_Not_Empty;
+
+   function Check_Price_Not_Zero (P : HFT_Engine.Price) return Boolean is
+   begin
+      return P /= 0.0;
+   end Check_Price_Not_Zero;
+
+   function Check_Quantity_Not_Zero (Q : HFT_Engine.Quantity) return Boolean is
+   begin
+      return Q /= 0;
+   end Check_Quantity_Not_Zero;
+
+   function Check_Timestamp_Not_Zero (T : HFT_Engine.Timestamp) return Boolean is
+   begin
+      return T /= 0;
+   end Check_Timestamp_Not_Zero;
 
    -- Helper function to create check result
    function Make_Check_Result (
@@ -174,6 +204,12 @@ package body HFT_Compliance is
       -- Performance
       All_Passed := All_Passed and Check_Symbol_Length_Optimal (O.Symbol);
       All_Passed := All_Passed and Check_Order_Size_Reasonable (O.Qty);
+      
+      -- NIL Safety
+      All_Passed := All_Passed and Check_Symbol_Not_Empty (O.Symbol);
+      All_Passed := All_Passed and Check_Price_Not_Zero (O.Price_Val);
+      All_Passed := All_Passed and Check_Quantity_Not_Zero (O.Qty);
+      All_Passed := All_Passed and Check_Timestamp_Not_Zero (O.Time_Stamp);
       
       if All_Passed then
          return Make_Check_Result (
@@ -255,6 +291,17 @@ package body HFT_Compliance is
                "Performance",
                "Performance-optimal parameters validated"
             );
+            
+         when NIL_Safety =>
+            Passed := Check_Symbol_Not_Empty (O.Symbol) and
+                     Check_Price_Not_Zero (O.Price_Val) and
+                     Check_Quantity_Not_Zero (O.Qty) and
+                     Check_Timestamp_Not_Zero (O.Time_Stamp);
+            return Make_Check_Result (
+               Passed,
+               "NIL Safety",
+               "NIL/null/zero value checks validated"
+            );
       end case;
    end Run_Category_Check;
 
@@ -303,6 +350,7 @@ package body HFT_Compliance is
                when Coding_Standards => Stats.Coding_Std_Pass := Stats.Coding_Std_Pass + 1;
                when Security         => Stats.Security_Pass := Stats.Security_Pass + 1;
                when Performance      => Stats.Performance_Pass := Stats.Performance_Pass + 1;
+               when NIL_Safety       => Stats.NIL_Safety_Pass := Stats.NIL_Safety_Pass + 1;
             end case;
          else
             Stats.Failed_Checks := Stats.Failed_Checks + 1;
