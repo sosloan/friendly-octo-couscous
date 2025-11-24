@@ -31,7 +31,7 @@ package HFT_Compliance is
    function Check_Quantity_Range (Q : HFT_Engine.Quantity) return Boolean
       with Post => Check_Quantity_Range'Result = (Q >= 0 and Q <= 1_000_000_000);
 
-   -- Check Order ID is valid (always true due to Positive type, but included for completeness)
+   -- Check Order ID is valid (always true due to Positive type, kept for framework completeness)
    function Check_Order_ID_Valid (ID : Positive) return Boolean
       with Post => Check_Order_ID_Valid'Result = True;
 
@@ -65,7 +65,7 @@ package HFT_Compliance is
            Post => (if Check_Symbol_Format'Result then 
                      (for all C of Symbol => C in 'A' .. 'Z' | ' '));
 
-   -- Check order side is valid (always true due to enumeration type, included for completeness)
+   -- Check order side is valid (always true due to enumeration type, kept for framework completeness)
    function Check_Order_Side_Valid (S : HFT_Engine.Side) return Boolean
       with Post => Check_Order_Side_Valid'Result = True;
 
