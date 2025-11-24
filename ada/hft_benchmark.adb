@@ -5,6 +5,7 @@ with Ada.Text_IO; use Ada.Text_IO;
 with Ada.Calendar; use Ada.Calendar;
 with HFT_Engine; use HFT_Engine;
 with HFT_Compliance; use HFT_Compliance;
+with HFT_Time_Util;
 
 procedure HFT_Benchmark is
    Test_Order : Order;
@@ -43,14 +44,14 @@ begin
    Put_Line ("  Iterations per test: " & Natural'Image (Iterations));
    Put_Line ("");
    
-   -- Create a valid test order
+   -- Create a valid test order (use current time)
    Test_Order := (
       Order_ID   => 12345,
       Symbol     => "NVDA      ",
       Price_Val  => 850.75,
       Qty        => 500,
       Order_Side => Buy,
-      Time_Stamp => 1732479420
+      Time_Stamp => Timestamp (HFT_Time_Util.Get_Unix_Timestamp)
    );
    
    -- Benchmark 1: Full Compliance Check

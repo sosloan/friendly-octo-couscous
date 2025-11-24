@@ -150,7 +150,11 @@ procedure HFT_Integration_Test is
       -- Invalid order 1: Future timestamp
       Invalid_Orders (1) := Valid_Order;
       Invalid_Orders (1).Order_ID := 2002;
-      Invalid_Orders (1).Time_Stamp := Current_Time + 3600; -- 1 hour in future
+      declare
+         One_Hour : constant Timestamp := 60 * 60; -- 1 hour in seconds
+      begin
+         Invalid_Orders (1).Time_Stamp := Current_Time + One_Hour;
+      end;
       Audit_Order_Compliance (Invalid_Orders (1), Result);
       Assert (not Result.Passed, "Future timestamp detected");
       

@@ -103,7 +103,7 @@ package body HFT_Compliance is
    function Check_Timestamp_Valid (O : HFT_Engine.Order) return Boolean is
       Current_Time : constant HFT_Engine.Timestamp := 
          HFT_Engine.Timestamp (HFT_Time_Util.Get_Unix_Timestamp);
-      One_Day : constant HFT_Engine.Timestamp := 86400; -- 24 hours in seconds
+      One_Day : constant HFT_Engine.Timestamp := 24 * 60 * 60; -- 24 hours in seconds
    begin
       -- Check that timestamp is not in the future
       if O.Time_Stamp > Current_Time then
