@@ -37,14 +37,26 @@ procedure HFT_Integration_Test is
       
       -- Create 5 test orders
       for I in Orders'Range loop
-         Orders (I) := (
-            Order_ID   => I,
-            Symbol     => "TEST" & Positive'Image (I) & "     ",
-            Price_Val  => Price (100.0 + Float (I) * 10.0),
-            Qty        => Quantity (100 * I),
-            Order_Side => (if I mod 2 = 0 then Buy else Sell),
-            Time_Stamp => Current_Time
-         );
+         declare
+            Num_Str : String := Positive'Image (I);
+            Symbol_Str : String (1 .. 10) := (others => ' ');
+         begin
+            Symbol_Str (1 .. 4) := "TEST";
+            if I < 10 then
+               Symbol_Str (5) := Num_Str (Num_Str'Last);
+            else
+               Symbol_Str (5 .. 6) := Num_Str (Num_Str'Last - 1 .. Num_Str'Last);
+            end if;
+            
+            Orders (I) := (
+               Order_ID   => I,
+               Symbol     => Symbol_Str,
+               Price_Val  => Price (100.0 + Float (I) * 10.0),
+               Qty        => Quantity (100 * I),
+               Order_Side => (if I mod 2 = 0 then Buy else Sell),
+               Time_Stamp => Current_Time
+            );
+         end;
          
          Audit_Order_Compliance (Orders (I), Result);
       end loop;
@@ -186,14 +198,26 @@ procedure HFT_Integration_Test is
       
       -- Process multiple orders
       for I in Orders'Range loop
-         Orders (I) := (
-            Order_ID   => 3000 + I,
-            Symbol     => "STOCK" & Positive'Image (I) & "    ",
-            Price_Val  => Price (50.0 + Float (I) * 5.0),
-            Qty        => Quantity (10 * I),
-            Order_Side => (if I mod 2 = 0 then Buy else Sell),
-            Time_Stamp => Current_Time
-         );
+         declare
+            Num_Str : String := Positive'Image (I);
+            Symbol_Str : String (1 .. 10) := (others => ' ');
+         begin
+            Symbol_Str (1 .. 5) := "STOCK";
+            if I < 10 then
+               Symbol_Str (6) := Num_Str (Num_Str'Last);
+            else
+               Symbol_Str (6 .. 7) := Num_Str (Num_Str'Last - 1 .. Num_Str'Last);
+            end if;
+            
+            Orders (I) := (
+               Order_ID   => 3000 + I,
+               Symbol     => Symbol_Str,
+               Price_Val  => Price (50.0 + Float (I) * 5.0),
+               Qty        => Quantity (10 * I),
+               Order_Side => (if I mod 2 = 0 then Buy else Sell),
+               Time_Stamp => Current_Time
+            );
+         end;
          
          Audit_Order_Compliance (Orders (I), Result);
       end loop;
@@ -240,7 +264,7 @@ procedure HFT_Integration_Test is
       end loop;
       
       Stats := Get_Audit_Statistics;
-      Assert (Stats.Total_Checks = 100, "All orders processed");
+      Assert (Stats.Total_Checks = 200, "All orders processed (2 events per order)");
       Put_Line ("  Successfully processed 100 orders");
       Put_Line ("");
    end Test_High_Volume_Processing;
