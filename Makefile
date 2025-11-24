@@ -2,6 +2,7 @@
 # Supports Linux, macOS (including MacBook Air), iOS, and Android
 
 .PHONY: all clean ada lean akka java erlang swift docs help
+.PHONY: all clean ada lean akka java erlang docs help test-aka test-aka-smoke test-aka-integration test-aka-performance
 
 all: ada java akka erlang swift
 	@echo "==================================="
@@ -20,6 +21,7 @@ help:
 	@echo "  make docs     - Generate documentation"
 	@echo "  make clean    - Clean all build artifacts"
 	@echo "  make test     - Run all tests"
+	@echo "  make test-aka - Run AKA comprehensive test suite"
 
 # Ada HFT Engine
 ada:
@@ -69,7 +71,7 @@ test: test-ada test-java test-erlang test-swift
 
 test-ada:
 	@echo "Testing Ada components..."
-	cd ada && gprbuild -P hft.gpr && ./hft_main
+	cd ada && gprbuild -P hft.gpr && ./hft_test && ./hft_compliance_test && ./hft_integration_test && ./hft_main
 
 test-java:
 	@echo "Testing Java components..."
@@ -93,6 +95,22 @@ audit-swift:
 	@echo ""
 	@echo "Generating audit report..."
 	cd swift && swift audit-report.swift
+# AKA Testing Suite
+test-aka:
+	@echo "Running AKA Test Suite..."
+	cd aka && ./aka_runner.sh --all --report
+
+test-aka-smoke:
+	@echo "Running AKA Smoke Tests..."
+	cd aka && ./aka_runner.sh --smoke
+
+test-aka-integration:
+	@echo "Running AKA Integration Tests..."
+	cd aka && ./aka_runner.sh --integration
+
+test-aka-performance:
+	@echo "Running AKA Performance Tests..."
+	cd aka && ./aka_runner.sh --performance
 
 # Clean
 clean:
@@ -103,6 +121,7 @@ clean:
 	cd erlang && rebar3 clean || true
 	cd lean && lake clean || true
 	cd swift && swift package clean || true
+	cd aka && rm -rf reports/* || true
 	@echo "✓ Clean complete"
 
 # Cross-platform targets
