@@ -1,0 +1,74 @@
+compliance_example.adb:1:04: (style) space required
+compliance_example.adb:2:04: (style) space required
+compliance_example.adb:5:01: (style) trailing spaces not permitted
+compliance_example.adb:10:04: warning: "Current_Time" is not modified, could be declared constant [-gnatwk]
+compliance_example.adb:11:01: (style) trailing spaces not permitted
+compliance_example.adb:12:04: (style) subprogram body has no previous spec
+compliance_example.adb:17:01: (style) trailing spaces not permitted
+compliance_example.adb:26:01: (style) trailing spaces not permitted
+compliance_example.adb:31:01: (style) trailing spaces not permitted
+compliance_example.adb:36:01: (style) trailing spaces not permitted
+compliance_example.adb:41:01: (style) trailing spaces not permitted
+compliance_example.adb:44:01: (style) trailing spaces not permitted
+compliance_example.adb:45:04: (style) subprogram body has no previous spec
+compliance_example.adb:51:01: (style) trailing spaces not permitted
+compliance_example.adb:60:01: (style) trailing spaces not permitted
+compliance_example.adb:64:01: (style) trailing spaces not permitted
+compliance_example.adb:72:01: (style) trailing spaces not permitted
+compliance_example.adb:75:01: (style) trailing spaces not permitted
+compliance_example.adb:76:04: (style) subprogram body has no previous spec
+compliance_example.adb:81:01: (style) trailing spaces not permitted
+compliance_example.adb:90:01: (style) trailing spaces not permitted
+compliance_example.adb:97:01: (style) trailing spaces not permitted
+compliance_example.adb:102:01: (style) trailing spaces not permitted
+compliance_example.adb:107:01: (style) trailing spaces not permitted
+compliance_example.adb:110:01: (style) trailing spaces not permitted
+compliance_example.adb:111:04: (style) subprogram body has no previous spec
+compliance_example.adb:116:01: (style) trailing spaces not permitted
+compliance_example.adb:125:01: (style) trailing spaces not permitted
+compliance_example.adb:130:01: (style) trailing spaces not permitted
+compliance_example.adb:135:01: (style) trailing spaces not permitted
+compliance_example.adb:138:01: (style) trailing spaces not permitted
+compliance_example.adb:139:04: (style) subprogram body has no previous spec
+compliance_example.adb:144:01: (style) trailing spaces not permitted
+compliance_example.adb:153:01: (style) trailing spaces not permitted
+compliance_example.adb:160:01: (style) trailing spaces not permitted
+compliance_example.adb:165:01: (style) trailing spaces not permitted
+compliance_example.adb:168:01: (style) trailing spaces not permitted
+compliance_example.adb:169:04: (style) subprogram body has no previous spec
+compliance_example.adb:174:01: (style) trailing spaces not permitted
+compliance_example.adb:183:01: (style) trailing spaces not permitted
+compliance_example.adb:188:01: (style) trailing spaces not permitted
+compliance_example.adb:193:01: (style) trailing spaces not permitted
+compliance_example.adb:196:01: (style) trailing spaces not permitted
+compliance_example.adb:197:04: (style) subprogram body has no previous spec
+compliance_example.adb:204:01: (style) trailing spaces not permitted
+compliance_example.adb:213:01: (style) trailing spaces not permitted
+compliance_example.adb:216:01: (style) trailing spaces not permitted
+compliance_example.adb:222:01: (style) trailing spaces not permitted
+compliance_example.adb:229:38: (style) trailing spaces not permitted
+compliance_example.adb:230:80: (style) this line is too long
+compliance_example.adb:231:01: (style) trailing spaces not permitted
+compliance_example.adb:234:01: (style) trailing spaces not permitted
+compliance_example.adb:235:04: (style) subprogram body has no previous spec
+compliance_example.adb:241:01: (style) trailing spaces not permitted
+compliance_example.adb:250:01: (style) trailing spaces not permitted
+compliance_example.adb:253:01: (style) trailing spaces not permitted
+compliance_example.adb:257:80: (style) this line is too long
+compliance_example.adb:259:80: (style) this line is too long
+compliance_example.adb:262:01: (style) trailing spaces not permitted
+compliance_example.adb:265:01: (style) trailing spaces not permitted
+compliance_example.adb:266:04: (style) subprogram body has no previous spec
+compliance_example.adb:271:01: (style) trailing spaces not permitted
+compliance_example.adb:280:01: (style) trailing spaces not permitted
+compliance_example.adb:284:01: (style) trailing spaces not permitted
+compliance_example.adb:286:80: (style) this line is too long
+compliance_example.adb:287:80: (style) this line is too long
+compliance_example.adb:288:80: (style) this line is too long
+compliance_example.adb:289:80: (style) this line is too long
+compliance_example.adb:291:01: (style) trailing spaces not permitted
+compliance_example.adb:301:01: (style) trailing spaces not permitted
+compliance_example.adb:302:80: (style) this line is too long
+compliance_example.adb:303:80: (style) this line is too long
+compliance_example.adb:304:80: (style) this line is too long
+compliance_example.adb:305:01: (style) trailing spaces not permitted

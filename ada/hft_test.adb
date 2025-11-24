@@ -1,6 +1,6 @@
 -- Ada Test Suite for HFT Engine
 with Ada.Text_IO; use Ada.Text_IO;
-with Ada.Real_Time; use Ada.Real_Time;
+ 
 with HFT_Engine; use HFT_Engine;
 
 procedure HFT_Test is
@@ -19,7 +19,7 @@ procedure HFT_Test is
       end if;
    end Assert;
    
-   Current_Time : Time := Clock;
+   Current_Time : Timestamp := 1732479420;
    Valid_Buy : Order;
    Valid_Sell : Order;
    Invalid_Order : Order;
@@ -35,7 +35,7 @@ begin
       Price_Val  => 150.50,
       Qty        => 100,
       Order_Side => Buy,
-      Timestamp  => Current_Time
+      Time_Stamp => Current_Time
    );
    
    Valid_Sell := (
@@ -44,7 +44,7 @@ begin
       Price_Val  => 150.25,
       Qty        => 100,
       Order_Side => Sell,
-      Timestamp  => Current_Time
+      Time_Stamp => Current_Time
    );
    
    Invalid_Order := (
@@ -53,7 +53,7 @@ begin
       Price_Val  => 0.0,  -- Invalid: zero price
       Qty        => 0,    -- Invalid: zero quantity
       Order_Side => Buy,
-      Timestamp  => Current_Time
+      Time_Stamp => Current_Time
    );
    
    Put_Line ("Test 1: Valid Order Validation");

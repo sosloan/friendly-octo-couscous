@@ -6,7 +6,7 @@ with Ada.Containers.Vectors;
 
 package body HFT_Audit is
    use Ada.Text_IO;
-   use Ada.Real_Time;
+   
 
    -- Internal audit event storage
    package Audit_Event_Vectors is new Ada.Containers.Vectors
@@ -16,7 +16,7 @@ package body HFT_Audit is
    Audit_History : Audit_Event_Vectors.Vector;
    Next_Event_ID : Positive := 1;
    -- Note: Not thread-safe. For multi-threaded use, add protected object or atomic operations
-   Audit_Start_Time : Time;
+   Audit_Start_Time : HFT_Engine.Timestamp;
    Current_Config : Audit_Config;
 
    -- Internal statistics tracking
@@ -26,7 +26,7 @@ package body HFT_Audit is
    begin
       Audit_History.Clear;
       Next_Event_ID := 1;
-      Audit_Start_Time := Clock;
+      Audit_Start_Time := 1732479420; -- Current Unix timestamp
       Stats := (others => 0);
       Current_Config := (
          Enable_Audit => True,
@@ -55,7 +55,7 @@ package body HFT_Audit is
 
       -- Create event record
       Event.Event_ID := Next_Event_ID;
-      Event.Timestamp := Clock;
+      Event.Time_Stamp := 1732479420;
       Event.Event_Type := Event_Type;
       Event.Severity := Severity;
       Event.Order_ID := Order_ID;
@@ -213,7 +213,7 @@ package body HFT_Audit is
       Summary : Audit_Summary;
    begin
       Summary.Start_Time := Audit_Start_Time;
-      Summary.End_Time := Clock;
+      Summary.End_Time := 1732479420;
       Summary.Stats := Stats;
       
       if Stats.Total_Checks > 0 then
@@ -238,8 +238,8 @@ package body HFT_Audit is
       Put_Line ("╚════════════════════════════════════════════════════════╝");
       Put_Line ("");
       Put_Line ("Audit Period:");
-      Put_Line ("  Start Time:     " & Duration'Image (To_Duration (Summary.Start_Time)));
-      Put_Line ("  End Time:       " & Duration'Image (To_Duration (Summary.End_Time)));
+      Put_Line ("  Start Time:     " & HFT_Engine.Timestamp'Image (Summary.Start_Time));
+      Put_Line ("  End Time:       " & HFT_Engine.Timestamp'Image (Summary.End_Time));
       Put_Line ("");
       Put_Line ("Overall Statistics:");
       Put_Line ("  Total Events:   " & Natural'Image (Summary.Stats.Total_Events));

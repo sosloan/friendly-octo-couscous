@@ -2,7 +2,7 @@
 -- Comprehensive tests for Ada compliance checking functionality
 
 with Ada.Text_IO; use Ada.Text_IO;
-with Ada.Real_Time; use Ada.Real_Time;
+ 
 with HFT_Engine; use HFT_Engine;
 with HFT_Compliance; use HFT_Compliance;
 
@@ -22,7 +22,7 @@ procedure HFT_Compliance_Test is
       end if;
    end Assert;
    
-   Current_Time : Time := Clock;
+   Current_Time : Timestamp := 1732479420;
    Valid_Order : Order;
    
 begin
@@ -38,7 +38,7 @@ begin
       Price_Val  => 150.50,
       Qty        => 100,
       Order_Side => Buy,
-      Timestamp  => Current_Time
+      Time_Stamp => Current_Time
    );
    
    -- Test 1: Type Safety Checks
@@ -121,7 +121,7 @@ begin
    declare
       Future_Order : Order := Valid_Order;
    begin
-      Future_Order.Timestamp := Current_Time + Seconds (3600);
+      Future_Order.Time_Stamp := Current_Time + 3600; -- 1 hour in the future
       Assert (not Check_Timestamp_Valid (Future_Order),
               "Future timestamp detected");
    end;

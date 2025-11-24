@@ -1,0 +1,55 @@
+hft_compliance_test.adb:1:04: (style) space required
+hft_compliance_test.adb:2:04: (style) space required
+hft_compliance_test.adb:5:01: (style) trailing spaces not permitted
+hft_compliance_test.adb:10:01: (style) trailing spaces not permitted
+hft_compliance_test.adb:13:01: (style) trailing spaces not permitted
+hft_compliance_test.adb:14:04: (style) subprogram body has no previous spec
+hft_compliance_test.adb:24:01: (style) trailing spaces not permitted
+hft_compliance_test.adb:25:04: warning: "Current_Time" is not modified, could be declared constant [-gnatwk]
+hft_compliance_test.adb:27:01: (style) trailing spaces not permitted
+hft_compliance_test.adb:33:01: (style) trailing spaces not permitted
+hft_compliance_test.adb:34:07: (style) space required
+hft_compliance_test.adb:43:01: (style) trailing spaces not permitted
+hft_compliance_test.adb:44:07: (style) space required
+hft_compliance_test.adb:57:01: (style) trailing spaces not permitted
+hft_compliance_test.adb:58:07: (style) space required
+hft_compliance_test.adb:61:80: (style) this line is too long
+hft_compliance_test.adb:66:62: (style) trailing spaces not permitted
+hft_compliance_test.adb:70:07: warning: "Value" is not modified, could be declared constant [-gnatwk]
+hft_compliance_test.adb:76:01: (style) trailing spaces not permitted
+hft_compliance_test.adb:77:07: (style) space required
+hft_compliance_test.adb:80:56: (style) trailing spaces not permitted
+hft_compliance_test.adb:82:57: (style) trailing spaces not permitted
+hft_compliance_test.adb:93:01: (style) trailing spaces not permitted
+hft_compliance_test.adb:94:07: (style) space required
+hft_compliance_test.adb:101:80: (style) this line is too long
+hft_compliance_test.adb:102:80: (style) this line is too long
+hft_compliance_test.adb:106:01: (style) trailing spaces not permitted
+hft_compliance_test.adb:107:07: (style) space required
+hft_compliance_test.adb:110:50: (style) trailing spaces not permitted
+hft_compliance_test.adb:129:01: (style) trailing spaces not permitted
+hft_compliance_test.adb:130:07: (style) space required
+hft_compliance_test.adb:133:55: (style) trailing spaces not permitted
+hft_compliance_test.adb:135:46: (style) trailing spaces not permitted
+hft_compliance_test.adb:137:44: (style) trailing spaces not permitted
+hft_compliance_test.adb:151:01: (style) trailing spaces not permitted
+hft_compliance_test.adb:152:07: (style) space required
+hft_compliance_test.adb:160:01: (style) trailing spaces not permitted
+hft_compliance_test.adb:163:01: (style) trailing spaces not permitted
+hft_compliance_test.adb:166:01: (style) trailing spaces not permitted
+hft_compliance_test.adb:169:01: (style) trailing spaces not permitted
+hft_compliance_test.adb:172:01: (style) trailing spaces not permitted
+hft_compliance_test.adb:177:01: (style) trailing spaces not permitted
+hft_compliance_test.adb:178:07: (style) space required
+hft_compliance_test.adb:187:01: (style) trailing spaces not permitted
+hft_compliance_test.adb:194:33: (style) trailing spaces not permitted
+hft_compliance_test.adb:198:01: (style) trailing spaces not permitted
+hft_compliance_test.adb:199:07: (style) space required
+hft_compliance_test.adb:209:73: (style) trailing spaces not permitted
+hft_compliance_test.adb:213:01: (style) trailing spaces not permitted
+hft_compliance_test.adb:214:07: (style) space required
+hft_compliance_test.adb:221:01: (style) trailing spaces not permitted
+hft_compliance_test.adb:222:07: (style) space required
+hft_compliance_test.adb:229:38: (style) trailing spaces not permitted
+hft_compliance_test.adb:232:01: (style) trailing spaces not permitted
+hft_compliance_test.adb:239:01: (style) trailing spaces not permitted

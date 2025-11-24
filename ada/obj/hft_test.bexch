@@ -1,0 +1,19 @@
+[GENERATED OBJECT FILE]
+b__hft_test.o
+[PROJECT FILES]
+/home/runner/work/friendly-octo-couscous/friendly-octo-couscous/ada/hft.gpr
+20251124192602 35cc153635455aaac236281323a8b2fd
+[BOUND OBJECT FILES]
+/home/runner/work/friendly-octo-couscous/friendly-octo-couscous/ada/obj/hft_engine.o
+/home/runner/work/friendly-octo-couscous/friendly-octo-couscous/ada/obj/hft_test.o
+[GENERATED SOURCE FILES]
+b__hft_test.ads
+b__hft_test.adb
+b__hft_test.ali
+[RESULTING OPTIONS]
+-L/home/runner/work/friendly-octo-couscous/friendly-octo-couscous/ada/obj/
+-L/home/runner/work/friendly-octo-couscous/friendly-octo-couscous/ada/obj/
+-L/usr/lib/gcc/x86_64-linux-gnu/13/adalib/
+-shared
+-lgnat-13
+-ldl

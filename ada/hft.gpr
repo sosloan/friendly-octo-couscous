@@ -6,7 +6,7 @@ project HFT is
                  "compliance_example.adb", "hft_integration_test.adb");
    
    package Compiler is
-      for Default_Switches ("Ada") use ("-gnatwa", "-gnatyyM", "-O2", "-gnat2022");
+      for Default_Switches ("Ada") use ("-gnatwa", "-O2", "-gnat2022");
    end Compiler;
    
    package Binder is

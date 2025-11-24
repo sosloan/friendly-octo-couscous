@@ -2,10 +2,9 @@
 -- Provides comprehensive Ada compliance validation for HFT systems
 pragma Ada_2022;
 
-with HFT_Engine;
+with HFT_Engine; use HFT_Engine;
 
 package HFT_Compliance is
-   pragma Preelaborate;
 
    -- Compliance check result type
    type Check_Result is record

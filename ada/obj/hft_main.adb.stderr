@@ -1,0 +1,29 @@
+hft_main.adb:1:04: (style) space required
+hft_main.adb:2:04: (style) space required
+hft_main.adb:11:04: warning: "Current_Time" is not modified, could be declared constant [-gnatwk]
+hft_main.adb:17:01: (style) trailing spaces not permitted
+hft_main.adb:18:07: (style) space required
+hft_main.adb:27:01: (style) trailing spaces not permitted
+hft_main.adb:28:07: (style) space required
+hft_main.adb:37:01: (style) trailing spaces not permitted
+hft_main.adb:38:46: (style) trailing spaces not permitted
+hft_main.adb:41:48: (style) trailing spaces not permitted
+hft_main.adb:45:01: (style) trailing spaces not permitted
+hft_main.adb:46:07: (style) space required
+hft_main.adb:55:01: (style) trailing spaces not permitted
+hft_main.adb:56:07: (style) space required
+hft_main.adb:65:01: (style) trailing spaces not permitted
+hft_main.adb:66:07: (style) space required
+hft_main.adb:70:01: (style) trailing spaces not permitted
+hft_main.adb:71:07: (style) space required
+hft_main.adb:77:80: (style) this line is too long
+hft_main.adb:78:80: (style) this line is too long
+hft_main.adb:79:80: (style) this line is too long
+hft_main.adb:80:80: (style) this line is too long
+hft_main.adb:81:80: (style) this line is too long
+hft_main.adb:82:80: (style) this line is too long
+hft_main.adb:84:01: (style) trailing spaces not permitted
+hft_main.adb:85:07: (style) space required
+hft_main.adb:89:01: (style) trailing spaces not permitted
+hft_main.adb:92:80: (style) this line is too long
+hft_main.adb:99:01: (style) trailing spaces not permitted

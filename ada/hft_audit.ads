@@ -4,7 +4,6 @@ pragma Ada_2022;
 
 with HFT_Engine;
 with HFT_Compliance;
-with Ada.Real_Time;
 with Ada.Containers.Vectors;
 
 package HFT_Audit is
@@ -31,7 +30,7 @@ package HFT_Audit is
    -- Audit Event Record
    type Audit_Event is record
       Event_ID        : Positive;
-      Timestamp       : Ada.Real_Time.Time;
+      Time_Stamp      : HFT_Engine.Timestamp;
       Event_Type      : Audit_Event_Type;
       Severity        : Severity_Level;
       Order_ID        : Positive;
@@ -59,8 +58,8 @@ package HFT_Audit is
 
    -- Audit Summary Report
    type Audit_Summary is record
-      Start_Time      : Ada.Real_Time.Time;
-      End_Time        : Ada.Real_Time.Time;
+      Start_Time      : HFT_Engine.Timestamp;
+      End_Time        : HFT_Engine.Timestamp;
       Stats           : Audit_Statistics;
       Success_Rate    : Float;
       Critical_Events : Natural := 0;

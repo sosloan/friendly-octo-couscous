@@ -2,14 +2,13 @@
 -- Demonstrates the type-safe HFT engine with comprehensive compliance checks
 
 with Ada.Text_IO; use Ada.Text_IO;
-with Ada.Real_Time; use Ada.Real_Time;
 with HFT_Engine; use HFT_Engine;
 with HFT_Compliance; use HFT_Compliance;
 
 procedure HFT_Main is
    Buy_Ord  : Order;
    Sell_Ord : Order;
-   Current_Time : Time := Clock;
+   Current_Time : Timestamp := 1732479420; -- Unix timestamp (Nov 24, 2025)
    Compliance_Result : Check_Result;
    Stats : Compliance_Stats;
 begin
@@ -23,7 +22,7 @@ begin
       Price_Val  => 150.50,
       Qty        => 100,
       Order_Side => Buy,
-      Timestamp  => Current_Time
+      Time_Stamp => Current_Time
    );
    
    -- Create a sell order
@@ -33,7 +32,7 @@ begin
       Price_Val  => 150.25,
       Qty        => 100,
       Order_Side => Sell,
-      Timestamp  => Current_Time
+      Time_Stamp => Current_Time
    );
    
    Put_Line ("Buy Order: " & Buy_Ord.Symbol & 

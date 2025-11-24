@@ -1,0 +1,3 @@
+hft_integration_test.adb:14:04: warning: "Current_Time" is not modified, could be declared constant [-gnatwk]
+hft_integration_test.adb:274:45: warning: "Result" modified by call, but value overwritten at line 284 [-gnatwm]
+hft_integration_test.adb:284:45: warning: "Result" modified by call, but value overwritten at line 293 [-gnatwm]
