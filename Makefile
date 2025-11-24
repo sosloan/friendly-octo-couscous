@@ -63,7 +63,7 @@ test: test-ada test-java test-erlang
 
 test-ada:
 	@echo "Testing Ada components..."
-	cd ada && gprbuild -P hft.gpr && ./hft_main
+	cd ada && gprbuild -P hft.gpr && ./hft_test && ./hft_compliance_test && ./hft_integration_test && ./hft_main
 
 test-java:
 	@echo "Testing Java components..."
