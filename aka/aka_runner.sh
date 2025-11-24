@@ -119,6 +119,23 @@ run_smoke_tests() {
     else
         test_result "AKA configuration present" 1
     fi
+    
+    # Run comprehensive test suite
+    echo ""
+    echo "Running comprehensive test suite..."
+    if [ -f "${SCRIPT_DIR}/tests/smoke/test_comprehensive_suite.sh" ]; then
+        # Capture output and count tests
+        COMP_OUTPUT=$(bash "${SCRIPT_DIR}/tests/smoke/test_comprehensive_suite.sh" 2>&1)
+        COMP_COUNT=$(echo "$COMP_OUTPUT" | grep -oP "Test count: \K\d+" || echo "0")
+        COMP_PASS=$(echo "$COMP_OUTPUT" | grep -oP "Pass count: \K\d+" || echo "0")
+        
+        # Add to total
+        TOTAL_TESTS=$((TOTAL_TESTS + COMP_COUNT))
+        PASSED_TESTS=$((PASSED_TESTS + COMP_PASS))
+        
+        echo "$COMP_OUTPUT" | grep "Category"
+        echo "  ✓ Comprehensive suite: ${COMP_COUNT} tests executed"
+    fi
 }
 
 run_integration_tests() {

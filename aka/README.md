@@ -4,7 +4,7 @@
 
 ## Overview
 
-AKA is a comprehensive testing suite for the Complete Functional Hyper-Ultra-HFT System. It provides unified test orchestration, reporting, and validation across all system components.
+AKA is a comprehensive testing suite for the Complete Functional Hyper-Ultra-HFT System with **414+ tests** providing unified test orchestration, reporting, and validation across all system components.
 
 ## Features
 
@@ -58,16 +58,29 @@ cd aka
 
 ## Test Categories
 
-### 1. Smoke Tests
-Quick validation that basic functionality works across all components.
+### 1. Smoke Tests (411 tests)
+Comprehensive validation covering:
+- Component structure validation (50 tests)
+- Order validation tests (60 tests)
+- Order matching logic (50 tests)
+- Price validation (40 tests)
+- Quantity validation (30 tests)
+- Symbol validation (20 tests)
+- Error handling (40 tests)
+- Concurrency & threading (30 tests)
+- Performance benchmarks (20 tests)
+- Cross-component integration (30 tests)
+- Network communication (20 tests)
+- Data serialization (15 tests)
+- Infrastructure validation (6 tests)
 
-### 2. Integration Tests
+### 2. Integration Tests (2 tests)
 Cross-component tests validating the complete system flow:
 - Ada Engine → Akka Bridge → Java Network → Erlang Supervisor
 - Order processing end-to-end
 - Fault tolerance and recovery
 
-### 3. Performance Tests
+### 3. Performance Tests (1 test)
 Validation of HFT system performance characteristics:
 - Sub-microsecond latency requirements
 - Throughput testing (millions of orders/second)
