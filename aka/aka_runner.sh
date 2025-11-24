@@ -138,7 +138,8 @@ run_smoke_tests() {
         TOTAL_TESTS=$((TOTAL_TESTS + COMP_COUNT))
         PASSED_TESTS=$((PASSED_TESTS + COMP_PASS))
         
-        echo "$COMP_OUTPUT" | grep "Category"
+        # Use sed for consistency instead of grep
+        echo "$COMP_OUTPUT" | sed -n '/Category/p'
         echo "  ✓ Comprehensive suite: ${COMP_COUNT} tests executed"
     fi
 }

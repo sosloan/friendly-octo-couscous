@@ -174,7 +174,7 @@ for i in {1..15}; do
 done
 
 echo ""
-echo "✓ Comprehensive test suite: $TEST_COUNT tests passed"
+echo "✓ Comprehensive test suite completed: $PASS_COUNT/$TEST_COUNT tests passed"
 echo "Test count: $TEST_COUNT"
 echo "Pass count: $PASS_COUNT"
 
