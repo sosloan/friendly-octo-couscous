@@ -89,6 +89,7 @@ Measure system performance with visionOS-style metrics and real-time monitoring 
 #### 4. Vision-Specific Benchmarks
 - **Spatial Computing Readiness**: <10μs per spatial calculation
 - **UI Update Latency**: 120 FPS (8.33ms) target
+- **Metal Rendering Latency**: 480 FPS (0.75ms) target for ultra-high-performance rendering
 - visionOS compatibility testing
 
 ### Usage Example
@@ -155,6 +156,7 @@ auditLogger.log(AuditEvent(
 - Order matching: <50μs
 - Audit logging: <200μs
 - UI updates: <8.33ms (120 FPS)
+- Metal rendering: <0.75ms (480 FPS) for ultra-high-performance GPU rendering
 
 ### Throughput
 - Order processing: >100,000 orders/second
@@ -224,6 +226,7 @@ Features available:
 ✅ High-throughput processing (>100K ops/sec)
 ✅ Memory-efficient order books
 ✅ 120 FPS UI updates
+✅ 480 FPS Metal rendering target (0.75ms per frame)
 ✅ visionOS spatial computing ready
 ✅ Thread-safe concurrent execution
 

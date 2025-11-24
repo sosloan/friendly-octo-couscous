@@ -37,6 +37,7 @@ print("""
   - Concurrent processing performance
   - Spatial computing readiness (visionOS)
   - UI update latency (120 FPS target)
+  - Metal rendering latency (480 FPS target)
 
 ════════════════════════════════════════════════════════════
 To run full test suite:
