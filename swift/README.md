@@ -4,7 +4,7 @@
 
 The Swift component of the HFT system provides a modern, reactive user interface using **SwiftUI** and **Swift Combine** for reactive programming. This implementation follows Apple's Human Interface Guidelines (HIG) and supports iOS, macOS, iPadOS, and visionOS platforms.
 
-**✅ FULLY AUDITED & CERTIFIED**: This implementation includes comprehensive audit compliance with 77 audit tests covering 20 audit categories, mirroring the Ada implementation's audit framework.
+**✅ FULLY AUDITED & CERTIFIED**: This implementation includes comprehensive audit compliance with 77 audit tests covering 20 audit categories, NIL compliance validation, Vision-inspired benchmarks, and Merkle tree cryptographic verification.
 
 ## Architecture
 
@@ -22,24 +22,79 @@ The Swift component of the HFT system provides a modern, reactive user interface
    - Real-time compliance validation
    - Regulatory reporting (SEC, FINRA, MiFID II)
 
-3. **Akka Bridge** (`AkkaBridge.swift`)
+3. **Merkle Tree Compliance** (`MerkleTreeCompliance.swift`)
+   - Cryptographic verification with Merkle trees
+   - Proof generation and verification
+   - Audit trail integrity with tamper detection
+   - Order/trade verification
+
+4. **NIL Compliance** (`NILCompliance.swift`)
+   - National Instrument List validation
+   - Multi-jurisdiction support
+   - Real-time compliance checking
+   - Status tracking (Approved/Restricted/Prohibited)
+
+5. **Akka Bridge** (`AkkaBridge.swift`)
    - Integration with the Scala/Akka reactive system
    - HTTP/TCP communication layer
    - Asynchronous message passing
    - Error handling and connection management
 
-4. **SwiftUI Views** (`Views/`)
+6. **SwiftUI Views** (`Views/`)
    - `TradingDashboardView`: Main dashboard with tab navigation
    - `OrderBookView`: Real-time order book visualization
    - `RecentTradesView`: Trade execution history
    - `MarketDataView`: Market data cards
    - `OrderEntryView`: Order submission form
 
-5. **Domain Models** (`Models.swift`)
+7. **Domain Models** (`Models.swift`)
    - `Order`: Trading order representation
    - `Trade`: Executed trade
    - `OrderBook`: Buy/sell order collections
    - `MarketData`: Market statistics
+
+## Merkle Tree Compliance
+
+### Cryptographic Verification
+
+The Swift implementation includes comprehensive Merkle tree support for data integrity:
+
+```swift
+// Create Merkle tree from orders
+let orderTree = OrderMerkleTree()
+let rootHash = orderTree.buildFromOrders(orders)
+
+// Generate proof for specific order
+if let proof = orderTree.generateProof(for: index) {
+    let isValid = orderTree.verify(proof: proof)
+}
+
+// Compliance tree for audit events
+let complianceTree = ComplianceMerkleTree()
+let merkleRoot = complianceTree.addAuditBatch(auditEvents)
+
+// Export with verification
+let (events, root) = logger.exportWithMerkleVerification(
+    from: startDate, 
+    to: endDate
+)
+```
+
+**Features:**
+- SHA256/SHA512 hash algorithms
+- Proof generation and verification
+- Tamper-evident audit logs
+- Order/trade verification
+- Compliance report generation
+
+**Performance Benchmarking:**
+```swift
+let benchmarker = MerkleTreeBenchmarker()
+let results = benchmarker.runAllBenchmarks()
+let report = benchmarker.generateReport()
+```
+
+See [MERKLE_TREE_SUMMARY.md](MERKLE_TREE_SUMMARY.md) for detailed documentation.
 
 ## Audit Compliance
 
