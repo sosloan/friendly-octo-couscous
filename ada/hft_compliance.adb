@@ -129,6 +129,33 @@ package body HFT_Compliance is
       return Q >= 1 and Q <= 10_000_000;
    end Check_Order_Size_Reasonable;
 
+   -- NIL Safety Checks
+   function Check_Symbol_Not_Empty (Symbol : String) return Boolean is
+   begin
+      -- Check that symbol has at least one non-space character
+      for C of Symbol loop
+         if C /= ' ' then
+            return True;
+         end if;
+      end loop;
+      return False; -- All spaces = empty symbol
+   end Check_Symbol_Not_Empty;
+
+   function Check_Price_Not_Zero (P : HFT_Engine.Price) return Boolean is
+   begin
+      return P /= 0.0;
+   end Check_Price_Not_Zero;
+
+   function Check_Quantity_Not_Zero (Q : HFT_Engine.Quantity) return Boolean is
+   begin
+      return Q /= 0;
+   end Check_Quantity_Not_Zero;
+
+   function Check_Timestamp_Not_Zero (T : HFT_Engine.Timestamp) return Boolean is
+   begin
+      return T /= 0;
+   end Check_Timestamp_Not_Zero;
+
    -- Helper function to create check result
    function Make_Check_Result (
       Passed : Boolean;
@@ -175,6 +202,12 @@ package body HFT_Compliance is
       -- Performance
       All_Passed := All_Passed and Check_Symbol_Length_Optimal (O.Symbol);
       All_Passed := All_Passed and Check_Order_Size_Reasonable (O.Qty);
+      
+      -- NIL Safety
+      All_Passed := All_Passed and Check_Symbol_Not_Empty (O.Symbol);
+      All_Passed := All_Passed and Check_Price_Not_Zero (O.Price_Val);
+      All_Passed := All_Passed and Check_Quantity_Not_Zero (O.Qty);
+      All_Passed := All_Passed and Check_Timestamp_Not_Zero (O.Time_Stamp);
       
       if All_Passed then
          return Make_Check_Result (
@@ -256,6 +289,17 @@ package body HFT_Compliance is
                "Performance",
                "Performance-optimal parameters validated"
             );
+            
+         when NIL_Safety =>
+            Passed := Check_Symbol_Not_Empty (O.Symbol) and
+                     Check_Price_Not_Zero (O.Price_Val) and
+                     Check_Quantity_Not_Zero (O.Qty) and
+                     Check_Timestamp_Not_Zero (O.Time_Stamp);
+            return Make_Check_Result (
+               Passed,
+               "NIL Safety",
+               "NIL/null/zero value checks validated"
+            );
       end case;
    end Run_Category_Check;
 
@@ -304,6 +348,7 @@ package body HFT_Compliance is
                when Coding_Standards => Stats.Coding_Std_Pass := Stats.Coding_Std_Pass + 1;
                when Security         => Stats.Security_Pass := Stats.Security_Pass + 1;
                when Performance      => Stats.Performance_Pass := Stats.Performance_Pass + 1;
+               when NIL_Safety       => Stats.NIL_Safety_Pass := Stats.NIL_Safety_Pass + 1;
             end case;
          else
             Stats.Failed_Checks := Stats.Failed_Checks + 1;

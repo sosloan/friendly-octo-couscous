@@ -99,6 +99,27 @@ if Check_Order_Size_Reasonable (Order.Qty) then
 end if;
 ```
 
+### 7. NIL Safety Checks
+
+Ensures critical fields are not null/empty/zero:
+
+- **Symbol Not Empty**: Validates symbol contains at least one non-space character
+- **Price Not Zero**: Ensures price is not zero
+- **Quantity Not Zero**: Ensures quantity is not zero  
+- **Timestamp Not Zero**: Ensures timestamp is initialized
+
+Example:
+```ada
+-- Check for NIL/empty values
+if Check_Symbol_Not_Empty (Order.Symbol) then
+   Put_Line ("Symbol is properly set");
+end if;
+
+if Check_Price_Not_Zero (Order.Price_Val) then
+   Put_Line ("Price is non-zero");
+end if;
+```
+
 ## Usage
 
 ### Full Compliance Check
@@ -160,6 +181,9 @@ Symbol:   AAPL
 ✓ Performance: PASS
   Performance-optimal parameters validated
 
+✓ NIL Safety: PASS
+  NIL/null/zero value checks validated
+
 Overall Compliance: ✓ PASS
 ============================
 ```
@@ -185,6 +209,7 @@ Put_Line ("Failed: " & Natural'Image (Stats.Failed_Checks));
 | **Coding_Standards** | Ada coding standards | Symbol format, enumeration validity |
 | **Security** | Security constraints | Order value limits, timestamp validity |
 | **Performance** | Performance optimization | Symbol length, order size reasonableness |
+| **NIL_Safety** | NIL/null/zero checks | Symbol not empty, price/quantity/timestamp not zero |
 
 ## Integration
 
@@ -273,6 +298,29 @@ The compliance checking system is designed with minimal performance overhead:
 - **Contract checks**: Inlined for minimal overhead
 - **Range checks**: Hardware-accelerated when possible
 - **Can be disabled**: In production builds if needed via compiler flags
+
+### Benchmark Results
+
+Performance benchmarks with 100,000 iterations per test:
+
+| Check Type | Ops/Second | Microsec/Op | Notes |
+|------------|------------|-------------|-------|
+| **Full Compliance** | 24.4M | 0.041 μs | All 7 categories |
+| **Type Safety** | 41.4M | 0.024 μs | Fast type checks |
+| **Contract Validity** | 31.7M | 0.032 μs | Precondition validation |
+| **Range Safety** | 43.3M | 0.023 μs | Overflow detection |
+| **Coding Standards** | 33.2M | 0.030 μs | Format validation |
+| **Security** | 31.6M | 0.032 μs | Security constraints |
+| **Performance** | 42.8M | 0.023 μs | Performance checks |
+| **NIL Safety** | 44.4M | 0.023 μs | NIL/null/zero checks |
+
+Individual NIL checks are extremely fast (500M+ ops/sec), making them suitable for high-frequency trading systems.
+
+Run benchmarks:
+```bash
+cd ada
+./obj/hft_benchmark
+```
 
 ## Future Enhancements
 

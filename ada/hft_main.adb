@@ -80,6 +80,7 @@ begin
    Put_Line ("Coding Standards:  " & Natural'Image (Stats.Coding_Std_Pass) & " passed");
    Put_Line ("Security:          " & Natural'Image (Stats.Security_Pass) & " passed");
    Put_Line ("Performance:       " & Natural'Image (Stats.Performance_Pass) & " passed");
+   Put_Line ("NIL Safety:        " & Natural'Image (Stats.NIL_Safety_Pass) & " passed");
    Put_Line ("");
    
    -- Traditional order validation and matching

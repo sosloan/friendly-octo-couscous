@@ -1,6 +1,0 @@
-hft_audit.adb:5:06: warning: redundant with clause in body [-gnatwr]
-hft_audit.adb:63:28: warning: array aggregate using () is an obsolescent syntax, use [] instead [-gnatwj]
-hft_audit.adb:379:36: warning: formal parameter "Top_N" is not referenced [-gnatwf]
-hft_audit.adb:385:57: warning: array aggregate using () is an obsolescent syntax, use [] instead [-gnatwj]
-hft_audit.ads:7:20: warning: unit "Ada.Containers.Vectors" is not instantiated in spec [-gnatwu]
-hft_audit.ads:7:20: warning: with clause can be moved to body [-gnatwu]

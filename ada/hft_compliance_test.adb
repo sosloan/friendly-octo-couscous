@@ -203,8 +203,8 @@ begin
       Stats : Compliance_Stats;
    begin
       Stats := Get_Compliance_Statistics (Valid_Order);
-      Assert (Stats.Total_Checks = 6, "Correct total check count");
-      Assert (Stats.Passed_Checks = 6, "All checks passed for valid order");
+      Assert (Stats.Total_Checks = 7, "Correct total check count");
+      Assert (Stats.Passed_Checks = 7, "All checks passed for valid order");
       Assert (Stats.Failed_Checks = 0, "No failed checks for valid order");
       Put_Line ("  Statistics: " & Natural'Image (Stats.Passed_Checks) & 
                 " / " & Natural'Image (Stats.Total_Checks) & " checks passed");
