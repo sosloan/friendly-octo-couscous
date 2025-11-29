@@ -1,6 +1,7 @@
 package com.hft.alpaca.model;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Instant;
 
 /**
@@ -33,6 +34,6 @@ public record Quote(
         if (askPrice == null || bidPrice == null) {
             return null;
         }
-        return askPrice.add(bidPrice).divide(BigDecimal.valueOf(2));
+        return askPrice.add(bidPrice).divide(BigDecimal.valueOf(2), RoundingMode.HALF_UP);
     }
 }
