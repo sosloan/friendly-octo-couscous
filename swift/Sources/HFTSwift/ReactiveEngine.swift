@@ -174,7 +174,7 @@ public class ReactiveTradeEngine: ObservableObject {
 
 // MARK: - Supporting Types
 
-public enum ConnectionStatus {
+public enum ConnectionStatus: Sendable {
     case disconnected
     case connecting
     case connected
@@ -188,7 +188,7 @@ public enum ConnectionStatus {
     }
 }
 
-public enum TradingError: Error {
+public enum TradingError: Error, Sendable {
     case invalidOrder(reason: String)
     case connectionFailed(reason: String)
     case matchingFailed(reason: String)

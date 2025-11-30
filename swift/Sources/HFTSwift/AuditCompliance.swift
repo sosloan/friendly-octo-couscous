@@ -5,7 +5,7 @@ import Combine
 #endif
 
 /// Audit event types for compliance tracking
-public enum AuditEventType: String, Codable {
+public enum AuditEventType: String, Codable, Sendable {
     case orderSubmitted = "ORDER_SUBMITTED"
     case orderAccepted = "ORDER_ACCEPTED"
     case orderRejected = "ORDER_REJECTED"
@@ -19,7 +19,7 @@ public enum AuditEventType: String, Codable {
 }
 
 /// Severity level for audit events
-public enum AuditSeverity: String, Codable {
+public enum AuditSeverity: String, Codable, Sendable {
     case info = "INFO"
     case warning = "WARNING"
     case error = "ERROR"
@@ -27,7 +27,7 @@ public enum AuditSeverity: String, Codable {
 }
 
 /// Audit event structure for compliance logging
-public struct AuditEvent: Codable, Identifiable {
+public struct AuditEvent: Codable, Identifiable, Sendable {
     public let id: UUID
     public let timestamp: Date
     public let eventType: AuditEventType
@@ -98,7 +98,7 @@ public protocol AuditLogger {
 }
 
 /// Default audit logger implementation
-public class DefaultAuditLogger: AuditLogger {
+public final class DefaultAuditLogger: AuditLogger, @unchecked Sendable {
     private var events: [AuditEvent] = []
     private let queue = DispatchQueue(label: "com.hft.audit.logger", qos: .userInitiated)
     private let maxEvents: Int
