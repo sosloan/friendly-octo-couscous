@@ -1,14 +1,15 @@
-// swift-tools-version: 5.9
+// swift-tools-version: 6.0
 // The swift-tools-version declares the minimum version of Swift required to build this package.
+// Updated to Swift 6.0+ with Distributed Actors support for high-frequency trading
 
 import PackageDescription
 
 let package = Package(
     name: "HFTSwift",
     platforms: [
-        .iOS(.v17),
-        .macOS(.v14),
-        .visionOS(.v1)
+        .iOS(.v18),
+        .macOS(.v15),
+        .visionOS(.v2)
     ],
     products: [
         .library(
@@ -19,12 +20,20 @@ let package = Package(
             targets: ["HFTSwiftDemo"])
     ],
     dependencies: [
-        // Add any Swift package dependencies here
+        // Swift Distributed Actors cluster for distributed trading system
+        // Using main branch for latest Swift 6 compatibility
+        .package(url: "https://github.com/apple/swift-distributed-actors.git", branch: "main")
     ],
     targets: [
         .target(
             name: "HFTSwift",
-            dependencies: []),
+            dependencies: [
+                .product(name: "DistributedCluster", package: "swift-distributed-actors")
+            ],
+            swiftSettings: [
+                .enableExperimentalFeature("StrictConcurrency")
+            ]
+        ),
         .executableTarget(
             name: "HFTSwiftDemo",
             dependencies: ["HFTSwift"]),

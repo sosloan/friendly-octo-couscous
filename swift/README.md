@@ -4,6 +4,16 @@
 
 The Swift component of the HFT system provides a modern, reactive user interface using **SwiftUI** and **Swift Combine** for reactive programming. This implementation follows Apple's Human Interface Guidelines (HIG) and supports iOS, macOS, iPadOS, and visionOS platforms.
 
+**🚀 UPDATED TO SWIFT 6.2+ WITH DISTRIBUTED ACTORS**
+
+This implementation now leverages **Swift 6.2+ Distributed Actors** for truly scalable, fault-tolerant distributed trading across multiple nodes. The distributed actors architecture enables:
+
+- **Cluster-wide order routing** with automatic load balancing
+- **Distributed compliance checking** across trading nodes
+- **Real-time market data broadcasting** to all cluster members
+- **Fault-tolerant trading operations** with automatic recovery
+- **Strict concurrency safety** with Swift 6's Sendable protocol
+
 **✅ FULLY AUDITED & CERTIFIED**: This implementation includes comprehensive audit compliance with 77 audit tests covering 20 audit categories, NIL compliance validation, Vision-inspired benchmarks, and Merkle tree cryptographic verification.
 
 ## Architecture
@@ -22,32 +32,39 @@ The Swift component of the HFT system provides a modern, reactive user interface
    - Real-time compliance validation
    - Regulatory reporting (SEC, FINRA, MiFID II)
 
-3. **Merkle Tree Compliance** (`MerkleTreeCompliance.swift`)
+3. **Swift Distributed Actors Trading** (`DistributedTrading.swift`) 🆕
+   - **DistributedOrderRouter**: Cluster-wide order routing and matching
+   - **DistributedMarketDataProvider**: Real-time market data broadcasting
+   - **DistributedComplianceChecker**: Cross-node compliance validation
+   - **DistributedTradingCoordinator**: Orchestrates all distributed actors
+   - Full Swift 6.2+ strict concurrency compliance
+
+4. **Merkle Tree Compliance** (`MerkleTreeCompliance.swift`)
    - Cryptographic verification with Merkle trees
    - Proof generation and verification
    - Audit trail integrity with tamper detection
    - Order/trade verification
 
-4. **NIL Compliance** (`NILCompliance.swift`)
+5. **NIL Compliance** (`NILCompliance.swift`)
    - National Instrument List validation
    - Multi-jurisdiction support
    - Real-time compliance checking
    - Status tracking (Approved/Restricted/Prohibited)
 
-5. **Akka Bridge** (`AkkaBridge.swift`)
+6. **Akka Bridge** (`AkkaBridge.swift`)
    - Integration with the Scala/Akka reactive system
    - HTTP/TCP communication layer
    - Asynchronous message passing
    - Error handling and connection management
 
-6. **SwiftUI Views** (`Views/`)
+7. **SwiftUI Views** (`Views/`)
    - `TradingDashboardView`: Main dashboard with tab navigation
    - `OrderBookView`: Real-time order book visualization
    - `RecentTradesView`: Trade execution history
    - `MarketDataView`: Market data cards
    - `OrderEntryView`: Order submission form
 
-7. **Domain Models** (`Models.swift`)
+8. **Domain Models** (`Models.swift`)
    - `Order`: Trading order representation
    - `Trade`: Executed trade
    - `OrderBook`: Buy/sell order collections
@@ -95,6 +112,65 @@ let report = benchmarker.generateReport()
 ```
 
 See [MERKLE_TREE_SUMMARY.md](MERKLE_TREE_SUMMARY.md) for detailed documentation.
+
+## Swift 6.2+ Distributed Actors 🆕
+
+### Distributed Trading Architecture
+
+The Swift implementation now includes a complete **Distributed Actors** system built with Swift 6.2+ and the `swift-distributed-actors` cluster package. This enables truly scalable, fault-tolerant trading across multiple nodes:
+
+```swift
+import HFTSwift
+import DistributedCluster
+
+// Create a distributed trading cluster
+let config = DistributedTradingClusterConfig(
+    clusterName: "HFTTradingCluster",
+    nodeName: "trading-node-1",
+    host: "192.168.1.100",
+    port: 7337,
+    seedNodes: ["192.168.1.101:7337", "192.168.1.102:7337"]
+)
+
+// Initialize cluster system
+let clusterSystem = try await DistributedTradingSystemFactory.createClusterSystem(config: config)
+
+// Create a full trading node with all distributed actors
+let tradingNode = try await DistributedTradingSystemFactory.createTradingNode(
+    clusterSystem: clusterSystem,
+    nodeName: config.nodeName
+)
+
+// Submit orders through the distributed system
+let order = Order(id: 1, symbol: "AAPL", price: 150.50, quantity: 100, side: .buy)
+let result = try await tradingNode.submitOrder(order)
+print("Order \(result.orderId) routed to \(result.routedToNode)")
+
+// Execute matching across all nodes
+let trades = try await tradingNode.executeMatching()
+for trade in trades {
+    print("Trade executed on \(trade.executorNode): \(trade.quantity) @ $\(trade.executionPrice)")
+}
+
+// Get cluster statistics
+let stats = try await tradingNode.getStatistics()
+print("Cluster: \(stats.totalNodes) nodes, \(stats.totalOrdersProcessed) orders processed")
+```
+
+### Distributed Actor Components
+
+1. **DistributedOrderRouter** - Routes and matches orders across the cluster
+2. **DistributedMarketDataProvider** - Broadcasts real-time market data to all nodes
+3. **DistributedComplianceChecker** - Validates compliance across distributed nodes
+4. **DistributedTradingCoordinator** - Orchestrates all trading operations
+
+### Benefits
+
+- **Horizontal Scalability**: Add nodes to handle more trading volume
+- **Fault Tolerance**: Automatic recovery from node failures
+- **Low Latency**: Efficient actor message passing
+- **Type Safety**: Full Swift 6.2+ strict concurrency compliance
+- **Sendable Safety**: All types properly marked for thread safety
 
 ## Audit Compliance
 
@@ -257,10 +333,10 @@ The Swift layer communicates with the Akka reactive system via:
 
 ### Prerequisites
 
-- macOS 14+ (Sonoma or later)
-- Xcode 15+
-- Swift 5.9+
-- iOS 17+ / visionOS 1.0+ (for deployment)
+- macOS 15+ (Sequoia or later) / Linux with Swift 6.2+
+- Xcode 16+ (for macOS/iOS development)
+- **Swift 6.2+** (required for Distributed Actors)
+- iOS 18+ / visionOS 2.0+ (for deployment)
 
 ### Build Commands
 

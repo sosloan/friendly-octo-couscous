@@ -696,7 +696,7 @@ class FailureRecovery {
     }
 }
 
-class ConcurrentTradeExecutor {
+final class ConcurrentTradeExecutor: @unchecked Sendable {
     private var orders: [Order] = []
     private let queue = DispatchQueue(label: "com.hft.executor", attributes: .concurrent)
     

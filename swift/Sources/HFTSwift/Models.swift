@@ -3,13 +3,13 @@ import Foundation
 // MARK: - Order Domain Model
 
 /// Order side enumeration matching the Akka/Java models
-public enum OrderSide: String, Codable {
+public enum OrderSide: String, Codable, Sendable {
     case buy = "BUY"
     case sell = "SELL"
 }
 
 /// Order structure representing a trading order
-public struct Order: Codable, Identifiable {
+public struct Order: Codable, Identifiable, Sendable {
     public let id: Int64
     public let symbol: String
     public let price: Decimal
@@ -46,7 +46,7 @@ public struct Order: Codable, Identifiable {
 }
 
 /// Trade structure representing an executed trade
-public struct Trade: Codable, Identifiable {
+public struct Trade: Codable, Identifiable, Sendable {
     public let id: Int64
     public let buyOrder: Order
     public let sellOrder: Order
@@ -70,7 +70,7 @@ public struct Trade: Codable, Identifiable {
 }
 
 /// Order book state
-public struct OrderBook: Codable {
+public struct OrderBook: Codable, Sendable {
     public var buyOrders: [Order]
     public var sellOrders: [Order]
     
@@ -97,7 +97,7 @@ public struct OrderBook: Codable {
 }
 
 /// Market data for a symbol
-public struct MarketData: Codable, Identifiable {
+public struct MarketData: Codable, Identifiable, Sendable {
     public let symbol: String
     public let lastPrice: Decimal
     public let volume: Int64

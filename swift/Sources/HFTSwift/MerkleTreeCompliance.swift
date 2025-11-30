@@ -39,7 +39,7 @@ private func sha512Hash(_ data: Data) -> String {
 // MARK: - Merkle Tree Node
 
 /// A node in the Merkle tree
-public class MerkleNode {
+public final class MerkleNode: @unchecked Sendable {
     public let hash: String
     public let left: MerkleNode?
     public let right: MerkleNode?
@@ -61,12 +61,12 @@ public class MerkleNode {
 // MARK: - Merkle Tree
 
 /// Merkle tree for cryptographic verification of compliance data
-public class MerkleTree {
+public final class MerkleTree: @unchecked Sendable {
     public private(set) var root: MerkleNode?
     public private(set) var leaves: [MerkleNode]
     private let hashAlgorithm: HashAlgorithm
     
-    public enum HashAlgorithm {
+    public enum HashAlgorithm: Sendable {
         case sha256
         case sha512
     }
@@ -205,8 +205,8 @@ public class MerkleTree {
 // MARK: - Merkle Proof
 
 /// Proof of inclusion in a Merkle tree
-public struct MerkleProof {
-    public enum Position {
+public struct MerkleProof: Sendable {
+    public enum Position: Sendable {
         case left
         case right
     }
@@ -229,7 +229,7 @@ public struct MerkleProof {
 // MARK: - Compliance Merkle Tree
 
 /// Merkle tree specialized for audit compliance verification
-public class ComplianceMerkleTree {
+public final class ComplianceMerkleTree: @unchecked Sendable {
     private var auditEventTrees: [Date: MerkleTree] = [:]
     private let queue = DispatchQueue(label: "com.hft.merkle.compliance", attributes: .concurrent)
     
@@ -306,7 +306,7 @@ public class ComplianceMerkleTree {
 // MARK: - Compliance Report
 
 /// Compliance report with Merkle tree verification data
-public struct ComplianceReport {
+public struct ComplianceReport: Sendable {
     public let treeCount: Int
     public let totalEvents: Int
     public let merkleRoots: [String]
@@ -332,7 +332,7 @@ public struct ComplianceReport {
 // MARK: - Order Merkle Tree
 
 /// Merkle tree for order and trade verification
-public class OrderMerkleTree {
+public final class OrderMerkleTree: @unchecked Sendable {
     private var tree: MerkleTree?
     
     public init() {}

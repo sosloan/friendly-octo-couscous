@@ -6,7 +6,7 @@ import Foundation
 // MARK: - NIL Compliance Types
 
 /// NIL instrument status
-public enum NILStatus: String, Codable {
+public enum NILStatus: String, Codable, Sendable {
     case approved = "APPROVED"
     case restricted = "RESTRICTED"
     case prohibited = "PROHIBITED"
@@ -15,7 +15,7 @@ public enum NILStatus: String, Codable {
 }
 
 /// NIL jurisdiction codes
-public enum NILJurisdiction: String, Codable {
+public enum NILJurisdiction: String, Codable, Sendable {
     case us = "US"
     case eu = "EU"
     case uk = "UK"
@@ -25,7 +25,7 @@ public enum NILJurisdiction: String, Codable {
 }
 
 /// NIL instrument classification
-public struct NILInstrument: Codable {
+public struct NILInstrument: Codable, Sendable {
     public let symbol: String
     public let isin: String?
     public let cusip: String?
@@ -46,7 +46,7 @@ public struct NILInstrument: Codable {
 }
 
 /// NIL compliance result
-public enum NILComplianceResult {
+public enum NILComplianceResult: Sendable {
     case approved
     case restricted(reasons: [String])
     case prohibited(reason: String)
@@ -55,7 +55,7 @@ public enum NILComplianceResult {
 
 // MARK: - NIL Compliance Checker
 
-public class NILComplianceChecker {
+public final class NILComplianceChecker: @unchecked Sendable {
     private var instrumentList: [String: NILInstrument] = [:]
     private let queue = DispatchQueue(label: "com.hft.nil.compliance", attributes: .concurrent)
     

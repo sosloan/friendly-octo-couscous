@@ -6,7 +6,7 @@ import Foundation
 // MARK: - Attribution Types
 
 /// Type of contribution in the system
-public enum ContributionType: String, Codable {
+public enum ContributionType: String, Codable, Sendable {
     case originalDesign = "Original Design"
     case algorithmAdaptation = "Algorithm Adaptation"
     case standardPattern = "Standard Pattern"
@@ -16,7 +16,7 @@ public enum ContributionType: String, Codable {
 }
 
 /// Originality level of a contribution
-public enum OriginalityLevel: String, Codable {
+public enum OriginalityLevel: String, Codable, Sendable {
     case high = "High (>75%)"
     case medium = "Medium (40-75%)"
     case low = "Low (<40%)"
@@ -26,7 +26,7 @@ public enum OriginalityLevel: String, Codable {
 // MARK: - Academic Reference
 
 /// Academic reference with full citation details
-public struct AcademicReference: Codable {
+public struct AcademicReference: Codable, Sendable {
     public let authors: [String]
     public let title: String
     public let publication: String
@@ -52,7 +52,7 @@ public struct AcademicReference: Codable {
 // MARK: - Attribution Node
 
 /// Node in the attribution chain representing a specific contribution
-public struct AttributionNode: Codable, Identifiable {
+public struct AttributionNode: Codable, Identifiable, Sendable {
     public let id: UUID
     public let component: String
     public let contributionType: ContributionType
@@ -90,7 +90,7 @@ public struct AttributionNode: Codable, Identifiable {
 // MARK: - Attribution Chain
 
 /// Attribution chain tracking system provenance
-public class AttributionChain {
+public final class AttributionChain: @unchecked Sendable {
     private var nodes: [UUID: AttributionNode] = [:]
     private let queue = DispatchQueue(label: "com.hft.attribution", attributes: .concurrent)
     

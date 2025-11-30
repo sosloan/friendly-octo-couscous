@@ -24,7 +24,7 @@
 [![Lean](https://img.shields.io/badge/Lean-4-purple.svg)](https://leanprover.github.io/)
 [![Akka](https://img.shields.io/badge/Akka-2.8-red.svg)](https://akka.io/)
 [![Java](https://img.shields.io/badge/Java-25-orange.svg)](https://openjdk.org/)
-[![Swift](https://img.shields.io/badge/Swift-5.9-FA7343.svg)](https://swift.org/)
+[![Swift](https://img.shields.io/badge/Swift-6.2+-FA7343.svg)](https://swift.org/)
 [![Erlang](https://img.shields.io/badge/Erlang-OTP26-green.svg)](https://www.erlang.org/)
 
 ## 🌟 Features
@@ -36,7 +36,7 @@
 - **📐 Lean Proofs** - Mathematical guarantees of correctness
 - **🌉 Akka Reactive Bridge** - Actor-based reactive architecture
 - **💪 Java 25 Powerhouse** - Virtual threads + Netty ultra-low latency
-- **🍎 Swift/SwiftUI + Combine** - Modern reactive UI with visionOS support
+- **🍎 Swift/SwiftUI + Combine + Distributed Actors** - Modern reactive UI with Swift 6.2+ distributed trading system and visionOS support
 - **🧠 Erlang/OTP Supervisor** - Immortal fault-tolerant supervision
 - **📱 Cross-Platform** - Native support for tablets, mobile, and MacBook Air
 
@@ -85,6 +85,7 @@ Each component is production-ready and demonstrates best practices for that lang
 | **Formal Verification** | Lean | Mathematical correctness proofs |
 | **Reactive Bridge** | Scala/Akka | Message-driven actor system |
 | **UI Layer** | Swift/SwiftUI | Modern reactive UI with Combine |
+| **Distributed Trading** | Swift 6.2+ | Distributed Actors for scalable trading |
 | **Network Layer** | Java/Netty | Ultra-low latency I/O |
 | **Supervisor** | Erlang/OTP | Fault-tolerant process management |
 
@@ -93,6 +94,7 @@ Each component is production-ready and demonstrates best practices for that lang
 - **Ada**: Prevents entire classes of errors at compile time
 - **Lean**: Proves correctness mathematically
 - **Akka**: Scales to millions of actors
+- **Swift 6.2+ Distributed Actors**: Scalable, fault-tolerant distributed trading with strict concurrency safety
 - **Swift/Combine**: Reactive UI with declarative SwiftUI
 - **Java 25**: Virtual threads enable massive concurrency
 - **Erlang**: Designed for 99.999% uptime
@@ -161,7 +163,7 @@ See [Audit & Integration Documentation](ada/AUDIT_INTEGRATION.md) for details.
 - Lean 4 toolchain
 - JDK 25+ (Modern Java features including virtual threads)
 - Scala 2.13+ and Gradle
-- Swift 5.9+ (for macOS, iOS, visionOS support)
+- **Swift 6.2+** (for Distributed Actors, macOS, iOS, visionOS support)
 - Erlang/OTP 26+
 - Make
 
