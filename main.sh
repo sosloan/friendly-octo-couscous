@@ -95,7 +95,13 @@ show_status() {
     
     # Java
     if check_command java; then
-        JAVA_VER=$(java -version 2>&1 | head -n 1 | cut -d'"' -f2 | cut -d'.' -f1)
+        # Handle both old format (1.8.x) and new format (11.0.x, 17.0.x)
+        JAVA_VER_RAW=$(java -version 2>&1 | head -n 1 | cut -d'"' -f2)
+        if [[ "$JAVA_VER_RAW" == 1.* ]]; then
+            JAVA_VER=$(echo "$JAVA_VER_RAW" | cut -d'.' -f2)
+        else
+            JAVA_VER=$(echo "$JAVA_VER_RAW" | cut -d'.' -f1)
+        fi
         component_status "Java Powerhouse" "💪" "true" "Java $JAVA_VER"
     else
         component_status "Java Powerhouse" "💪" "false" "Install JDK 21+"
@@ -118,8 +124,8 @@ show_status() {
     
     # Swift
     if check_command swift; then
-        SWIFT_VER=$(timeout 2 swift --version 2>&1 | head -n 1 || echo "Swift available")
-        component_status "Swift/SwiftUI" "🍎" "true" "$SWIFT_VER"
+        # Swift is available, version check can be slow so just indicate availability
+        component_status "Swift/SwiftUI" "🍎" "true" "Swift compiler available"
     else
         component_status "Swift/SwiftUI" "🍎" "false" "Install Swift 5.9+"
     fi
@@ -221,32 +227,56 @@ run_tests() {
     echo -e "${BLUE}=== Running All Tests ===${NC}"
     echo ""
     
+    local test_failures=0
+    
     if [ -f "Makefile" ]; then
-        make test
+        make test || test_failures=$((test_failures + 1))
     else
         echo "Running tests manually..."
         
         # Ada tests
         if check_command gprbuild && [ -d "ada" ]; then
             echo -e "${YELLOW}Running Ada tests...${NC}"
-            cd ada && ./hft_test 2>/dev/null || true && cd ..
+            if cd ada && ./hft_test 2>&1 && cd ..; then
+                echo -e "  ${GREEN}✓${NC} Ada tests passed"
+            else
+                echo -e "  ${RED}✗${NC} Ada tests failed or not available"
+                test_failures=$((test_failures + 1))
+                cd ..
+            fi
         fi
         
         # Java tests
         if [ -f "java/gradlew" ]; then
             echo -e "${YELLOW}Running Java tests...${NC}"
-            cd java && ./gradlew test --quiet 2>/dev/null || true && cd ..
+            if cd java && ./gradlew test --quiet 2>&1 && cd ..; then
+                echo -e "  ${GREEN}✓${NC} Java tests passed"
+            else
+                echo -e "  ${RED}✗${NC} Java tests failed or not available"
+                test_failures=$((test_failures + 1))
+                cd ..
+            fi
         fi
         
         # Erlang tests
         if check_command rebar3 && [ -d "erlang" ]; then
             echo -e "${YELLOW}Running Erlang tests...${NC}"
-            cd erlang && rebar3 eunit 2>/dev/null || true && cd ..
+            if cd erlang && rebar3 eunit 2>&1 && cd ..; then
+                echo -e "  ${GREEN}✓${NC} Erlang tests passed"
+            else
+                echo -e "  ${RED}✗${NC} Erlang tests failed or not available"
+                test_failures=$((test_failures + 1))
+                cd ..
+            fi
         fi
     fi
     
     echo ""
-    echo -e "${GREEN}✓ Tests complete${NC}"
+    if [ $test_failures -eq 0 ]; then
+        echo -e "${GREEN}✓ All tests complete${NC}"
+    else
+        echo -e "${YELLOW}⚠ Tests complete with $test_failures component(s) having issues${NC}"
+    fi
 }
 
 # Run Ada engine
@@ -292,7 +322,17 @@ run_akka() {
 run_erlang() {
     echo -e "${BLUE}=== Running Erlang Supervisor 🧠 ===${NC}"
     if check_command rebar3 && [ -d "erlang" ]; then
-        cd erlang && rebar3 shell 2>/dev/null && cd ..
+        echo "Starting Erlang application..."
+        echo -e "${YELLOW}Note: Use 'rebar3 shell' for interactive mode${NC}"
+        cd erlang
+        # Run in non-interactive mode, or indicate how to start interactive shell
+        if rebar3 compile 2>/dev/null; then
+            echo -e "${GREEN}✓ Erlang supervisor compiled and ready${NC}"
+            echo "  To start interactive shell: cd erlang && rebar3 shell"
+        else
+            echo -e "${RED}✗ Failed to compile Erlang application${NC}"
+        fi
+        cd ..
     else
         echo -e "${RED}Error: Cannot run Erlang supervisor${NC}"
     fi
