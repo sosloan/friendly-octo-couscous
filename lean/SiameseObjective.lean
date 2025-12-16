@@ -31,13 +31,11 @@ structure SiameseSample (α : Type*) where
 def xnor (a b : Bool) : Bool :=
   a == b
 
-/-- XNOR transform: transforms the weight using XNOR logic on the n+1 structure.
-    The "1+1=3" insight: when n=1, the base weight uses exponent (1+1)=2, but XNOR
-    transform recognizes that in binary operations, 1+1 with XNOR semantics yields
-    an effective shift to exponent 3. This captures how XNOR operations on indices
-    interact with the geometric series structure. -/
+/-- XNOR transform: demonstrates how an XNOR trigger at `n = 1` can shift the
+    exponent by one step; otherwise it matches the base geometric weight. -/
 def xnorTransform (n : ℕ) : ℝ :=
-  let use_extra_shift := (n == 1)
+  let xnor_match := xnor ((n == 1) : Bool) ((n + 1 == 2) : Bool)
+  let use_extra_shift := xnor_match && (n == 1)
   let exponent := if use_extra_shift then n + 2 else n + 1
   (1 / 2^(exponent : ℕ) : ℝ)
 
@@ -117,10 +115,7 @@ theorem summable_siameseObjective {loss : ℕ → ℝ} {C : ℝ}
   -- Apply a standard dominated convergence criterion.
   exact summable_of_nonneg_of_le h_nonneg_term h_dom h_major
 
-/--
-Corollary: the infinite Siamese objective converges whenever the losses are
-uniformly bounded.
--/
+/-- Convenience corollary restating `summable_siameseObjective`. -/
 theorem siameseObjective_convergent {loss : ℕ → ℝ} {C : ℝ}
     (h : LossBound loss C) :
     Summable fun n => (1 / 2^(n+1 : ℕ) : ℝ) * loss n :=
