@@ -37,7 +37,7 @@ def xnor (a b : Bool) : Bool :=
     an effective shift to exponent 3. This captures how XNOR operations on indices
     interact with the geometric series structure. -/
 def xnorTransform (n : ℕ) : ℝ :=
-  let use_extra_shift := xnor ((n == 1) : Bool) ((n + 1 == 2) : Bool)
+  let use_extra_shift := (n == 1)
   let exponent := if use_extra_shift then n + 2 else n + 1
   (1 / 2^(exponent : ℕ) : ℝ)
 
