@@ -1,4 +1,5 @@
 import HFT
+import SiameseObjective
 
 def main : IO Unit := do
   IO.println "=== Lean HFT Formal Verification ==="
