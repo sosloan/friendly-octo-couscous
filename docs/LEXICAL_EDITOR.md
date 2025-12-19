@@ -1,6 +1,6 @@
 # 🧠 Lexical TRUE Accessible Editor & Brace Bridges
 
-This page captures how to add a **Lexical**-based rich text editor that stays **TRUE** (Typed, Robust, Universal, Equitable) while bridging code-like braces and collaborating with the rest of the polyglot system.
+This page captures how to add a **Lexical**-based rich text editor that stays **TRUE** (Typed, Robust, Universal, Equitable) while bridging code-like braces and collaborating with the rest of the polyglot system. **TRUE** is the internal accessibility baseline: keep semantics typed, announce changes robustly, ensure universal keyboard reachability, and ship equitable visual contrast.
 
 ## Goals
 - **Accessible by default**: keyboard-first navigation, aria-live announcements, and WCAG-friendly headings/landmarks.
