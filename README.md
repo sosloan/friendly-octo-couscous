@@ -65,6 +65,7 @@ make test
 - [Deployment](docs/DEPLOYMENT.md) - Cross-platform deployment guide
 - [Ada Compliance](ada/COMPLIANCE.md) - Comprehensive Ada compliance checking system
 - [Ada Audit & Integration](ada/AUDIT_INTEGRATION.md) - Audit trails and integration testing
+- [Lexical TRUE Accessible Editor](docs/LEXICAL_EDITOR.md) - Accessible, brace-aware, collaborative editor blueprint
 
 ## 🏗️ Architecture
 
