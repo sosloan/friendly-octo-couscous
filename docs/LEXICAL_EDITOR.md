@@ -50,14 +50,14 @@ export default function AccessibleEditor({onChange}) {
 ```
 
 ### Brace bridges
-- Parse `()` `{}` `[]` tokens and mirror-focus the matching partner.
+- Parse `()` `{}` `[]` tokens and visually indicate the matching partner whenever the caret lands on a brace.
 - Announce matches via `aria-live="polite"` for screen readers.
 - Keep contrast-friendly background on paired braces to satisfy WCAG 2.1 AA.
 
 ### Collaboration bridge
 - Use the existing Akka reactive bridge to broadcast Lexical updates.
 - Erlang supervisor tracks sessions and fan-outs to listeners.
-- Latency target: sub-50ms local, aligning with HFT operator playbooks.
+- Latency target: sub-50ms local for keystroke-to-fanout sync, aligning with HFT operator playbooks.
 
 ## Accessibility checklist (TRUE)
 - **Typed**: maintain semantic nodes (headings, lists, code) instead of spans.
