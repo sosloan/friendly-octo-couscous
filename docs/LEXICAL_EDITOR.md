@@ -12,6 +12,7 @@ This page captures how to add a **Lexical**-based rich text editor that stays **
 The following Lexical setup keeps the surface minimal while wiring accessibility and brace support:
 
 ```tsx
+import {EditorState} from "lexical";
 import {LexicalComposer} from "@lexical/react/LexicalComposer";
 import {RichTextPlugin} from "@lexical/react/LexicalRichTextPlugin";
 import {ContentEditable} from "@lexical/react/LexicalContentEditable";
@@ -27,7 +28,7 @@ const editorConfig = {
   editable: true
 };
 
-export default function AccessibleEditor({onChange}) {
+export default function AccessibleEditor({onChange}: {onChange: (editorState: EditorState) => void}) {
   return (
     <LexicalComposer initialConfig={editorConfig}>
       <RichTextPlugin
