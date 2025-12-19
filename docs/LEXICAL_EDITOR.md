@@ -34,7 +34,7 @@ export default function AccessibleEditor({onChange}) {
         contentEditable={
           <ContentEditable
             aria-label="Trading runbook editor"
-            spellCheck
+            spellCheck={true}
             role="textbox"
           />
         }
