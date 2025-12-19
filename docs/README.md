@@ -126,7 +126,17 @@ cd akka
 ./gradlew run
 ```
 
-### 4. Java 21 Powerhouse (`java/`)
+### 4. Lexical TRUE Accessible Editor (`docs/LEXICAL_EDITOR.md`)
+
+An accessible, collaboration-ready editor for trading runbooks built on [Lexical](https://lexical.dev):
+
+- **TRUE**: Typed nodes, Robust announcements, Universal keyboard reachability, Equitable contrast.
+- **Brace bridges**: Highlights paired braces/brackets with aria-live cues.
+- **Collaboration**: Streams edits through the Akka/Erlang bridge for multi-operator co-authoring.
+
+See [Lexical TRUE Accessible Editor & Brace Bridges](./LEXICAL_EDITOR.md) for implementation notes.
+
+### 5. Java 21 Powerhouse (`java/`)
 
 Modern Java with virtual threads and Netty:
 
@@ -147,7 +157,7 @@ cd java
 ./gradlew run
 ```
 
-### 5. Erlang/OTP Supervisor (`erlang/`)
+### 6. Erlang/OTP Supervisor (`erlang/`)
 
 Fault-tolerant supervision with OTP:
 
