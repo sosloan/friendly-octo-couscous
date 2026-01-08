@@ -169,6 +169,14 @@ rebar3 compile
 rebar3 shell
 ```
 
+### 6. Kiro-Inspired Autonomous Agent (`KiroAgent.swift`)
+
+Lightweight, file-backed agent memory that retains interactions for multiple days:
+
+- **Multi-day persistence** with rolling retention
+- **Daily journaling** and optional checkpoints
+- **Quick recall** API to rehydrate recent context for coding sessions
+
 ## Cross-Platform Support
 
 ### Desktop
