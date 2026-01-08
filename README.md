@@ -39,6 +39,7 @@
 - **🍎 Swift/SwiftUI + Combine** - Modern reactive UI with visionOS support
 - **🧠 Erlang/OTP Supervisor** - Immortal fault-tolerant supervision
 - **📱 Cross-Platform** - Native support for tablets, mobile, and MacBook Air
+- **🤖 Kiro Agent** - Autonomous coding agent module with multi-day memory persistence
 
 ## 🚀 Quick Start
 
