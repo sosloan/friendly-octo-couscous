@@ -97,7 +97,7 @@ This system earns the "**Hyper-UIRobot-S1TIer**" designation for combining bleed
 - **Zero-Copy Architecture** - Netty eliminates unnecessary data movement for maximum speed
 - **GPU-Ready Architecture** - Designed for NVIDIA CUDA acceleration in compute-intensive workflows
   - **CUDA-Compatible Design**: Architecture supports Tesla V100/A100 GPU integration
-  - **Parallel Processing**: Framework ready for batch validation of 100K+ orders
+  - **Parallel Processing**: Framework ready for batch validation of 1M+ orders
   - **ML-Ready Pipeline**: Structure supports TensorRT inference integration
   - **Scalable Compute**: Design accommodates multi-GPU configurations for risk analytics
 
