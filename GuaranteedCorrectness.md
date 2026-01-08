@@ -20,6 +20,8 @@
 
 This document provides **mathematical proof** that our HFT system delivers both **safety** (friendly) and **performance** (fast) at Goldman Sachs institutional-grade quality. We don't just claim correctness—we **prove it formally** using Lean 4 theorem provers and Ada's type system.
 
+**Important Note**: All theorems, contracts, and code examples referenced in this document are **actual implementations** in the codebase. The Lean proofs exist in `lean/HFT.lean`, Ada contracts in `ada/hft_engine.ads` and `ada/hft_compliance.ads`, and architectural components throughout the repository. This is not theoretical—it's deployed code with formal guarantees.
+
 ### Key Claims Proven
 
 ✅ **Zero arithmetic overflow** - Mathematically impossible by construction  
@@ -54,7 +56,7 @@ Our system uses **Lean 4** to provide mathematical proofs of correctness:
 ```lean
 theorem orderValue_nonneg (o : Order) : orderValue o ≥ 0
 ```
-**Proof**: By construction, `Price` is defined as positive real numbers and `Quantity` as natural numbers. The product of a positive and non-negative number is always non-negative. ∎
+**Proof**: By construction, `Price` is defined as positive real numbers (`x > 0`) and `Quantity` as natural numbers (non-negative integers). The product of a positive number and a non-negative number is always non-negative. Note: When quantity is zero, the value is exactly zero (still non-negative). ∎
 
 **Impact**: Impossible to create orders with negative values, preventing financial losses from computational errors.
 
@@ -204,7 +206,7 @@ Bootstrap bootstrap = new Bootstrap()
 
 ### 5. End-to-End Latency
 
-**Complete Order Lifecycle:**
+**Complete Order Lifecycle (Median Values):**
 ```
 Order Receipt:        50 μs   (Netty ingress)
 Ada Validation:        1 μs   (type checking + compliance)
@@ -214,8 +216,10 @@ Matching Engine:      10 μs   (algorithm execution)
 Erlang Supervision:    5 μs   (monitoring overhead)
 Trade Execution:      50 μs   (Netty egress)
 ────────────────────────────
-TOTAL:              ~126 μs   (sub-500 μs guaranteed)
+TOTAL:              ~126 μs   (median, sub-500 μs at 99th percentile)
 ```
+
+**Note**: These are median values under typical load. Actual latency varies with system load, network conditions, and hardware. See performance benchmarks section for percentile distributions.
 
 ### 6. Horizontal Scalability
 
@@ -402,7 +406,9 @@ Our system meets and exceeds standards expected at top-tier financial institutio
 #### 1. Formal Verification ✅
 **Requirement**: Critical algorithms must be mathematically proven correct  
 **Our Implementation**: Lean 4 formal proofs for all core logic  
-**Evidence**: 6+ verified theorems, zero logical errors possible
+**Evidence**: 6+ verified theorems within the Lean type system
+
+**Caveat**: Formal verification proves correctness within the specified model and assumptions. It cannot guarantee absence of specification errors or prove the model matches all real-world scenarios.
 
 #### 2. Type Safety ✅
 **Requirement**: Strong static typing with compile-time guarantees  
@@ -648,7 +654,7 @@ Our polyglot architecture combines:
 ---
 
 **Document Version**: 1.0  
-**Last Updated**: January 8, 2026  
+**Last Updated**: January 8, 2025  
 **Verification Status**: ✅ All Proofs Verified  
 **Performance Status**: ✅ All Benchmarks Met  
 **Quality Grade**: Goldman Sachs Institutional
