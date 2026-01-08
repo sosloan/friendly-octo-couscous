@@ -40,7 +40,7 @@ procedure HFT_Integration_Test is
       for I in Orders'Range loop
          declare
             Num_Str : String := Positive'Image (I);
-            Symbol_Str : String (1 .. 10) := (others => ' ');
+            Symbol_Str : String (1 .. Symbol_Length) := (others => ' ');
          begin
             Symbol_Str (1 .. 4) := "TEST";
             if I < 10 then
@@ -205,7 +205,7 @@ procedure HFT_Integration_Test is
       for I in Orders'Range loop
          declare
             Num_Str : String := Positive'Image (I);
-            Symbol_Str : String (1 .. 10) := (others => ' ');
+            Symbol_Str : String (1 .. Symbol_Length) := (others => ' ');
          begin
             Symbol_Str (1 .. 5) := "STOCK";
             if I < 10 then
