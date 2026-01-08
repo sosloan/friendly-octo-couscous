@@ -7,6 +7,9 @@ public class ArbitrageStatistics
     private int _detectedOpportunities;
     private double _totalScore;
 
+    private double ComputeAverageUnsafe() =>
+        _processedUpdates == 0 ? 0.0 : _totalScore / _processedUpdates;
+
     public int ProcessedUpdates
     {
         get
@@ -35,7 +38,7 @@ public class ArbitrageStatistics
         {
             lock (_sync)
             {
-                return _processedUpdates == 0 ? 0.0 : _totalScore / _processedUpdates;
+                return ComputeAverageUnsafe();
             }
         }
     }
@@ -68,8 +71,7 @@ public class ArbitrageStatistics
     {
         lock (_sync)
         {
-            var avg = _processedUpdates == 0 ? 0.0 : _totalScore / _processedUpdates;
-            return $"Processed: {_processedUpdates} | Opportunities: {_detectedOpportunities} | Avg Score: {avg:F4}";
+            return $"Processed: {_processedUpdates} | Opportunities: {_detectedOpportunities} | Avg Score: {ComputeAverageUnsafe():F4}";
         }
     }
 }
