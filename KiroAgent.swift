@@ -2,7 +2,7 @@
 //  KiroAgent.swift
 //  Kiro-inspired autonomous coding agent with multi-day persistence
 //
-//  Created by Copilot on 01/08/26.
+//  Created by Copilot on 2026-01-08.
 //
 
 import Foundation
@@ -19,6 +19,10 @@ import Foundation
 public actor KiroAgent {
     // MARK: - Types
     
+    public static let minimumRetentionDays = 1
+    public static let defaultRecallDays = 3
+    public static let defaultRecallLimit = 64
+    
     public struct Config: Sendable {
         public let name: String
         public let retentionDays: Int
@@ -30,7 +34,7 @@ public actor KiroAgent {
             persistenceURL: URL? = nil
         ) {
             self.name = name
-            self.retentionDays = max(retentionDays, 1)
+            self.retentionDays = max(retentionDays, KiroAgent.minimumRetentionDays)
             
             if let url = persistenceURL {
                 self.persistenceURL = url
@@ -90,30 +94,38 @@ public actor KiroAgent {
     
     private let config: Config
     private var snapshot: Snapshot
-    private let calendar = Calendar(identifier: .iso8601)
-    private let dayFormatter: DateFormatter = {
+    private let calendar: Calendar
+    private static let sharedDayFormatter: DateFormatter = KiroAgent.makeDayFormatter()
+    
+    private static func makeDayFormatter() -> DateFormatter {
         let formatter = DateFormatter()
         formatter.calendar = Calendar(identifier: .iso8601)
         formatter.locale = Locale(identifier: "en_US_POSIX")
         formatter.timeZone = TimeZone(secondsFromGMT: 0)
         formatter.dateFormat = "yyyy-MM-dd"
         return formatter
-    }()
+    }
     
     // MARK: - Lifecycle
     
     public init(config: Config) {
         self.config = config
+        let calendar = Calendar(identifier: .iso8601)
+        self.calendar = calendar
         let loaded = Self.loadSnapshot(config: config)
         self.snapshot = Self.prune(
             snapshot: loaded,
             retentionDays: config.retentionDays,
             calendar: calendar,
-            formatter: dayFormatter
+            formatter: Self.sharedDayFormatter
         )
     }
     
     // MARK: - Public API
+    
+    public enum AgentStateError: Error {
+        case missingJournalDay(String)
+    }
     
     /// Record a single interaction and persist it to disk.
     public func record(
@@ -122,7 +134,7 @@ public actor KiroAgent {
         tags: [String] = [],
         at date: Date = Date()
     ) async throws {
-        let dayKey = dayFormatter.string(from: date)
+        let dayKey = Self.sharedDayFormatter.string(from: date)
         ensureDayExists(dayKey)
         
         let entry = MemoryEntry(
@@ -132,7 +144,7 @@ public actor KiroAgent {
             tags: tags
         )
         
-        append(entry, to: dayKey)
+        try append(entry, to: dayKey)
         try persist()
     }
     
@@ -141,7 +153,7 @@ public actor KiroAgent {
         summary: String,
         for date: Date = Date()
     ) async throws {
-        let dayKey = dayFormatter.string(from: date)
+        let dayKey = Self.sharedDayFormatter.string(from: date)
         ensureDayExists(dayKey)
         
         if let index = snapshot.journals.firstIndex(where: { $0.day == dayKey }) {
@@ -153,16 +165,19 @@ public actor KiroAgent {
     
     /// Retrieve the most recent interactions across a sliding window of days.
     public func recall(
-        days: Int = 3,
-        limit: Int = 64
+        days: Int = KiroAgent.defaultRecallDays,
+        limit: Int = KiroAgent.defaultRecallLimit
     ) -> [MemoryEntry] {
         let windowDays = max(days, 1)
         let today = Date()
         guard let start = calendar.date(byAdding: .day, value: -windowDays + 1, to: today) else {
+#if DEBUG
+            print("KiroAgent[\(config.name)]: failed to compute recall window for \(windowDays) day(s)")
+#endif
             return []
         }
         
-        let startKey = dayFormatter.string(from: start)
+        let startKey = Self.sharedDayFormatter.string(from: start)
         let entries = snapshot.journals
             .filter { $0.day >= startKey }
             .sorted { $0.day < $1.day }
@@ -190,14 +205,15 @@ public actor KiroAgent {
             snapshot: snapshot,
             retentionDays: config.retentionDays,
             calendar: calendar,
-            formatter: dayFormatter
+            formatter: Self.sharedDayFormatter
         )
     }
     
-    private func append(_ entry: MemoryEntry, to day: String) {
-        guard let index = snapshot.journals.firstIndex(where: { $0.day == day }) else { return }
+    private func append(_ entry: MemoryEntry, to day: String) throws {
+        guard let index = snapshot.journals.firstIndex(where: { $0.day == day }) else {
+            throw AgentStateError.missingJournalDay(day)
+        }
         snapshot.journals[index].entries.append(entry)
-        snapshot.lastCheckpoint = entry.timestamp
     }
     
     private func persist() throws {
@@ -215,17 +231,20 @@ public actor KiroAgent {
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
         
-        if let data = try? Data(contentsOf: config.persistenceURL),
-           let decoded = try? decoder.decode(Snapshot.self, from: data) {
-            return decoded
+        if FileManager.default.fileExists(atPath: config.persistenceURL.path) {
+            do {
+                let data = try Data(contentsOf: config.persistenceURL)
+                let decoded = try decoder.decode(Snapshot.self, from: data)
+                return decoded
+            } catch {
+                #if DEBUG
+                    print("KiroAgent[\(config.name)]: failed to load persisted state \(config.persistenceURL.lastPathComponent): \(error)")
+                #endif
+            }
         }
         
         let today = Date()
-        let formatter = DateFormatter()
-        formatter.calendar = Calendar(identifier: .iso8601)
-        formatter.locale = Locale(identifier: "en_US_POSIX")
-        formatter.timeZone = TimeZone(secondsFromGMT: 0)
-        formatter.dateFormat = "yyyy-MM-dd"
+        let formatter = sharedDayFormatter
         let dayKey = formatter.string(from: today)
         
         return Snapshot(
