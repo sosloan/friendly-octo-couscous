@@ -87,7 +87,7 @@ theorem price_improvement : better price → better value
 
 ## 🤖 Why This Is Hyper-UIRobot-S1TIer
 
-This system earns the "**hyper-uirobot-S1TIer**" designation for combining bleeding-edge performance, automation, and user experience in a single platform:
+This system earns the "**Hyper-UIRobot-S1TIer**" designation for combining bleeding-edge performance, automation, and user experience in a single platform:
 
 ### 🚀 HYPER (Ultra High Performance)
 - **Sub-Microsecond Latency** - Order validation in < 1 μs with Ada's real-time engine
