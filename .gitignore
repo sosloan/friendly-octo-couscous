@@ -40,3 +40,17 @@ deps/
 aka/reports/*.txt
 aka/reports/*.json
 aka/reports/*.html
+
+# Security - Never commit credentials
+.env
+.env.*
+!.env.example
+secrets/
+*.pem
+*.key
+*.crt
+*.p12
+*.jks
+credentials.json
+config.properties
+application-secrets.yml
