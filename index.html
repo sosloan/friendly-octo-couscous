@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scholar-Athlete | Friendly Octo Couscous</title>
+  <meta name="description" content="Where champions code. Connecting the locker room to the library. Inspiring the next generation of scholar-athletes through high-performance systems engineering." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Reset & Base ─────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --orange:  #FF6B00;
+      --green:   #00C951;
+      --blue:    #00A3E0;
+      --black:   #080808;
+      --charcoal:#111111;
+      --gray:    #1A1A1A;
+      --muted:   #888;
+      --white:   #FAFAFA;
+      --font-display: 'Bebas Neue', 'Impact', sans-serif;
+      --font-body:    'Inter', system-ui, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: var(--font-body);
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    img { display: block; max-width: 100%; }
+
+    /* ── Utility ──────────────────────────────────────────────── */
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    .highlight { color: var(--orange); }
+    .highlight-green { color: var(--green); }
+    .highlight-blue  { color: var(--blue); }
+
+    /* ── NAV ──────────────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(8,8,8,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255,107,0,0.15);
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      padding: 0 2rem;
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      letter-spacing: 0.05em;
+      color: var(--white);
+    }
+
+    .nav-logo span { color: var(--orange); }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--orange); }
+
+    .nav-links .nav-cta {
+      background: var(--orange);
+      color: var(--black);
+      padding: 0.45rem 1.2rem;
+      border-radius: 2px;
+      font-weight: 700;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .nav-cta:hover { background: #ff8533; transform: translateY(-1px); }
+
+    /* ── HERO ─────────────────────────────────────────────────── */
+    #hero {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      position: relative;
+      overflow: hidden;
+      background: var(--black);
+      padding: 80px 2rem 0;
+    }
+
+    /* Diagonal stripe background */
+    #hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        -55deg,
+        transparent 0,
+        transparent 60px,
+        rgba(255,107,0,0.03) 60px,
+        rgba(255,107,0,0.03) 61px
+      );
+      pointer-events: none;
+    }
+
+    /* Glowing orb */
+    #hero::after {
+      content: '';
+      position: absolute;
+      top: -200px;
+      right: -200px;
+      width: 700px;
+      height: 700px;
+      background: radial-gradient(circle, rgba(255,107,0,0.18) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      animation: pulse-orb 6s ease-in-out infinite alternate;
+    }
+
+    @keyframes pulse-orb {
+      from { opacity: 0.6; transform: scale(1); }
+      to   { opacity: 1;   transform: scale(1.08); }
+    }
+
+    .hero-content {
+      position: relative;
+      text-align: center;
+      max-width: 1000px;
+      z-index: 2;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 1.5rem;
+      border: 1px solid rgba(255,107,0,0.35);
+      padding: 0.4rem 1rem;
+      border-radius: 2px;
+    }
+
+    .hero-eyebrow::before {
+      content: '';
+      width: 24px; height: 2px;
+      background: var(--orange);
+    }
+
+    h1.hero-headline {
+      font-family: var(--font-display);
+      font-size: clamp(4.5rem, 13vw, 11rem);
+      line-height: 0.9;
+      letter-spacing: -0.01em;
+      text-transform: uppercase;
+      color: var(--white);
+      margin-bottom: 1.5rem;
+    }
+
+    h1.hero-headline em {
+      font-style: normal;
+      color: var(--orange);
+      display: block;
+    }
+
+    .hero-sub {
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      color: rgba(250,250,250,0.65);
+      max-width: 620px;
+      margin: 0 auto 2.5rem;
+      line-height: 1.6;
+      font-weight: 400;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      background: var(--orange);
+      color: var(--black);
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      letter-spacing: 0.08em;
+      padding: 0.85rem 2.5rem;
+      border-radius: 2px;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      box-shadow: 0 0 0 0 rgba(255,107,0,0);
+    }
+    .btn-primary:hover {
+      background: #ff8533;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(255,107,0,0.4);
+    }
+
+    .btn-outline {
+      border: 1px solid rgba(250,250,250,0.25);
+      color: var(--white);
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      letter-spacing: 0.08em;
+      padding: 0.85rem 2.5rem;
+      border-radius: 2px;
+      transition: border-color 0.2s, color 0.2s, transform 0.15s;
+    }
+    .btn-outline:hover {
+      border-color: var(--orange);
+      color: var(--orange);
+      transform: translateY(-2px);
+    }
+
+    /* Scroll cue */
+    .scroll-cue {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .scroll-cue::after {
+      content: '';
+      width: 1px;
+      height: 50px;
+      background: linear-gradient(to bottom, var(--orange), transparent);
+      animation: scroll-line 1.8s ease-in-out infinite;
+    }
+
+    @keyframes scroll-line {
+      0%   { transform: scaleY(0); transform-origin: top; opacity: 1; }
+      50%  { transform: scaleY(1); transform-origin: top; opacity: 1; }
+      100% { transform: scaleY(1); transform-origin: bottom; opacity: 0; }
+    }
+
+    /* ── TICKER BAND ──────────────────────────────────────────── */
+    #ticker {
+      background: var(--orange);
+      padding: 0.7rem 0;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .ticker-track {
+      display: inline-flex;
+      gap: 3rem;
+      animation: ticker-scroll 30s linear infinite;
+    }
+
+    .ticker-item {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      letter-spacing: 0.1em;
+      color: var(--black);
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .ticker-item::after {
+      content: '●';
+      font-size: 0.5rem;
+    }
+
+    @keyframes ticker-scroll {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    /* ── STATS ────────────────────────────────────────────────── */
+    #stats {
+      background: var(--charcoal);
+      padding: 5rem 2rem;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 0;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .stat-card {
+      padding: 2.5rem 2rem;
+      border-right: 1px solid rgba(255,255,255,0.06);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      position: relative;
+      overflow: hidden;
+      transition: background 0.3s;
+    }
+
+    .stat-card:hover {
+      background: rgba(255,107,0,0.06);
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px;
+      height: 0;
+      background: var(--orange);
+      transition: height 0.3s;
+    }
+    .stat-card:hover::before { height: 100%; }
+
+    .stat-num {
+      font-family: var(--font-display);
+      font-size: clamp(2.5rem, 5vw, 3.8rem);
+      color: var(--orange);
+      line-height: 1;
+      margin-bottom: 0.3rem;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .stat-desc {
+      font-size: 0.85rem;
+      color: rgba(250,250,250,0.5);
+      margin-top: 0.5rem;
+    }
+
+    /* ── BRIDGE SECTION ───────────────────────────────────────── */
+    #bridge {
+      padding: 7rem 2rem;
+      background: var(--black);
+      position: relative;
+      overflow: hidden;
+    }
+
+    #bridge::before {
+      content: '';
+      position: absolute;
+      bottom: -100px;
+      left: -100px;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(0,201,81,0.1) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .bridge-grid {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 2rem;
+      align-items: center;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .bridge-side {
+      padding: 3rem 2.5rem;
+      border-radius: 4px;
+      position: relative;
+    }
+
+    .locker-room {
+      background: rgba(255,107,0,0.08);
+      border: 1px solid rgba(255,107,0,0.2);
+    }
+
+    .library {
+      background: rgba(0,201,81,0.06);
+      border: 1px solid rgba(0,201,81,0.2);
+    }
+
+    .bridge-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    .bridge-heading {
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      letter-spacing: 0.04em;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+    }
+
+    .bridge-items {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .bridge-items li {
+      font-size: 0.9rem;
+      color: rgba(250,250,250,0.7);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .bridge-items li::before {
+      content: '→';
+      color: var(--orange);
+      font-weight: 700;
+    }
+
+    .library .bridge-items li::before {
+      color: var(--green);
+    }
+
+    .bridge-arrow {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--muted);
+    }
+
+    .bridge-arrow-line {
+      width: 2px;
+      height: 80px;
+      background: linear-gradient(to bottom, var(--orange), var(--green));
+    }
+
+    .bridge-arrow-icon {
+      font-family: var(--font-display);
+      font-size: 3rem;
+      background: linear-gradient(135deg, var(--orange), var(--green));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.02em;
+    }
+
+    .bridge-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-align: center;
+      max-width: 80px;
+    }
+
+    .section-kicker {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      letter-spacing: 0.01em;
+      line-height: 1;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+
+    .section-body {
+      font-size: 1rem;
+      color: rgba(250,250,250,0.6);
+      line-height: 1.7;
+      max-width: 600px;
+    }
+
+    .bridge-intro {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    /* ── ROSTER / STACK ───────────────────────────────────────── */
+    #roster {
+      background: var(--gray);
+      padding: 7rem 2rem;
+    }
+
+    .roster-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .roster-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    .player-card {
+      background: var(--charcoal);
+      border: 1px solid rgba(255,255,255,0.06);
+      padding: 2rem;
+      border-radius: 4px;
+      position: relative;
+      overflow: hidden;
+      cursor: default;
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+
+    .player-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.5);
+    }
+
+    .player-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent 60%, rgba(255,107,0,0.05) 100%);
+      pointer-events: none;
+    }
+
+    .player-number {
+      font-family: var(--font-display);
+      font-size: 5rem;
+      line-height: 1;
+      color: rgba(255,255,255,0.05);
+      position: absolute;
+      top: 0.5rem;
+      right: 1rem;
+      letter-spacing: -0.02em;
+      pointer-events: none;
+    }
+
+    .player-position {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 0.5rem;
+    }
+
+    .player-name {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      margin-bottom: 0.8rem;
+      position: relative;
+    }
+
+    .player-bio {
+      font-size: 0.85rem;
+      color: rgba(250,250,250,0.55);
+      line-height: 1.6;
+    }
+
+    .player-stat {
+      display: flex;
+      align-items: baseline;
+      gap: 0.4rem;
+      margin-top: 1.2rem;
+    }
+
+    .player-stat-val {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      color: var(--green);
+    }
+
+    .player-stat-lbl {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* ── MANIFESTO / QUOTE ────────────────────────────────────── */
+    #manifesto {
+      padding: 8rem 2rem;
+      background: var(--orange);
+      position: relative;
+      overflow: hidden;
+    }
+
+    #manifesto::before {
+      content: '"';
+      position: absolute;
+      top: -2rem;
+      left: 2rem;
+      font-family: var(--font-display);
+      font-size: 30rem;
+      line-height: 1;
+      color: rgba(0,0,0,0.08);
+      pointer-events: none;
+    }
+
+    .manifesto-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .manifesto-quote {
+      font-family: var(--font-display);
+      font-size: clamp(2.2rem, 5vw, 4.5rem);
+      letter-spacing: 0.01em;
+      line-height: 1.05;
+      color: var(--black);
+      text-transform: uppercase;
+      margin-bottom: 2rem;
+    }
+
+    .manifesto-author {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(0,0,0,0.5);
+    }
+
+    /* ── PERFORMANCE SCOREBOARD ───────────────────────────────── */
+    #scoreboard {
+      background: var(--black);
+      padding: 7rem 2rem;
+    }
+
+    .scoreboard-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .scoreboard-table {
+      max-width: 900px;
+      margin: 0 auto;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .score-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 1rem;
+      align-items: center;
+      padding: 1.2rem 2rem;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      transition: background 0.2s;
+    }
+
+    .score-row:hover { background: rgba(255,107,0,0.04); }
+    .score-row:last-child { border-bottom: none; }
+
+    .score-row-header {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: rgba(255,255,255,0.02);
+    }
+
+    .score-metric {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: rgba(250,250,250,0.8);
+    }
+
+    .score-val {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      color: var(--orange);
+      text-align: right;
+      letter-spacing: 0.03em;
+    }
+
+    .score-badge {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.25rem 0.7rem;
+      border-radius: 2px;
+      background: rgba(0,201,81,0.15);
+      color: var(--green);
+    }
+
+    /* ── FUEL / CTA ───────────────────────────────────────────── */
+    #fuel {
+      background: var(--charcoal);
+      padding: 7rem 2rem;
+    }
+
+    .fuel-inner {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .fuel-eyebrow {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 1.5rem;
+    }
+
+    .fuel-title {
+      font-family: var(--font-display);
+      font-size: clamp(3rem, 8vw, 6rem);
+      letter-spacing: 0.01em;
+      line-height: 0.95;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+
+    .fuel-sub {
+      color: rgba(250,250,250,0.55);
+      font-size: 1rem;
+      line-height: 1.7;
+      max-width: 500px;
+      margin: 0 auto 2.5rem;
+    }
+
+    .fuel-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* ── FOOTER ───────────────────────────────────────────────── */
+    footer {
+      background: var(--black);
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 3rem 2rem;
+    }
+
+    .footer-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+
+    .footer-logo {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      letter-spacing: 0.05em;
+    }
+
+    .footer-logo span { color: var(--orange); }
+
+    .footer-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .footer-links a { color: var(--muted); transition: color 0.2s; }
+    .footer-links a:hover { color: var(--orange); }
+
+    .footer-copy {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.2);
+      letter-spacing: 0.05em;
+    }
+
+    /* ── ANIMATIONS ───────────────────────────────────────────── */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .fade-in.visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    /* ── RESPONSIVE ───────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .bridge-grid {
+        grid-template-columns: 1fr;
+      }
+      .bridge-arrow {
+        flex-direction: row;
+        justify-content: center;
+      }
+      .bridge-arrow-line {
+        width: 80px;
+        height: 2px;
+        background: linear-gradient(to right, var(--orange), var(--green));
+      }
+    }
+
+    /* ── MOBILE NAV TOGGLE ────────────────────────────────────── */
+    .nav-toggle {
+      display: none;
+      background: none;
+      border: 1px solid rgba(255,255,255,0.2);
+      color: var(--white);
+      font-size: 1.2rem;
+      width: 36px;
+      height: 36px;
+      cursor: pointer;
+      border-radius: 2px;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .nav-toggle:focus-visible {
+      outline: 2px solid var(--orange);
+      outline-offset: 2px;
+    }
+
+    @media (max-width: 600px) {
+      .nav-toggle { display: flex; }
+
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 64px;
+        left: 0; right: 0;
+        background: rgba(8,8,8,0.97);
+        border-bottom: 1px solid rgba(255,107,0,0.15);
+        padding: 1rem 2rem 1.5rem;
+        gap: 1.2rem;
+      }
+
+      .nav-links.open { display: flex; }
+
+      h1.hero-headline { font-size: 4.5rem; }
+      .score-row { grid-template-columns: 1fr auto; }
+      .score-badge { display: none; }
+    }
+
+    /* ── REDUCED MOTION ───────────────────────────────────────── */
+    @media (prefers-reduced-motion: reduce) {
+      .ticker-track { animation: none; }
+      #hero::after { animation: none; }
+      .scroll-cue::after { animation: none; }
+      .fade-in {
+        opacity: 1;
+        transform: none;
+        transition: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── NAV ─────────────────────────────────────────────────── -->
+  <nav aria-label="Main navigation">
+    <div class="nav-inner">
+      <a href="#hero" class="nav-logo">SCHOLAR<span>●</span>ATHLETE</a>
+      <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="main-nav-links">☰</button>
+      <ul class="nav-links" id="main-nav-links">
+        <li><a href="#bridge">Mission</a></li>
+        <li><a href="#roster">The Stack</a></li>
+        <li><a href="#scoreboard">Stats</a></li>
+        <li><a href="https://github.com/sosloan/friendly-octo-couscous" target="_blank" rel="noopener">GitHub</a></li>
+        <li><a href="https://github.com/sosloan/friendly-octo-couscous" target="_blank" rel="noopener" class="nav-cta">Get Started</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ── HERO ────────────────────────────────────────────────── -->
+  <section id="hero" aria-labelledby="hero-heading">
+    <div class="hero-content">
+      <div class="hero-eyebrow">Polyglot · High-Performance · Formally Verified</div>
+      <h1 class="hero-headline" id="hero-heading">
+        WHERE
+        <em>CHAMPIONS</em>
+        CODE
+      </h1>
+      <p class="hero-sub">
+        Connecting the locker room to the library.
+        Built for scholar-athletes who refuse to choose between
+        grit and genius — <strong>proof that discipline scales.</strong>
+      </p>
+      <div class="hero-actions">
+        <a href="https://github.com/sosloan/friendly-octo-couscous" target="_blank" rel="noopener" class="btn-primary">
+          Study the Playbook
+        </a>
+        <a href="#bridge" class="btn-outline">
+          Our Mission
+        </a>
+      </div>
+    </div>
+    <div class="scroll-cue">Scroll</div>
+  </section>
+
+  <!-- ── TICKER ───────────────────────────────────────────────── -->
+  <div id="ticker" aria-hidden="true">
+    <div class="ticker-track">
+      <!-- duplicate for seamless loop -->
+      <span class="ticker-item">SUB-MICROSECOND LATENCY</span>
+      <span class="ticker-item">1M+ ORDERS / SECOND</span>
+      <span class="ticker-item">99.999% UPTIME</span>
+      <span class="ticker-item">FORMALLY VERIFIED</span>
+      <span class="ticker-item">ADA · LEAN · AKKA · JAVA · SWIFT · ERLANG</span>
+      <span class="ticker-item">POLYGLOT ARCHITECTURE</span>
+      <span class="ticker-item">SCHOLAR-ATHLETE MINDSET</span>
+      <span class="ticker-item">SUB-MICROSECOND LATENCY</span>
+      <span class="ticker-item">1M+ ORDERS / SECOND</span>
+      <span class="ticker-item">99.999% UPTIME</span>
+      <span class="ticker-item">FORMALLY VERIFIED</span>
+      <span class="ticker-item">ADA · LEAN · AKKA · JAVA · SWIFT · ERLANG</span>
+      <span class="ticker-item">POLYGLOT ARCHITECTURE</span>
+      <span class="ticker-item">SCHOLAR-ATHLETE MINDSET</span>
+    </div>
+  </div>
+
+  <!-- ── STATS ────────────────────────────────────────────────── -->
+  <section id="stats" aria-label="Key performance statistics">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-card fade-in">
+          <div class="stat-num">&lt;1μs</div>
+          <div class="stat-label">Order Validation</div>
+          <div class="stat-desc">Ada real-time engine</div>
+        </div>
+        <div class="stat-card fade-in">
+          <div class="stat-num">1M+</div>
+          <div class="stat-label">Orders / Second</div>
+          <div class="stat-desc">Linear scaling per node</div>
+        </div>
+        <div class="stat-card fade-in">
+          <div class="stat-num">99.999%</div>
+          <div class="stat-label">Uptime Target</div>
+          <div class="stat-desc">Erlang/OTP supervision</div>
+        </div>
+        <div class="stat-card fade-in">
+          <div class="stat-num">6+</div>
+          <div class="stat-label">Proven Theorems</div>
+          <div class="stat-desc">Lean 4 formal verification</div>
+        </div>
+        <div class="stat-card fade-in">
+          <div class="stat-num">6</div>
+          <div class="stat-label">Languages</div>
+          <div class="stat-desc">Best tool for every job</div>
+        </div>
+        <div class="stat-card fade-in">
+          <div class="stat-num">0</div>
+          <div class="stat-label">Known Vulnerabilities</div>
+          <div class="stat-desc">Security score: 82/100</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── BRIDGE ───────────────────────────────────────────────── -->
+  <section id="bridge" aria-labelledby="bridge-heading">
+    <div class="container">
+      <div class="bridge-intro fade-in">
+        <div class="section-kicker">Our Philosophy</div>
+        <h2 class="section-title" id="bridge-heading">
+          Locker Room<br/><span class="highlight">meets</span> Library
+        </h2>
+        <p class="section-body" style="margin: 0 auto; text-align:center;">
+          The greatest athletes are also students. The best engineers train like champions.
+          This system was built on that belief — where every line of proof is a rep,
+          every deployment is a game-day performance.
+        </p>
+      </div>
+      <div class="bridge-grid">
+        <div class="bridge-side locker-room fade-in">
+          <div class="bridge-icon">🏆</div>
+          <h3 class="bridge-heading" style="color: var(--orange);">Locker Room</h3>
+          <p style="font-size:0.85rem; color: rgba(250,250,250,0.5); margin-bottom:1.2rem;">
+            Athletic discipline. Team systems. Relentless performance.
+          </p>
+          <ul class="bridge-items">
+            <li>Practice until it's automatic</li>
+            <li>Trust the process, execute the plan</li>
+            <li>Fault tolerance — get up, adapt, win</li>
+            <li>Teamwork: each role is critical</li>
+            <li>No single point of failure</li>
+            <li>Train for the hardest day</li>
+          </ul>
+        </div>
+        <div class="bridge-arrow fade-in" aria-hidden="true">
+          <div class="bridge-arrow-line"></div>
+          <div class="bridge-arrow-icon">→</div>
+          <div class="bridge-label">Scholar-Athlete</div>
+          <div class="bridge-arrow-line"></div>
+        </div>
+        <div class="bridge-side library fade-in">
+          <div class="bridge-icon">📚</div>
+          <h3 class="bridge-heading" style="color: var(--green);">Library</h3>
+          <p style="font-size:0.85rem; color: rgba(250,250,250,0.5); margin-bottom:1.2rem;">
+            Mathematical rigor. Formal proofs. Lifelong learning.
+          </p>
+          <ul class="bridge-items">
+            <li>Provable correctness, not just testing</li>
+            <li>Type safety: eliminate errors by design</li>
+            <li>Read the spec before writing a line</li>
+            <li>Master multiple paradigms</li>
+            <li>Document everything — teach forward</li>
+            <li>Curiosity is a competitive advantage</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── MANIFESTO ─────────────────────────────────────────────── -->
+  <section id="manifesto" aria-label="Mission statement">
+    <div class="manifesto-inner">
+      <blockquote class="manifesto-quote">
+        "Functional programming isn't about what you can't do —
+        it's about building systems that scale fearlessly
+        and fail gracefully."
+      </blockquote>
+      <p class="manifesto-author">++ Polymath · Ada · Polyglot · Scholar-Athlete ++</p>
+    </div>
+  </section>
+
+  <!-- ── ROSTER / STACK ────────────────────────────────────────── -->
+  <section id="roster" aria-labelledby="roster-heading">
+    <div class="container">
+      <div class="roster-header fade-in">
+        <div class="section-kicker">The Starting Lineup</div>
+        <h2 class="section-title" id="roster-heading">Meet the Stack</h2>
+        <p class="section-body" style="margin: 0 auto; text-align:center;">
+          Six languages. Six specialists. One unstoppable system.
+          Each chosen for its unique strengths — the perfect team.
+        </p>
+      </div>
+      <div class="roster-grid">
+        <!-- Ada -->
+        <div class="player-card fade-in">
+          <div class="player-number">01</div>
+          <div class="player-position">Starting Five · Safety</div>
+          <div class="player-name">Ada 2022</div>
+          <p class="player-bio">
+            The defensive anchor. Type safety and formal contracts eliminate entire error classes at compile time. No runtime surprises — Ada locks it down.
+          </p>
+          <div class="player-stat">
+            <span class="player-stat-val">&lt;1μs</span>
+            <span class="player-stat-lbl">Validation speed</span>
+          </div>
+        </div>
+        <!-- Lean -->
+        <div class="player-card fade-in">
+          <div class="player-number">04</div>
+          <div class="player-position">Film Room · Strategist</div>
+          <div class="player-name">Lean 4</div>
+          <p class="player-bio">
+            The game-film analyst. Doesn't just test — proves. Six+ mathematical theorems verified before a single order touches production.
+          </p>
+          <div class="player-stat">
+            <span class="player-stat-val">6+</span>
+            <span class="player-stat-lbl">Theorems proved</span>
+          </div>
+        </div>
+        <!-- Akka -->
+        <div class="player-card fade-in">
+          <div class="player-number">08</div>
+          <div class="player-position">Point Guard · Conductor</div>
+          <div class="player-name">Akka / Scala</div>
+          <p class="player-bio">
+            Runs the offense. Actor-based concurrency orchestrates millions of messages with location transparency and cluster-ready architecture.
+          </p>
+          <div class="player-stat">
+            <span class="player-stat-val">M+</span>
+            <span class="player-stat-lbl">Messages / sec</span>
+          </div>
+        </div>
+        <!-- Java -->
+        <div class="player-card fade-in">
+          <div class="player-number">25</div>
+          <div class="player-position">Power Forward · Engine</div>
+          <div class="player-name">Java 25</div>
+          <p class="player-bio">
+            The workhorse. Virtual threads (Project Loom), modern records, and Netty zero-copy I/O for raw throughput that doesn't blink.
+          </p>
+          <div class="player-stat">
+            <span class="player-stat-val">126μs</span>
+            <span class="player-stat-lbl">End-to-end</span>
+          </div>
+        </div>
+        <!-- Swift -->
+        <div class="player-card fade-in">
+          <div class="player-number">09</div>
+          <div class="player-position">Fan Experience · UI</div>
+          <div class="player-name">Swift / SwiftUI</div>
+          <p class="player-bio">
+            The showstopper. Reactive Combine publishers, visionOS spatial computing, and 60fps declarative UI for traders who refuse to wait.
+          </p>
+          <div class="player-stat">
+            <span class="player-stat-val">60fps</span>
+            <span class="player-stat-lbl">UI guarantee</span>
+          </div>
+        </div>
+        <!-- Erlang -->
+        <div class="player-card fade-in">
+          <div class="player-number">26</div>
+          <div class="player-position">Closer · Survivor</div>
+          <div class="player-name">Erlang / OTP</div>
+          <p class="player-bio">
+            Built for the nine-inning grind. Let-it-crash supervision automatically restarts failed processes. Five-nines reliability, every season.
+          </p>
+          <div class="player-stat">
+            <span class="player-stat-val">99.999%</span>
+            <span class="player-stat-lbl">Uptime target</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── SCOREBOARD ────────────────────────────────────────────── -->
+  <section id="scoreboard" aria-labelledby="scoreboard-heading">
+    <div class="container">
+      <div class="scoreboard-header fade-in">
+        <div class="section-kicker">Game Stats</div>
+        <h2 class="section-title" id="scoreboard-heading">The Scoreboard</h2>
+        <p class="section-body" style="margin: 0 auto; text-align:center;">
+          Performance that doesn't need spin. Every metric earned.
+        </p>
+      </div>
+      <div class="scoreboard-table fade-in" role="table" aria-label="Performance metrics">
+        <div class="score-row score-row-header" role="row">
+          <span role="columnheader">Metric</span>
+          <span role="columnheader" style="text-align:right;">Value</span>
+          <span role="columnheader">Status</span>
+        </div>
+        <div class="score-row" role="row">
+          <span class="score-metric" role="cell">Order Validation Latency</span>
+          <span class="score-val" role="cell">&lt; 1μs</span>
+          <span class="score-badge" role="cell">Elite</span>
+        </div>
+        <div class="score-row" role="row">
+          <span class="score-metric" role="cell">End-to-End Processing</span>
+          <span class="score-val" role="cell">126μs</span>
+          <span class="score-badge" role="cell">Elite</span>
+        </div>
+        <div class="score-row" role="row">
+          <span class="score-metric" role="cell">Throughput (per node)</span>
+          <span class="score-val" role="cell">1M+ /s</span>
+          <span class="score-badge" role="cell">Elite</span>
+        </div>
+        <div class="score-row" role="row">
+          <span class="score-metric" role="cell">System Uptime Target</span>
+          <span class="score-val" role="cell">99.999%</span>
+          <span class="score-badge" role="cell">Elite</span>
+        </div>
+        <div class="score-row" role="row">
+          <span class="score-metric" role="cell">Compliance Test Cases</span>
+          <span class="score-val" role="cell">50+</span>
+          <span class="score-badge" role="cell">Complete</span>
+        </div>
+        <div class="score-row" role="row">
+          <span class="score-metric" role="cell">Formal Theorems Verified</span>
+          <span class="score-val" role="cell">6+</span>
+          <span class="score-badge" role="cell">Proven</span>
+        </div>
+        <div class="score-row" role="row">
+          <span class="score-metric" role="cell">Languages in Production</span>
+          <span class="score-val" role="cell">6</span>
+          <span class="score-badge" role="cell">Polyglot</span>
+        </div>
+        <div class="score-row" role="row">
+          <span class="score-metric" role="cell">Known Vulnerabilities</span>
+          <span class="score-val" role="cell" style="color: var(--green);">0</span>
+          <span class="score-badge" role="cell">Secure</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CTA / FUEL ─────────────────────────────────────────────── -->
+  <section id="fuel" aria-labelledby="fuel-heading">
+    <div class="fuel-inner">
+      <div class="fuel-eyebrow fade-in">Ready to Level Up?</div>
+      <h2 class="fuel-title fade-in" id="fuel-heading">
+        FUEL YOUR<br/><span class="highlight">NEXT REP</span>
+      </h2>
+      <p class="fuel-sub fade-in">
+        Clone the repo. Study the proofs. Run the tests.
+        The locker room and the library are one room — walk in.
+      </p>
+      <div class="fuel-actions fade-in">
+        <a href="https://github.com/sosloan/friendly-octo-couscous" target="_blank" rel="noopener" class="btn-primary">
+          Clone the Repo
+        </a>
+        <a href="https://github.com/sosloan/friendly-octo-couscous/blob/main/README.md" target="_blank" rel="noopener" class="btn-outline">
+          Read the Docs
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ────────────────────────────────────────────────── -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-logo">SCHOLAR<span>●</span>ATHLETE</div>
+      <ul class="footer-links">
+        <li><a href="https://github.com/sosloan/friendly-octo-couscous" target="_blank" rel="noopener">GitHub</a></li>
+        <li><a href="https://github.com/sosloan/friendly-octo-couscous/blob/main/README.md" target="_blank" rel="noopener">Docs</a></li>
+        <li><a href="https://github.com/sosloan/friendly-octo-couscous/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a></li>
+        <li><a href="https://github.com/sosloan/friendly-octo-couscous/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">Contribute</a></li>
+      </ul>
+      <span class="footer-copy">MIT · Built with ❤️ for high-performance systems engineering</span>
+    </div>
+  </footer>
+
+  <!-- ── INTERSECTION OBSERVER + NAV TOGGLE ───────────────────── -->
+  <script>
+    (function () {
+      // Scroll fade-in
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) {
+            e.target.classList.add('visible');
+            io.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.12 });
+
+      document.querySelectorAll('.fade-in').forEach(function (el) {
+        io.observe(el);
+      });
+
+      // Mobile nav toggle
+      var toggle = document.querySelector('.nav-toggle');
+      var navLinks = document.getElementById('main-nav-links');
+      if (toggle && navLinks) {
+        toggle.addEventListener('click', function () {
+          var open = navLinks.classList.toggle('open');
+          toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+          toggle.textContent = open ? '✕' : '☰';
+        });
+        // Close on link click
+        navLinks.querySelectorAll('a').forEach(function (a) {
+          a.addEventListener('click', function () {
+            navLinks.classList.remove('open');
+            toggle.setAttribute('aria-expanded', 'false');
+            toggle.textContent = '☰';
+          });
+        });
+      }
+    })();
+  </script>
+
+</body>
+</html>
