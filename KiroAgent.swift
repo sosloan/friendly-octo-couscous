@@ -225,11 +225,13 @@ public actor KiroAgent {
         limit: Int = KiroAgent.defaultRecallLimit
     ) -> [MemoryEntry] {
         let normalizedTag = tag.trimmingCharacters(in: .whitespacesAndNewlines)
+        let effectiveLimit = max(limit, 1)
         guard !normalizedTag.isEmpty else { return [] }
-        return recall(days: days, limit: max(limit, 1))
-            .filter { $0.tags.contains(normalizedTag) }
-            .suffix(max(limit, 1))
-            .map { $0 }
+        return Array(
+            recall(days: days, limit: Int.max)
+                .filter { $0.tags.contains(normalizedTag) }
+                .suffix(effectiveLimit)
+        )
     }
     
     /// Record an AnnotationChain event in memory with structured tags.
@@ -246,11 +248,12 @@ public actor KiroAgent {
         
         guard !resource.isEmpty, !text.isEmpty else { return }
         
+        let authorValue = actor.isEmpty ? "system" : actor
         let epochText = epoch.map { " epoch=\($0)" } ?? ""
-        let content = "[AnnotationChain] resource=\(resource) author=\(actor.isEmpty ? "system" : actor)\(epochText) note=\(text)"
+        let content = "[AnnotationChain] resource=\(resource) author=\(authorValue)\(epochText) note=\(text)"
         
         var tags = ["annotation-chain", "resource:\(resource)"]
-        tags.append("author:\(actor.isEmpty ? "system" : actor)")
+        tags.append("author:\(authorValue)")
         if let epoch {
             tags.append("epoch:\(epoch)")
         }
