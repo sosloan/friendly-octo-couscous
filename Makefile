@@ -109,6 +109,7 @@ test-aka-integration:
 	@echo "Running AKA Integration Tests..."
 	cd aka && ./aka_runner.sh --integration
 
+# End-to-end aliases for AKA integration tests
 test-aka-e2e: test-aka-integration
 
 test-e2e: test-aka-integration
