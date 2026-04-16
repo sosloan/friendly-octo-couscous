@@ -83,6 +83,38 @@ public actor KiroAgent {
         }
     }
     
+    /// Lightweight shape for persisting hospital infrastructure context.
+    public struct HospitalInfrastructureSnapshot: Codable, Sendable {
+        public let patientId: String
+        public let encounterId: String
+        public let locationId: String
+        public let epoch: UInt64
+        public let completedTasks: Int
+        public let activeFlags: Int
+        public let activeGoals: Int
+        public let annotationCount: Int
+        
+        public init(
+            patientId: String,
+            encounterId: String,
+            locationId: String,
+            epoch: UInt64,
+            completedTasks: Int,
+            activeFlags: Int,
+            activeGoals: Int,
+            annotationCount: Int
+        ) {
+            self.patientId = patientId
+            self.encounterId = encounterId
+            self.locationId = locationId
+            self.epoch = epoch
+            self.completedTasks = completedTasks
+            self.activeFlags = activeFlags
+            self.activeGoals = activeGoals
+            self.annotationCount = annotationCount
+        }
+    }
+    
     private struct Snapshot: Codable, Sendable {
         var name: String
         var createdAt: Date
@@ -184,6 +216,95 @@ public actor KiroAgent {
             .flatMap { $0.entries }
         
         return Array(entries.suffix(limit))
+    }
+    
+    /// Retrieve recent interactions filtered by a single tag.
+    public func recallByTag(
+        _ tag: String,
+        days: Int = KiroAgent.defaultRecallDays,
+        limit: Int = KiroAgent.defaultRecallLimit
+    ) -> [MemoryEntry] {
+        let normalizedTag = tag.trimmingCharacters(in: .whitespacesAndNewlines)
+        let effectiveLimit = max(limit, 1)
+        guard !normalizedTag.isEmpty else { return [] }
+        
+        let windowDays = max(days, 1)
+        let today = Date()
+        guard let start = calendar.date(byAdding: .day, value: -windowDays + 1, to: today) else {
+            return []
+        }
+        
+        let startKey = Self.sharedDayFormatter.string(from: start)
+        let entries = snapshot.journals
+            .filter { $0.day >= startKey }
+            .sorted { $0.day < $1.day }
+            .flatMap { $0.entries }
+            .filter { $0.tags.contains(normalizedTag) }
+        
+        return Array(entries.suffix(effectiveLimit))
+    }
+    
+    /// Record an AnnotationChain event in memory with structured tags.
+    public func recordAnnotationEvent(
+        resourceReference: String,
+        annotationText: String,
+        author: String,
+        epoch: UInt64?,
+        at date: Date = Date()
+    ) async throws {
+        let resource = resourceReference.trimmingCharacters(in: .whitespacesAndNewlines)
+        let text = annotationText.trimmingCharacters(in: .whitespacesAndNewlines)
+        let actor = author.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        guard !resource.isEmpty, !text.isEmpty else { return }
+        
+        let authorValue = actor.isEmpty ? "system" : actor
+        var contentParts = [
+            "[AnnotationChain]",
+            "resource=\(resource)",
+            "author=\(authorValue)"
+        ]
+        if let epoch {
+            contentParts.append("epoch=\(epoch)")
+        }
+        contentParts.append("note=\(text)")
+        let content = contentParts.joined(separator: " ")
+        
+        var tags = ["annotation-chain", "resource:\(resource)"]
+        tags.append("author:\(authorValue)")
+        if let epoch {
+            tags.append("epoch:\(epoch)")
+        }
+        
+        try await record(
+            role: .system,
+            content: content,
+            tags: tags,
+            at: date
+        )
+    }
+    
+    /// Record a hospital infrastructure snapshot as a single memory entry.
+    public func recordHospitalInfrastructure(
+        _ snapshot: HospitalInfrastructureSnapshot,
+        at date: Date = Date()
+    ) async throws {
+        let content = """
+        [HospitalInfrastructure] patient=\(snapshot.patientId) encounter=\(snapshot.encounterId) location=\(snapshot.locationId) epoch=\(snapshot.epoch) completedTasks=\(snapshot.completedTasks) activeFlags=\(snapshot.activeFlags) activeGoals=\(snapshot.activeGoals) annotations=\(snapshot.annotationCount)
+        """
+        
+        try await record(
+            role: .system,
+            content: content,
+            tags: [
+                "hospital-infrastructure",
+                "patient:\(snapshot.patientId)",
+                "encounter:\(snapshot.encounterId)",
+                "location:\(snapshot.locationId)",
+                "epoch:\(snapshot.epoch)"
+            ],
+            at: date
+        )
     }
     
     /// Lightweight status for monitoring or debugging.
