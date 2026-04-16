@@ -227,11 +227,21 @@ public actor KiroAgent {
         let normalizedTag = tag.trimmingCharacters(in: .whitespacesAndNewlines)
         let effectiveLimit = max(limit, 1)
         guard !normalizedTag.isEmpty else { return [] }
-        return Array(
-            recall(days: days, limit: Int.max)
-                .filter { $0.tags.contains(normalizedTag) }
-                .suffix(effectiveLimit)
-        )
+        
+        let windowDays = max(days, 1)
+        let today = Date()
+        guard let start = calendar.date(byAdding: .day, value: -windowDays + 1, to: today) else {
+            return []
+        }
+        
+        let startKey = Self.sharedDayFormatter.string(from: start)
+        let entries = snapshot.journals
+            .filter { $0.day >= startKey }
+            .sorted { $0.day < $1.day }
+            .flatMap { $0.entries }
+            .filter { $0.tags.contains(normalizedTag) }
+        
+        return Array(entries.suffix(effectiveLimit))
     }
     
     /// Record an AnnotationChain event in memory with structured tags.
@@ -249,8 +259,16 @@ public actor KiroAgent {
         guard !resource.isEmpty, !text.isEmpty else { return }
         
         let authorValue = actor.isEmpty ? "system" : actor
-        let epochText = epoch.map { " epoch=\($0)" } ?? ""
-        let content = "[AnnotationChain] resource=\(resource) author=\(authorValue)\(epochText) note=\(text)"
+        var contentParts = [
+            "[AnnotationChain]",
+            "resource=\(resource)",
+            "author=\(authorValue)"
+        ]
+        if let epoch {
+            contentParts.append("epoch=\(epoch)")
+        }
+        contentParts.append("note=\(text)")
+        let content = contentParts.joined(separator: " ")
         
         var tags = ["annotation-chain", "resource:\(resource)"]
         tags.append("author:\(authorValue)")
