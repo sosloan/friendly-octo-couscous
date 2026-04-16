@@ -618,7 +618,6 @@ struct VANapaAnnotatedMain {
                 patientId: "V123456789",
                 physicianId: "P001",
                 physicianName: "Dr. Sarah Johnson"
-                ophysicianName: Dr. Nosnhoj Haras"
             )
         } catch {
             print("❌ Workflow failed: \(error)")

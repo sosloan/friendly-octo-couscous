@@ -83,6 +83,38 @@ public actor KiroAgent {
         }
     }
     
+    /// Lightweight shape for persisting hospital infrastructure context.
+    public struct HospitalInfrastructureSnapshot: Codable, Sendable {
+        public let patientId: String
+        public let encounterId: String
+        public let locationId: String
+        public let epoch: UInt64
+        public let completedTasks: Int
+        public let activeFlags: Int
+        public let activeGoals: Int
+        public let annotationCount: Int
+        
+        public init(
+            patientId: String,
+            encounterId: String,
+            locationId: String,
+            epoch: UInt64,
+            completedTasks: Int,
+            activeFlags: Int,
+            activeGoals: Int,
+            annotationCount: Int
+        ) {
+            self.patientId = patientId
+            self.encounterId = encounterId
+            self.locationId = locationId
+            self.epoch = epoch
+            self.completedTasks = completedTasks
+            self.activeFlags = activeFlags
+            self.activeGoals = activeGoals
+            self.annotationCount = annotationCount
+        }
+    }
+    
     private struct Snapshot: Codable, Sendable {
         var name: String
         var createdAt: Date
@@ -184,6 +216,74 @@ public actor KiroAgent {
             .flatMap { $0.entries }
         
         return Array(entries.suffix(limit))
+    }
+    
+    /// Retrieve recent interactions filtered by a single tag.
+    public func recall(
+        tag: String,
+        days: Int = KiroAgent.defaultRecallDays,
+        limit: Int = KiroAgent.defaultRecallLimit
+    ) -> [MemoryEntry] {
+        let normalizedTag = tag.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !normalizedTag.isEmpty else { return [] }
+        return recall(days: days, limit: max(limit, 1))
+            .filter { $0.tags.contains(normalizedTag) }
+            .suffix(max(limit, 1))
+            .map { $0 }
+    }
+    
+    /// Record an AnnotationChain event in memory with structured tags.
+    public func recordAnnotationEvent(
+        resourceReference: String,
+        annotationText: String,
+        author: String,
+        epoch: UInt64?,
+        at date: Date = Date()
+    ) async throws {
+        let resource = resourceReference.trimmingCharacters(in: .whitespacesAndNewlines)
+        let text = annotationText.trimmingCharacters(in: .whitespacesAndNewlines)
+        let actor = author.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        guard !resource.isEmpty, !text.isEmpty else { return }
+        
+        let epochText = epoch.map { " epoch=\($0)" } ?? ""
+        let content = "[AnnotationChain] resource=\(resource) author=\(actor.isEmpty ? "system" : actor)\(epochText) note=\(text)"
+        
+        var tags = ["annotation-chain", "resource:\(resource)"]
+        tags.append("author:\(actor.isEmpty ? "system" : actor)")
+        if let epoch {
+            tags.append("epoch:\(epoch)")
+        }
+        
+        try await record(
+            role: .system,
+            content: content,
+            tags: tags,
+            at: date
+        )
+    }
+    
+    /// Record a hospital infrastructure snapshot as a single memory entry.
+    public func recordHospitalInfrastructure(
+        _ snapshot: HospitalInfrastructureSnapshot,
+        at date: Date = Date()
+    ) async throws {
+        let content = """
+        [HospitalInfrastructure] patient=\(snapshot.patientId) encounter=\(snapshot.encounterId) location=\(snapshot.locationId) epoch=\(snapshot.epoch) completedTasks=\(snapshot.completedTasks) activeFlags=\(snapshot.activeFlags) activeGoals=\(snapshot.activeGoals) annotations=\(snapshot.annotationCount)
+        """
+        
+        try await record(
+            role: .system,
+            content: content,
+            tags: [
+                "hospital-infrastructure",
+                "patient:\(snapshot.patientId)",
+                "encounter:\(snapshot.encounterId)",
+                "location:\(snapshot.locationId)",
+                "epoch:\(snapshot.epoch)"
+            ],
+            at: date
+        )
     }
     
     /// Lightweight status for monitoring or debugging.
