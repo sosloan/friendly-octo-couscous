@@ -219,8 +219,8 @@ public actor KiroAgent {
     }
     
     /// Retrieve recent interactions filtered by a single tag.
-    public func recall(
-        tag: String,
+    public func recallByTag(
+        _ tag: String,
         days: Int = KiroAgent.defaultRecallDays,
         limit: Int = KiroAgent.defaultRecallLimit
     ) -> [MemoryEntry] {
