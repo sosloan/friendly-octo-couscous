@@ -2,7 +2,7 @@
 # Supports Linux, macOS (including MacBook Air), iOS, and Android
 
 .PHONY: all clean ada lean akka java erlang swift docs help
-.PHONY: all clean ada lean akka java erlang docs help test-aka test-aka-smoke test-aka-integration test-aka-performance
+.PHONY: all clean ada lean akka java erlang docs help test-aka test-aka-smoke test-aka-integration test-aka-performance test-aka-e2e test-e2e e2e
 
 all: ada java akka erlang swift
 	@echo "==================================="
@@ -22,6 +22,7 @@ help:
 	@echo "  make clean    - Clean all build artifacts"
 	@echo "  make test     - Run all tests"
 	@echo "  make test-aka - Run AKA comprehensive test suite"
+	@echo "  make e2e      - Run end-to-end AKA integration tests"
 
 # Ada HFT Engine
 ada:
@@ -107,6 +108,12 @@ test-aka-smoke:
 test-aka-integration:
 	@echo "Running AKA Integration Tests..."
 	cd aka && ./aka_runner.sh --integration
+
+test-aka-e2e: test-aka-integration
+
+test-e2e: test-aka-integration
+
+e2e: test-aka-integration
 
 test-aka-performance:
 	@echo "Running AKA Performance Tests..."
