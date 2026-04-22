@@ -1,0 +1,63 @@
+TEST_HILBERT_PROMPTS — SLED EDITION (State & Local Government)
+
+Mission:
+Create playful, practical test prompts for Hilbert-style evaluation focused on SLED workflows,
+with special attention to California local operations such as the Santa Clara County Sheriff.
+
+Plan (fun mode: ON):
+
+1) Pick the SLED Personas (the "League of Public Service")
+- Sheriff’s Office Dispatcher (Santa Clara County style incident routing)
+- Patrol Sergeant (shift planning + response coordination)
+- Records Clerk (public records and retention workflows)
+- County Emergency Manager (wildfire/flood/citywide alerts)
+- City IT Security Lead (CJIS-minded security and audit trails)
+
+2) Build Prompt Themes (the "Civic Questlines")
+- Incident triage and priority setting
+- Cross-agency coordination (sheriff, fire, EMS, public works)
+- Policy-compliant communication templates
+- FOIA/public records request handling
+- Budget-aware resource allocation
+- Community safety messaging in plain language
+
+3) Write Prompt Sets by Difficulty (the "Boss Levels")
+- Level 1: Clear single-step asks (status lookup, report summary)
+- Level 2: Multi-step operational planning (staffing + response + comms)
+- Level 3: Ambiguous crisis scenarios (partial info, time pressure, policy constraints)
+
+4) Add Santa Clara County Sheriff-Flavored Scenarios (without sensitive data)
+- Weekend event crowd management near county facilities
+- Storm-related road closure coordination across unincorporated areas
+- Jail transport scheduling conflicts and escalation paths
+- Community outreach plan for neighborhood safety workshops
+
+5) Include Safety + Governance Checks (the "Guardrails Gauntlet")
+- No personal data exposure
+- No tactical details that could increase public risk
+- Preserve chain-of-command and jurisdiction boundaries
+- Require source attribution for policy claims
+- Flag uncertainty instead of inventing facts
+
+6) Define Success Criteria (the "Scoreboard")
+- Accuracy to role and jurisdiction
+- Policy alignment and public-service tone
+- Actionability under real-world constraints
+- Responsible handling of unknowns
+- Clear, concise outputs for busy teams
+
+7) Make It Replayable (the "Arcade Cabinet")
+- For each prompt, add variants:
+  - low/high urgency
+  - weekday/weekend staffing
+  - normal/limited budget
+  - coordinated/siloed agency communications
+
+8) Final Deliverable Shape
+- 20–30 SLED prompts total
+- Balanced across law enforcement, emergency management, records, and IT/security
+- Each prompt includes: objective, constraints, expected output style, and scoring notes
+
+Closing vibe:
+Serious public service, playful testing energy. Think “mission control for counties,”
+with clarity, safety, and community trust as the main characters.
