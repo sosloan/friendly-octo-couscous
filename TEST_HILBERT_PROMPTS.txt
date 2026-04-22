@@ -1,63 +1,393 @@
-TEST_HILBERT_PROMPTS — SLED EDITION (State & Local Government)
+================================================================================
+  TEST_HILBERT_PROMPTS -- SLED EDITION
+  Santa Clara County Sheriff's Office & Peers
+  Format: Feed-Forward 3x3 Prompt Gallery
+  Rule: Every response generates 3 new prompts + 1 negative signal.
+================================================================================
 
-Mission:
-Create playful, practical test prompts for Hilbert-style evaluation focused on SLED workflows,
-with special attention to California local operations such as the Santa Clara County Sheriff.
+HOW THIS WORKS
+--------------
+1. Pick any prompt below. Copy it. Paste it. Hit send. That is 1-click and go.
+2. After you read the response, look at the three "NEXT PROMPTS" lines.
+3. Pick one. That becomes your next 1-click prompt.
+4. The DO LESS line is a negative signal -- it tells you when to pull back.
+5. The gallery below is Gallery 0 (the starting 3x3).
+   As you move through the feed-forward chain, a new 3x3 emerges each time.
 
-Plan (fun mode: ON):
+================================================================================
+ GALLERY 0 -- THE STARTING 3x3
+ Row A: Incident Operations  |  Row B: Records & Admin  |  Row C: Community
+================================================================================
 
-1) Pick the SLED Personas (the "League of Public Service")
-- Sheriff’s Office Dispatcher (Santa Clara County style incident routing)
-- Patrol Sergeant (shift planning + response coordination)
-- Records Clerk (public records and retention workflows)
-- County Emergency Manager (wildfire/flood/citywide alerts)
-- City IT Security Lead (CJIS-minded security and audit trails)
++-----------------------------------------------------------------------------+
+| [A1] CAD INCIDENT ENTRY -- COLLISION WITH INJURIES                         |
++-----------------------------------------------------------------------------+
+|                                                                             |
+| You are a dispatcher at the Santa Clara County Sheriff's Office.           |
+| A call comes in at 14:23 on a Tuesday.                                     |
+|                                                                             |
+| Caller reports: two-vehicle collision on Highway 9 near Saratoga at        |
+| the Mt. Eden Road intersection. One driver is unresponsive. Second          |
+| driver walked away but is confused. Lane blockage confirmed.                |
+|                                                                             |
+| Write the CAD (Computer-Aided Dispatch) incident entry. Include:           |
+|   * Incident type and priority level (use P1-P4 scale)                     |
+|   * Units to dispatch (patrol, EMS, fire, CalTrans notification)           |
+|   * Notification chain (supervisor, watch commander)                       |
+|   * Initial notes field (caller quotes, road conditions, ETA)              |
+|                                                                             |
+| Format as a standard CAD entry. Be concise. Every second counts.           |
+|                                                                             |
+| >> NEXT PROMPTS (pick one after you get a response):                       |
+|   [+] DO MORE  -> [A2] Add a secondary caller with conflicting info.       |
+|   [=] STAY     -> [A3] Same scenario, swap collision for a structure fire. |
+|   [-] DO LESS  -> Summarize only the dispatch priority and top two units.  |
++-----------------------------------------------------------------------------+
 
-2) Build Prompt Themes (the "Civic Questlines")
-- Incident triage and priority setting
-- Cross-agency coordination (sheriff, fire, EMS, public works)
-- Policy-compliant communication templates
-- FOIA/public records request handling
-- Budget-aware resource allocation
-- Community safety messaging in plain language
++-----------------------------------------------------------------------------+
+| [A2] MULTI-CALLER TRIAGE -- CONFLICTING REPORTS                            |
++-----------------------------------------------------------------------------+
+|                                                                             |
+| You are a Santa Clara County Sheriff's dispatcher during a Friday night    |
+| shift (22:00). Three calls arrive within 90 seconds about the same area    |
+| near Coyote Creek Trail, San Jose:                                         |
+|                                                                             |
+|   Caller 1: "Someone is screaming near the trail. I see a person down."   |
+|   Caller 2: "Two people are fighting by the bridge. One has a weapon."     |
+|   Caller 3: "I heard a loud bang -- might be a car backfire, not sure."    |
+|                                                                             |
+| Reconcile the three reports into one unified incident log entry.           |
+| Mark confidence level for each detail (HIGH / MEDIUM / UNCONFIRMED).      |
+| Recommend the dispatch posture: send what, staged how, in what order.      |
+| Note any officer safety considerations without revealing tactics.          |
+|                                                                             |
+| >> NEXT PROMPTS:                                                            |
+|   [+] DO MORE  -> [A3] Add a fourth call that is a hoax -- ID the signals. |
+|   [=] STAY     -> [A2-B] Same setup, swap location to Alum Rock Park.     |
+|   [-] DO LESS  -> List only the three conflicting details, no triage.      |
++-----------------------------------------------------------------------------+
 
-3) Write Prompt Sets by Difficulty (the "Boss Levels")
-- Level 1: Clear single-step asks (status lookup, report summary)
-- Level 2: Multi-step operational planning (staffing + response + comms)
-- Level 3: Ambiguous crisis scenarios (partial info, time pressure, policy constraints)
++-----------------------------------------------------------------------------+
+| [A3] SHIFT BRIEFING -- SERGEANT MORNING HANDOFF                            |
++-----------------------------------------------------------------------------+
+|                                                                             |
+| You are a patrol sergeant at the Santa Clara County Sheriff's Office       |
+| writing the 06:00 shift briefing for your incoming team of six deputies.   |
+|                                                                             |
+| Last night's notable events:                                               |
+|   * Vehicle pursuit ended without arrest, suspect fled on foot near        |
+|     Cottle Road. BOLO still active.                                        |
+|   * Domestic disturbance at a Gilroy address, parties separated,           |
+|     no arrest made, follow-up welfare check requested at 10:00.            |
+|   * Road closure on Monterey Highway (construction) -- detour in effect.  |
+|                                                                             |
+| Write a shift briefing memo. Include:                                      |
+|   * Priority items and assigned deputies                                   |
+|   * BOLO summary (general description only, no PII)                       |
+|   * Welfare check reminder with assigned unit                              |
+|   * Road closure note with alternate route                                 |
+|   * Tone: professional, direct, 90 seconds to read aloud                  |
+|                                                                             |
+| >> NEXT PROMPTS:                                                            |
+|   [+] DO MORE  -> Sergeant must handle a staffing shortage (2 deputies     |
+|                   called out sick). Adjust assignments accordingly.         |
+|   [=] STAY     -> Same briefing structure, swap to weekend night shift.    |
+|   [-] DO LESS  -> Write only the BOLO summary bullet. One paragraph max.  |
++-----------------------------------------------------------------------------+
 
-4) Add Santa Clara County Sheriff-Flavored Scenarios (without sensitive data)
-- Weekend event crowd management near county facilities
-- Storm-related road closure coordination across unincorporated areas
-- Jail transport scheduling conflicts and escalation paths
-- Community outreach plan for neighborhood safety workshops
++-----------------------------------------------------------------------------+
+| [B1] PUBLIC RECORDS REQUEST -- FOIA RESPONSE LETTER                        |
++-----------------------------------------------------------------------------+
+|                                                                             |
+| You are a records clerk at the Santa Clara County Sheriff's Office.        |
+| A member of the public submits this request:                               |
+|                                                                             |
+|   "I am requesting all incident reports filed for the 200 block of        |
+|    Main Street, Gilroy, between January 1 and March 31 of this year.      |
+|    I also request any officer body-cam footage from those incidents."      |
+|                                                                             |
+| Draft the official response letter. Include:                               |
+|   * Acknowledgment of receipt and statutory response window (California    |
+|     Public Records Act: 10 business days)                                  |
+|   * What records are likely releasable vs. subject to exemption           |
+|   * Reason for any exemptions (cite California Gov. Code sections)        |
+|   * Next steps and contact information                                     |
+|   * Formal, professional tone per county letterhead standards              |
+|                                                                             |
+| Do NOT invent specific incident details. Respond to the request type only. |
+|                                                                             |
+| >> NEXT PROMPTS:                                                            |
+|   [+] DO MORE  -> [B2] Requester follows up claiming partial records are   |
+|                   missing. Draft the clarification and appeal guidance.     |
+|   [=] STAY     -> Same letter structure, request is for use-of-force data. |
+|   [-] DO LESS  -> Write only the exemption paragraph. Three sentences max. |
++-----------------------------------------------------------------------------+
 
-5) Include Safety + Governance Checks (the "Guardrails Gauntlet")
-- No personal data exposure
-- No tactical details that could increase public risk
-- Preserve chain-of-command and jurisdiction boundaries
-- Require source attribution for policy claims
-- Flag uncertainty instead of inventing facts
++-----------------------------------------------------------------------------+
+| [B2] RECORDS RETENTION -- AUDIT PREP CHECKLIST                             |
++-----------------------------------------------------------------------------+
+|                                                                             |
+| You are the Records Manager for a California county sheriff's office.      |
+| An annual state compliance audit is scheduled in 30 days.                  |
+|                                                                             |
+| Auditors will review:                                                      |
+|   * Arrest records retention schedules (per CA Gov. Code 26202)           |
+|   * Body-worn camera footage retention (CA Penal Code 832.18)             |
+|   * CJIS audit log completeness (FBI CJIS Security Policy v5.9.2)         |
+|   * Destruction certificates for records past retention window             |
+|                                                                             |
+| Generate a 30-day pre-audit checklist. Format:                             |
+|   Week 1: [Action items]                                                   |
+|   Week 2: [Action items]                                                   |
+|   Week 3: [Action items]                                                   |
+|   Final 2 Days: [Last-minute review and staging]                          |
+|                                                                             |
+| Flag any items that require legal counsel sign-off.                        |
+|                                                                             |
+| >> NEXT PROMPTS:                                                            |
+|   [+] DO MORE  -> Auditor sends a pre-audit questionnaire. Draft answers   |
+|                   for the five most common CJIS compliance gaps.            |
+|   [=] STAY     -> Same checklist, pivot to a HIPAA audit for jail medical. |
+|   [-] DO LESS  -> List only the three highest-risk audit items. No sched.  |
++-----------------------------------------------------------------------------+
 
-6) Define Success Criteria (the "Scoreboard")
-- Accuracy to role and jurisdiction
-- Policy alignment and public-service tone
-- Actionability under real-world constraints
-- Responsible handling of unknowns
-- Clear, concise outputs for busy teams
++-----------------------------------------------------------------------------+
+| [B3] TRANSPORT SCHEDULING -- JAIL LOGISTICS CONFLICT                       |
++-----------------------------------------------------------------------------+
+|                                                                             |
+| You are a custody operations supervisor at the Santa Clara County          |
+| Correctional Facility (Elmwood). It is Monday morning.                     |
+|                                                                             |
+| Conflicts this week:                                                       |
+|   * 14 court transport runs needed Tue-Thu. You have 6 transport officers. |
+|   * One transport vehicle is out for maintenance until Wednesday noon.     |
+|   * A medical transport to Valley Medical is scheduled Tue 08:30,          |
+|     requiring a two-officer escort.                                        |
+|   * A judge's standing order mandates all AM court runs arrive by 09:00.  |
+|                                                                             |
+| Build the transport schedule for Tuesday through Thursday. Show:           |
+|   * Vehicle and officer assignments by run                                 |
+|   * How the medical transport is accommodated without disrupting court     |
+|   * Any runs that must be rescheduled and the required notification chain  |
+|                                                                             |
+| Format as a table. Flag conflicts in bold or with [CONFLICT] tag.         |
+|                                                                             |
+| >> NEXT PROMPTS:                                                            |
+|   [+] DO MORE  -> A second vehicle breaks down Wednesday morning. Rebuild. |
+|   [=] STAY     -> Same conflict level, swap to an all-female facility wing.|
+|   [-] DO LESS  -> List only Tuesday's assignments. Skip Wed-Thu.           |
++-----------------------------------------------------------------------------+
 
-7) Make It Replayable (the "Arcade Cabinet")
-- For each prompt, add variants:
-  - low/high urgency
-  - weekday/weekend staffing
-  - normal/limited budget
-  - coordinated/siloed agency communications
++-----------------------------------------------------------------------------+
+| [C1] COMMUNITY ALERT -- PLAIN-LANGUAGE SAFETY NOTICE                       |
++-----------------------------------------------------------------------------+
+|                                                                             |
+| You are the Public Information Officer for the Santa Clara County          |
+| Sheriff's Office.                                                          |
+|                                                                             |
+| Situation: A series of residential package thefts has occurred across      |
+| three unincorporated neighborhoods in the past two weeks (Alum Rock,       |
+| Cambrian, and Loma Prieta foothills areas). No arrests yet.                |
+|                                                                             |
+| Write a community safety alert for distribution via:                       |
+|   * Nextdoor post (casual, neighborhood tone, 150 words max)               |
+|   * Press release (formal, 300 words max)                                  |
+|   * Emergency text alert (SMS-ready, 160 characters max)                  |
+|                                                                             |
+| For each version:                                                          |
+|   * Include 3 specific prevention tips (not generic platitudes)           |
+|   * Include how to report suspicious activity                              |
+|   * Do NOT include any suspect description unless officially released      |
+|                                                                             |
+| >> NEXT PROMPTS:                                                            |
+|   [+] DO MORE  -> [C2] Suspect is now in custody. Write the follow-up      |
+|                   community update for all three channels.                  |
+|   [=] STAY     -> Same format, swap to catalytic converter theft targeting  |
+|                   hybrid vehicles.                                          |
+|   [-] DO LESS  -> Write only the SMS alert. Nothing else.                  |
++-----------------------------------------------------------------------------+
 
-8) Final Deliverable Shape
-- 20–30 SLED prompts total
-- Balanced across law enforcement, emergency management, records, and IT/security
-- Each prompt includes: objective, constraints, expected output style, and scoring notes
++-----------------------------------------------------------------------------+
+| [C2] TOWN HALL PREP -- Q&A ANTICIPATION SHEET                              |
++-----------------------------------------------------------------------------+
+|                                                                             |
+| You are a community liaison for the Santa Clara County Sheriff's Office.   |
+| The Sheriff is presenting at a public town hall in East San Jose next      |
+| Thursday evening. Expected attendance: 200 residents, local media,         |
+| and three city council members.                                            |
+|                                                                             |
+| Topic: Increased response times in the unincorporated areas over the       |
+| past quarter and the department's plan to address them.                    |
+|                                                                             |
+| Prepare a Q&A anticipation sheet. For each question:                      |
+|   * Write the likely audience question verbatim                           |
+|   * Write the recommended answer (honest, non-defensive, solution-forward)|
+|   * Flag questions that require legal review before answering live         |
+|                                                                             |
+| Cover at least 8 questions across these themes:                           |
+|   * Why are times increasing?  * What is the fix?  * Who is accountable?  |
+|   * Budget / staffing reality  * Specific neighborhood concerns            |
+|                                                                             |
+| >> NEXT PROMPTS:                                                            |
+|   [+] DO MORE  -> Sheriff gets an ambush question about a recent           |
+|                   use-of-force incident. Draft the live-response guidance.  |
+|   [=] STAY     -> Same format, topic is mental health call response times. |
+|   [-] DO LESS  -> Write only the two hardest questions and answers.        |
++-----------------------------------------------------------------------------+
 
-Closing vibe:
-Serious public service, playful testing energy. Think “mission control for counties,”
-with clarity, safety, and community trust as the main characters.
++-----------------------------------------------------------------------------+
+| [C3] WILDFIRE EVACUATION -- INTER-AGENCY COORDINATION BRIEF                |
++-----------------------------------------------------------------------------+
+|                                                                             |
+| You are the Santa Clara County Sheriff's Emergency Operations              |
+| coordinator. Cal Fire has just issued a red flag warning. A fire has       |
+| ignited in the Santa Cruz Mountains near Lexington Reservoir.              |
+| It is 11:00 on a Saturday. Wind gusts 45 mph. 0% containment.             |
+|                                                                             |
+| You must coordinate with: Cal Fire, County OES, SCCFD, Valley             |
+| Transportation Authority, and the American Red Cross.                      |
+|                                                                             |
+| Draft the initial 2-hour action brief covering:                            |
+|   * Evacuation zone tiers (Zone A immediate, Zone B warning, Zone C watch)|
+|   * Traffic control assignments and route designations                     |
+|   * Special needs population notification (access/functional needs)       |
+|   * Animal evacuation coordination (livestock, pets)                      |
+|   * Agency radio channel assignments and interop check                     |
+|   * Public alert cadence (when, which channels, in what language)         |
+|                                                                             |
+| Format as a command brief. Bullet-point, action-oriented.                  |
+|                                                                             |
+| >> NEXT PROMPTS:                                                            |
+|   [+] DO MORE  -> Fire jumps Highway 17. Add CHP and Caltrans to the brief |
+|                   and update Zone A to include Los Gatos neighborhoods.     |
+|   [=] STAY     -> Same brief format, swap wildfire for a 6.5 earthquake.  |
+|   [-] DO LESS  -> Write only the public alert paragraph. Three channels.   |
++-----------------------------------------------------------------------------+
+
+================================================================================
+ GALLERY NAVIGATION RULES
+================================================================================
+
+  PICK -> RESPOND -> CHOOSE NEXT -> REPEAT
+
+  Every response you get back automatically surfaces 3 forks:
+
+    [+] DO MORE  = Add complexity, stakes, or scope. Level up.
+    [=] STAY     = Same difficulty, fresh scenario. Refresh the gallery tile.
+    [-] DO LESS  = Reduce scope. Nail the core thing. This is your STOP signal.
+                   If every response is saying DO LESS, you found the right
+                   layer of granularity. Park there and build depth, not width.
+
+  THE 3x3 UPDATES WHEN:
+    * You choose DO MORE three times in a row -> New Gallery spawned.
+    * You choose STAY on any row -> That row's prompts rotate.
+    * You choose DO LESS -> Gallery stays, but that prompt locks simpler.
+
+================================================================================
+ GALLERY 1 -- UNLOCKED AFTER COMPLETING ANY 3 PROMPTS IN GALLERY 0
+================================================================================
+
++-----------------------------------------------------------------------------+
+| [A4] AFTER-ACTION REPORT -- OFFICER INVOLVED INCIDENT (ADMIN ONLY)         |
++-----------------------------------------------------------------------------+
+|                                                                             |
+| You are a Santa Clara County Sheriff's administrative sergeant.            |
+| An officer-involved shooting occurred last Tuesday at 20:14.               |
+| The critical incident review is complete. No criminal charges filed.       |
+| Your job is the administrative after-action report only.                   |
+|                                                                             |
+| Write the administrative AAR covering:                                     |
+|   * Incident timeline (sanitized: no names, badge numbers, or PII)        |
+|   * Policy compliance findings (use of force policy, de-escalation steps) |
+|   * Training gaps identified                                               |
+|   * Recommended corrective actions (non-disciplinary, policy-level)       |
+|   * Follow-up support offered (EAP, peer support notification)             |
+|                                                                             |
+| Tone: factual, non-inflammatory, legally reviewable.                       |
+|                                                                             |
+| >> NEXT PROMPTS:                                                            |
+|   [+] DO MORE  -> Add a community notification component. PIO must draft   |
+|                   a public statement that acknowledges without prejudging.  |
+|   [=] STAY     -> Same AAR format, swap to a vehicle pursuit ending in a   |
+|                   collision with a civilian vehicle.                        |
+|   [-] DO LESS  -> Write only the training gap bullets. Five items, max.    |
++-----------------------------------------------------------------------------+
+
++-----------------------------------------------------------------------------+
+| [B4] BUDGET JUSTIFICATION -- BODY-WORN CAMERA EXPANSION                    |
++-----------------------------------------------------------------------------+
+|                                                                             |
+| You are preparing a budget justification memo for the Santa Clara County   |
+| Board of Supervisors. The Sheriff's Office is requesting funding to        |
+| expand body-worn camera deployment from 40% to 100% of patrol deputies.   |
+|                                                                             |
+| Approximate costs:                                                         |
+|   * 120 additional cameras at $900 each = $108,000 hardware               |
+|   * Cloud storage expansion: $48,000/year                                 |
+|   * Training hours: 240 officer-hours at blended $65/hr = $15,600         |
+|   * Total Year 1: approx. $171,600                                         |
+|                                                                             |
+| Write the budget justification. Include:                                   |
+|   * Public safety and liability reduction rationale                        |
+|   * Legal compliance angle (CA SB 978, departmental transparency policy)  |
+|   * Cost-benefit framing (compare to average civil litigation cost)        |
+|   * Risk of not funding (one paragraph)                                    |
+|   * Requested vote: approve full allocation                                |
+|                                                                             |
+| Format: Board memo. One page equivalent. Professional, persuasive.        |
+|                                                                             |
+| >> NEXT PROMPTS:                                                            |
+|   [+] DO MORE  -> A board member questions the storage cost. Draft the     |
+|                   verbal rebuttal and two alternative storage options.      |
+|   [=] STAY     -> Same memo format, justification is for a drone program.  |
+|   [-] DO LESS  -> Write only the risk-of-not-funding paragraph.            |
++-----------------------------------------------------------------------------+
+
++-----------------------------------------------------------------------------+
+| [C4] MENTAL HEALTH DIVERSION -- BRIEFING FOR NEW DEPUTIES                  |
++-----------------------------------------------------------------------------+
+|                                                                             |
+| You are a training sergeant at the Santa Clara County Sheriff's Office.    |
+| The county has launched a new co-responder program pairing deputies with   |
+| licensed mental health clinicians for 5150 calls.                          |
+|                                                                             |
+| Write a 10-minute in-service briefing script for deputies who have         |
+| NOT yet worked with the program. Cover:                                    |
+|   * What the co-responder model is (and is NOT -- not social workers        |
+|     replacing deputies, not a soft-on-crime pivot)                         |
+|   * Deputy's role during a co-responder call                               |
+|   * Language to avoid with mental health populations                      |
+|   * Handoff protocol when clinician determines 5150 hold is needed        |
+|   * Common questions from skeptical deputies and how to answer them       |
+|                                                                             |
+| Tone: peer-to-peer. Honest. No corporate training language.                |
+|                                                                             |
+| >> NEXT PROMPTS:                                                            |
+|   [+] DO MORE  -> A deputy during the briefing says the program is a       |
+|                   "liability" and pushes back hard. Write the facilitator's |
+|                   live response.                                            |
+|   [=] STAY     -> Same briefing format, topic is the new homeless          |
+|                   outreach navigation team ride-along protocol.            |
+|   [-] DO LESS  -> Write only the handoff protocol. Bullet points only.     |
++-----------------------------------------------------------------------------+
+
+================================================================================
+ FEED-FORWARD SYSTEM SUMMARY
+================================================================================
+
+  Each prompt is a node. Each response is an edge. The gallery is a graph.
+
+  The three branches per node mean the gallery is always 3 moves deep.
+  You never hit a dead end. You either go deeper ([+]), sideways ([=]),
+  or you find the floor ([-]) -- and the floor is useful too.
+
+  Starting nodes in Gallery 0:   A1, A2, A3, B1, B2, B3, C1, C2, C3
+  Gallery 1 nodes:               A4, B4, C4 (+ all [+] forks from Gallery 0)
+  Gallery 2+:                    Generated from [+] chains in Gallery 1
+
+  The Sheriff's team can run this like a menu.
+  One person's [+] fork is another person's A1.
+  No dead ends. No "what should I ask?" paralysis.
+  The prompts are already written. Pick one. Go.
+
+================================================================================
