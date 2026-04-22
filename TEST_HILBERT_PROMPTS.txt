@@ -2,17 +2,32 @@
   TEST_HILBERT_PROMPTS -- SLED EDITION
   Santa Clara County Sheriff's Office & Peers
   Format: Feed-Forward 3x3 Prompt Gallery
-  Rule: Every response generates 3 new prompts + 1 negative signal.
+  Rule: Every response surfaces 4 suggestions. Multi-select. No STAY.
+        Add [-] PIN IT DOWN to any selection to constrain and narrow.
 ================================================================================
 
 HOW THIS WORKS
 --------------
-1. Pick any prompt below. Copy it. Paste it. Hit send. That is 1-click and go.
-2. After you read the response, look at the three "NEXT PROMPTS" lines.
-3. Pick one. That becomes your next 1-click prompt.
-4. The DO LESS line is a negative signal -- it tells you when to pull back.
-5. The gallery below is Gallery 0 (the starting 3x3).
-   As you move through the feed-forward chain, a new 3x3 emerges each time.
+1. Pick any prompt below. Copy it. Paste it. Hit send. 1-click and go.
+2. After you read the response, look at the four NEXT PROMPTS.
+3. Pick ONE -- or pick MULTIPLE and combine them (e.g. [A]+[C]).
+4. Add [-] PIN IT DOWN to any combo to tighten scope and shrink output.
+5. [-] PIN IT DOWN used ALONE is your stop/reset signal.
+
+MULTI-SELECT EXAMPLES:
+  [A]       -> Scale up only.
+  [A]+[B]   -> Scale up AND go deeper at the same time.
+  [B]+[C]   -> Go deeper AND shift the role perspective.
+  [A]+[D]+[-] -> Scale up, add adjacent domain, but keep output tight.
+  [-]       -> Pull back hard. Strip to the minimum. Pin the scope.
+
+THE 4 SUGGESTION TYPES (appear after every prompt):
+  [A] SCALE UP    = Bigger scenario. More agencies, stakes, or complexity.
+  [B] GO DEEPER   = More detail, nuance, or rigor on the same task.
+  [C] SHIFT ROLE  = Same scenario, different responder's perspective.
+  [D] ADJACENT    = Neighboring domain, same format and difficulty.
+  [-] PIN IT DOWN = Constrain. Shorter output. Fewer assumptions. Tighter scope.
+                    Use alone to reset. Combine with [A]-[D] to focus the combo.
 
 ================================================================================
  GALLERY 0 -- THE STARTING 3x3
@@ -38,10 +53,18 @@ HOW THIS WORKS
 |                                                                             |
 | Format as a standard CAD entry. Be concise. Every second counts.           |
 |                                                                             |
-| >> NEXT PROMPTS (pick one after you get a response):                       |
-|   [+] DO MORE  -> [A2] Add a secondary caller with conflicting info.       |
-|   [=] STAY     -> [A3] Same scenario, swap collision for a structure fire. |
-|   [-] DO LESS  -> Summarize only the dispatch priority and top two units.  |
+| >> NEXT PROMPTS (pick one, or combine -- add [-] to narrow any combo):     |
+|   [A] SCALE UP    -> A second crash occurs on the same highway 3 min       |
+|                      later. Manage both incidents simultaneously.           |
+|   [B] GO DEEPER   -> Add chain-of-custody notes for the dashcam footage    |
+|                      and document the exact witness statement protocol.     |
+|   [C] SHIFT ROLE  -> Rewrite the same entry from the Watch Commander's     |
+|                      perspective -- what does their screen show and what    |
+|                      decisions do they make?                                |
+|   [D] ADJACENT    -> Same CAD format. New incident: structure fire with    |
+|                      reported entrapment, same Highway 9 corridor.          |
+|   [-] PIN IT DOWN -> Dispatch priority and top two units only. One line    |
+|                      each. No notes field.                                  |
 +-----------------------------------------------------------------------------+
 
 +-----------------------------------------------------------------------------+
@@ -62,9 +85,18 @@ HOW THIS WORKS
 | Note any officer safety considerations without revealing tactics.          |
 |                                                                             |
 | >> NEXT PROMPTS:                                                            |
-|   [+] DO MORE  -> [A3] Add a fourth call that is a hoax -- ID the signals. |
-|   [=] STAY     -> [A2-B] Same setup, swap location to Alum Rock Park.     |
-|   [-] DO LESS  -> List only the three conflicting details, no triage.      |
+|   [A] SCALE UP    -> A fourth call arrives identifying the caller from      |
+|                      call #2 as a known serial false reporter. How does     |
+|                      that change posture and logging?                       |
+|   [B] GO DEEPER   -> Drill into the confidence-level methodology. Write    |
+|                      the dispatcher's internal decision tree for flagging   |
+|                      UNCONFIRMED vs. MEDIUM on weapon reports.              |
+|   [C] SHIFT ROLE  -> Patrol sergeant gets the dispatch. Rewrite the        |
+|                      incident from their radio log and tactical notes.      |
+|   [D] ADJACENT    -> Same triage format. New scenario: three conflicting    |
+|                      reports of a hit-and-run near a school zone at 08:15. |
+|   [-] PIN IT DOWN -> List only the three conflicting facts and their        |
+|                      confidence level. No dispatch recommendation.          |
 +-----------------------------------------------------------------------------+
 
 +-----------------------------------------------------------------------------+
@@ -89,10 +121,18 @@ HOW THIS WORKS
 |   * Tone: professional, direct, 90 seconds to read aloud                  |
 |                                                                             |
 | >> NEXT PROMPTS:                                                            |
-|   [+] DO MORE  -> Sergeant must handle a staffing shortage (2 deputies     |
-|                   called out sick). Adjust assignments accordingly.         |
-|   [=] STAY     -> Same briefing structure, swap to weekend night shift.    |
-|   [-] DO LESS  -> Write only the BOLO summary bullet. One paragraph max.  |
+|   [A] SCALE UP    -> Two deputies call in sick. Rebuild the same briefing  |
+|                      with adjusted assignments and a mutual aid request.    |
+|   [B] GO DEEPER   -> Expand the domestic disturbance section. Include      |
+|                      lethality risk indicators, Penal Code references,      |
+|                      and the protocol if the welfare check goes sideways.  |
+|   [C] SHIFT ROLE  -> Rewrite the briefing as the Watch Commander's shift   |
+|                      change summary sent up to division.                    |
+|   [D] ADJACENT    -> Same briefing format, new shift: a Friday midnight     |
+|                      briefing that includes a large public event, DUI       |
+|                      checkpoint, and a VIP protection detail.               |
+|   [-] PIN IT DOWN -> Write the BOLO bullet only. Two sentences. No other   |
+|                      briefing content.                                      |
 +-----------------------------------------------------------------------------+
 
 +-----------------------------------------------------------------------------+
@@ -117,10 +157,19 @@ HOW THIS WORKS
 | Do NOT invent specific incident details. Respond to the request type only. |
 |                                                                             |
 | >> NEXT PROMPTS:                                                            |
-|   [+] DO MORE  -> [B2] Requester follows up claiming partial records are   |
-|                   missing. Draft the clarification and appeal guidance.     |
-|   [=] STAY     -> Same letter structure, request is for use-of-force data. |
-|   [-] DO LESS  -> Write only the exemption paragraph. Three sentences max. |
+|   [A] SCALE UP    -> The requester is a journalist and attaches a formal   |
+|                      legal demand. Add attorney notification steps and      |
+|                      a media-relations coordination note.                   |
+|   [B] GO DEEPER   -> Expand the exemption section. Map each exemption to   |
+|                      its specific Gov. Code subsection and the departmental |
+|                      policy that operationalizes it.                        |
+|   [C] SHIFT ROLE  -> Rewrite the same response from the County Counsel's   |
+|                      perspective as an internal legal review memo.          |
+|   [D] ADJACENT    -> Same letter format. New request: a requester asks for |
+|                      all Internal Affairs complaint files from the past     |
+|                      two years.                                             |
+|   [-] PIN IT DOWN -> Write only the exemption paragraph. Three sentences.  |
+|                      Cite one Gov. Code section.                            |
 +-----------------------------------------------------------------------------+
 
 +-----------------------------------------------------------------------------+
@@ -145,10 +194,18 @@ HOW THIS WORKS
 | Flag any items that require legal counsel sign-off.                        |
 |                                                                             |
 | >> NEXT PROMPTS:                                                            |
-|   [+] DO MORE  -> Auditor sends a pre-audit questionnaire. Draft answers   |
-|                   for the five most common CJIS compliance gaps.            |
-|   [=] STAY     -> Same checklist, pivot to a HIPAA audit for jail medical. |
-|   [-] DO LESS  -> List only the three highest-risk audit items. No sched.  |
+|   [A] SCALE UP    -> Auditors send a surprise pre-audit questionnaire with |
+|                      12 questions. Draft complete answers for all 12,       |
+|                      flagging any that need County Counsel review.          |
+|   [B] GO DEEPER   -> Expand the CJIS audit log section into a standalone   |
+|                      SOG (Standard Operating Guide) covering log format,    |
+|                      access review cadence, and anomaly escalation.         |
+|   [C] SHIFT ROLE  -> Rewrite Week 1 from the IT Security Lead's view:      |
+|                      what system-side tasks mirror the records tasks?       |
+|   [D] ADJACENT    -> Same checklist format. New audit: a HIPAA compliance  |
+|                      review of the jail's medical records unit.             |
+|   [-] PIN IT DOWN -> List the three highest-risk audit items only.          |
+|                      No schedule, no sign-off flags.                        |
 +-----------------------------------------------------------------------------+
 
 +-----------------------------------------------------------------------------+
@@ -170,12 +227,24 @@ HOW THIS WORKS
 |   * How the medical transport is accommodated without disrupting court     |
 |   * Any runs that must be rescheduled and the required notification chain  |
 |                                                                             |
-| Format as a table. Flag conflicts in bold or with [CONFLICT] tag.         |
+| Format as a table. Flag conflicts with [CONFLICT] tag.                     |
 |                                                                             |
 | >> NEXT PROMPTS:                                                            |
-|   [+] DO MORE  -> A second vehicle breaks down Wednesday morning. Rebuild. |
-|   [=] STAY     -> Same conflict level, swap to an all-female facility wing.|
-|   [-] DO LESS  -> List only Tuesday's assignments. Skip Wed-Thu.           |
+|   [A] SCALE UP    -> A second vehicle breaks down Wednesday morning and    |
+|                      a judge issues a contempt warning for a late arrival.  |
+|                      Rebuild the schedule and draft the judicial notice.    |
+|   [B] GO DEEPER   -> Expand the notification chain. Write the full         |
+|                      escalation protocol for a rescheduled run, including   |
+|                      court clerk, defense attorney, and chain of custody    |
+|                      documentation steps.                                   |
+|   [C] SHIFT ROLE  -> Rewrite the same conflict from the court clerk's      |
+|                      perspective: what do they need to communicate to the   |
+|                      judge and how?                                         |
+|   [D] ADJACENT    -> Same table format. New scenario: an ICE detainer      |
+|                      request arrives for a current occupant. What transport |
+|                      and documentation steps change?                        |
+|   [-] PIN IT DOWN -> Tuesday's assignments only. Table format. No          |
+|                      notification chain, no Wed-Thu.                        |
 +-----------------------------------------------------------------------------+
 
 +-----------------------------------------------------------------------------+
@@ -200,11 +269,18 @@ HOW THIS WORKS
 |   * Do NOT include any suspect description unless officially released      |
 |                                                                             |
 | >> NEXT PROMPTS:                                                            |
-|   [+] DO MORE  -> [C2] Suspect is now in custody. Write the follow-up      |
-|                   community update for all three channels.                  |
-|   [=] STAY     -> Same format, swap to catalytic converter theft targeting  |
-|                   hybrid vehicles.                                          |
-|   [-] DO LESS  -> Write only the SMS alert. Nothing else.                  |
+|   [A] SCALE UP    -> A suspect is now in custody. Write the follow-up      |
+|                      community update for all three channels including a    |
+|                      victim resource and a tip-line closure notice.         |
+|   [B] GO DEEPER   -> Expand the Nextdoor post into a full neighborhood     |
+|                      watch activation guide: meeting agenda, block captain  |
+|                      role card, and a recurring alert cadence plan.         |
+|   [C] SHIFT ROLE  -> Rewrite the press release as a Spanish-language       |
+|                      version for Univision and Spanish-language Nextdoor.  |
+|   [D] ADJACENT    -> Same three-channel format. New crime type: catalytic  |
+|                      converter theft targeting hybrid vehicles in the same  |
+|                      neighborhoods.                                         |
+|   [-] PIN IT DOWN -> SMS alert only. 160 characters. Nothing else.         |
 +-----------------------------------------------------------------------------+
 
 +-----------------------------------------------------------------------------+
@@ -229,10 +305,21 @@ HOW THIS WORKS
 |   * Budget / staffing reality  * Specific neighborhood concerns            |
 |                                                                             |
 | >> NEXT PROMPTS:                                                            |
-|   [+] DO MORE  -> Sheriff gets an ambush question about a recent           |
-|                   use-of-force incident. Draft the live-response guidance.  |
-|   [=] STAY     -> Same format, topic is mental health call response times. |
-|   [-] DO LESS  -> Write only the two hardest questions and answers.        |
+|   [A] SCALE UP    -> A council member ambushes the Sheriff with a          |
+|                      recent use-of-force incident mid-session. Draft the    |
+|                      live-response script and the follow-up written         |
+|                      statement for the next morning.                        |
+|   [B] GO DEEPER   -> Take the two hardest questions and expand each        |
+|                      answer into a full 90-second speaking script with      |
+|                      data citations and a closing call to action.           |
+|   [C] SHIFT ROLE  -> Rewrite the Q&A sheet from the Council Member's       |
+|                      perspective: what follow-up motions might they file    |
+|                      after the town hall?                                   |
+|   [D] ADJACENT    -> Same Q&A format. New topic: the Sheriff's co-         |
+|                      responder mental health program rollout and community  |
+|                      skepticism about it.                                   |
+|   [-] PIN IT DOWN -> Write the two hardest questions and answers only.     |
+|                      No legal flags, no other questions.                    |
 +-----------------------------------------------------------------------------+
 
 +-----------------------------------------------------------------------------+
@@ -258,10 +345,20 @@ HOW THIS WORKS
 | Format as a command brief. Bullet-point, action-oriented.                  |
 |                                                                             |
 | >> NEXT PROMPTS:                                                            |
-|   [+] DO MORE  -> Fire jumps Highway 17. Add CHP and Caltrans to the brief |
-|                   and update Zone A to include Los Gatos neighborhoods.     |
-|   [=] STAY     -> Same brief format, swap wildfire for a 6.5 earthquake.  |
-|   [-] DO LESS  -> Write only the public alert paragraph. Three channels.   |
+|   [A] SCALE UP    -> Fire jumps Highway 17. Add CHP and Caltrans to the    |
+|                      brief, expand Zone A to Los Gatos, and issue a         |
+|                      shelter-in-place for Highway 17 business district.     |
+|   [B] GO DEEPER   -> Expand the special needs population section into a    |
+|                      full access and functional needs annex: registry pull, |
+|                      transport coordination, medical equipment logistics.   |
+|   [C] SHIFT ROLE  -> Rewrite the same brief from the Red Cross Shelter     |
+|                      Coordinator's perspective: intake, capacity, supplies, |
+|                      and family reunification protocol.                     |
+|   [D] ADJACENT    -> Same command brief format. New disaster: a 6.5        |
+|                      earthquake with a ruptured gas main in the same        |
+|                      geographic zone.                                       |
+|   [-] PIN IT DOWN -> Public alert paragraph only. Three channels.           |
+|                      No agency assignments, no zone details.                |
 +-----------------------------------------------------------------------------+
 
 ================================================================================
@@ -270,18 +367,27 @@ HOW THIS WORKS
 
   PICK -> RESPOND -> CHOOSE NEXT -> REPEAT
 
-  Every response you get back automatically surfaces 3 forks:
+  After every response, four suggestions appear:
 
-    [+] DO MORE  = Add complexity, stakes, or scope. Level up.
-    [=] STAY     = Same difficulty, fresh scenario. Refresh the gallery tile.
-    [-] DO LESS  = Reduce scope. Nail the core thing. This is your STOP signal.
-                   If every response is saying DO LESS, you found the right
-                   layer of granularity. Park there and build depth, not width.
+    [A] SCALE UP    = More agencies, higher stakes, bigger scope.
+    [B] GO DEEPER   = More detail, rigor, or nuance on the same task.
+    [C] SHIFT ROLE  = Same scenario, different responder's perspective.
+    [D] ADJACENT    = Neighboring domain, same format and difficulty.
+    [-] PIN IT DOWN = Constrain. Use alone to reset. Combine to narrow a combo.
 
-  THE 3x3 UPDATES WHEN:
-    * You choose DO MORE three times in a row -> New Gallery spawned.
-    * You choose STAY on any row -> That row's prompts rotate.
-    * You choose DO LESS -> Gallery stays, but that prompt locks simpler.
+  MULTI-SELECT COMBOS:
+    [A]+[B]      -> Bigger AND more detailed.
+    [B]+[C]      -> Deep dive from a different seat.
+    [A]+[D]      -> Level up AND move to adjacent domain.
+    [A]+[B]+[-]  -> Level up and go deep, but keep the output tight.
+    [-]          -> Stop climbing. Strip to minimum. Find the floor.
+
+  WHEN DOES THE GALLERY UPDATE?
+    * Any [A] selection unlocks the next Gallery tier for that prompt.
+    * [A]+[A]+[A] in sequence on any row -> Gallery 1 row promoted to Gallery 0.
+    * [-] alone on any prompt -> that tile resets to its simplest form.
+    * Multi-select combos generate hybrid prompts not listed here --
+      those are Gallery 2+ territory, generated on-the-fly.
 
 ================================================================================
  GALLERY 1 -- UNLOCKED AFTER COMPLETING ANY 3 PROMPTS IN GALLERY 0
@@ -306,11 +412,19 @@ HOW THIS WORKS
 | Tone: factual, non-inflammatory, legally reviewable.                       |
 |                                                                             |
 | >> NEXT PROMPTS:                                                            |
-|   [+] DO MORE  -> Add a community notification component. PIO must draft   |
-|                   a public statement that acknowledges without prejudging.  |
-|   [=] STAY     -> Same AAR format, swap to a vehicle pursuit ending in a   |
-|                   collision with a civilian vehicle.                        |
-|   [-] DO LESS  -> Write only the training gap bullets. Five items, max.    |
+|   [A] SCALE UP    -> Add a community notification component. PIO must      |
+|                      draft a public statement that acknowledges without     |
+|                      prejudging and coordinates with County Counsel.        |
+|   [B] GO DEEPER   -> Expand the de-escalation compliance section into a    |
+|                      policy gap analysis comparing what the policy says vs. |
+|                      what the timeline shows, with remediation steps.       |
+|   [C] SHIFT ROLE  -> Rewrite the AAR conclusions from the perspective of   |
+|                      the union rep -- what do they flag, dispute, or        |
+|                      request be amended before signing?                     |
+|   [D] ADJACENT    -> Same AAR format. New incident: a deputy involved in   |
+|                      a vehicle pursuit that ended in a civilian collision.  |
+|   [-] PIN IT DOWN -> Training gap bullets only. Five items. No timeline,   |
+|                      no compliance findings, no EAP section.                |
 +-----------------------------------------------------------------------------+
 
 +-----------------------------------------------------------------------------+
@@ -337,10 +451,20 @@ HOW THIS WORKS
 | Format: Board memo. One page equivalent. Professional, persuasive.        |
 |                                                                             |
 | >> NEXT PROMPTS:                                                            |
-|   [+] DO MORE  -> A board member questions the storage cost. Draft the     |
-|                   verbal rebuttal and two alternative storage options.      |
-|   [=] STAY     -> Same memo format, justification is for a drone program.  |
-|   [-] DO LESS  -> Write only the risk-of-not-funding paragraph.            |
+|   [A] SCALE UP    -> A board member challenges the storage cost and         |
+|                      requests a vendor-comparison slide deck. Draft the     |
+|                      verbal rebuttal and a three-vendor comparison table.   |
+|   [B] GO DEEPER   -> Expand the cost-benefit section. Pull average         |
+|                      settlement data for California counties and model      |
+|                      three scenarios (0%, 50%, 90% BWC coverage rates).    |
+|   [C] SHIFT ROLE  -> Rewrite the memo from the perspective of a skeptical  |
+|                      board member's staff analyst: what questions would     |
+|                      they send back to the Sheriff before the vote?         |
+|   [D] ADJACENT    -> Same board memo format. New ask: budget justification  |
+|                      for a drone-as-first-responder pilot program at        |
+|                      $220,000 Year 1.                                       |
+|   [-] PIN IT DOWN -> Risk-of-not-funding paragraph only. No cost tables,   |
+|                      no compliance section, no vote request.                |
 +-----------------------------------------------------------------------------+
 
 +-----------------------------------------------------------------------------+
@@ -363,12 +487,21 @@ HOW THIS WORKS
 | Tone: peer-to-peer. Honest. No corporate training language.                |
 |                                                                             |
 | >> NEXT PROMPTS:                                                            |
-|   [+] DO MORE  -> A deputy during the briefing says the program is a       |
-|                   "liability" and pushes back hard. Write the facilitator's |
-|                   live response.                                            |
-|   [=] STAY     -> Same briefing format, topic is the new homeless          |
-|                   outreach navigation team ride-along protocol.            |
-|   [-] DO LESS  -> Write only the handoff protocol. Bullet points only.     |
+|   [A] SCALE UP    -> A deputy during the briefing aggressively challenges  |
+|                      the program as a liability. Write the full facilitated |
+|                      discussion guide for handling the live pushback,       |
+|                      including what NOT to say in response.                 |
+|   [B] GO DEEPER   -> Expand the handoff protocol section into a laminated  |
+|                      field reference card deputies can carry: step-by-step  |
+|                      5150 hold sequence, key legal thresholds, radio codes.|
+|   [C] SHIFT ROLE  -> Rewrite the briefing from the clinician's perspective:|
+|                      what do they need deputies to understand about their   |
+|                      role, limitations, and safety needs in the field?      |
+|   [D] ADJACENT    -> Same briefing format. New topic: the homeless         |
+|                      outreach navigation team ride-along protocol and what  |
+|                      deputies should and should not do during outreach.     |
+|   [-] PIN IT DOWN -> Handoff protocol only. Numbered steps. No background, |
+|                      no skeptical Q&A, no language guidance.                |
 +-----------------------------------------------------------------------------+
 
 ================================================================================
@@ -377,17 +510,25 @@ HOW THIS WORKS
 
   Each prompt is a node. Each response is an edge. The gallery is a graph.
 
-  The three branches per node mean the gallery is always 3 moves deep.
-  You never hit a dead end. You either go deeper ([+]), sideways ([=]),
-  or you find the floor ([-]) -- and the floor is useful too.
+  With 4 options per node (plus multi-select combos), the branching factor
+  is effectively unlimited. You never hit a dead end.
+
+    [A] SCALE UP    -> New node at higher complexity.
+    [B] GO DEEPER   -> New node at greater depth, same altitude.
+    [C] SHIFT ROLE  -> New node at same complexity, different seat.
+    [D] ADJACENT    -> New node in a neighboring operational domain.
+    [-] PIN IT DOWN -> Constrains the next node. Alone: reset to minimum.
+
+  MULTI-SELECT creates composite nodes not in this list.
+  Those are Gallery 2+ -- generated from your actual responses.
 
   Starting nodes in Gallery 0:   A1, A2, A3, B1, B2, B3, C1, C2, C3
-  Gallery 1 nodes:               A4, B4, C4 (+ all [+] forks from Gallery 0)
-  Gallery 2+:                    Generated from [+] chains in Gallery 1
+  Gallery 1 nodes:               A4, B4, C4
+  Gallery 2+:                    Generated from [A] chains or multi-select combos
 
   The Sheriff's team can run this like a menu.
-  One person's [+] fork is another person's A1.
-  No dead ends. No "what should I ask?" paralysis.
-  The prompts are already written. Pick one. Go.
+  Pick one. Combine. Pin it down when you've found the depth you need.
+  The prompts are already written. No prompt engineering required.
+  1-click and go.
 
 ================================================================================
