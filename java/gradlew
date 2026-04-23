@@ -1,6 +1,12 @@
-#!/bin/bash
-# Gradle wrapper for Java
+#!/usr/bin/env bash
+# Minimal Gradle launcher for the Java module
+set -euo pipefail
 
-cd java
-chmod +x gradlew
-./gradlew "$@"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+if command -v gradle >/dev/null 2>&1; then
+  exec gradle -p "$SCRIPT_DIR" "$@"
+fi
+
+echo "Gradle is required to build this module. Please install Gradle or add a wrapper." >&2
+exit 1
