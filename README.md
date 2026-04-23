@@ -328,6 +328,45 @@ Contributions welcome! This is a demonstration project showing how multiple lang
 
 MIT License - See LICENSE file
 
+---
+
+## 🛸 AÑGEL | ISLÃND — Dynamic 3D Spatiotemporal Ecological Graph
+
+> *Each object is unique, 3D, and alive in time.*
+
+**AÑGEL | ISLÃND** is a living simulation of a 3D spatiotemporal ecological graph:
+
+```
+𝔄 = (Ω, 𝕋, V, G(t), X(t), Φ)
+```
+
+| Layer | Symbol | Meaning |
+|-------|--------|---------|
+| 1–3   | Ω ⊂ ℝ³ | 3D island space (x, y, z) |
+| 4     | Φ      | Relational / 4th-wall meta-structure |
+| 5     | 𝕋      | Time / history / evolution |
+
+### Model
+
+- **Entities** `V = {v₁,…,vₙ}` — each is **unique**, with a 3D position `xᵢ(t) ∈ Ω` and internal ecological state `sᵢ(t) ∈ 𝒮`
+- **Graph** `G(t) = (V, E(t), W(t))` — time-indexed edges with semantic relation types (proximity, predation, music, alien observation, …)
+- **Edge weight** `wᵢⱼ(t) = f(dᵢⱼ, sᵢ, sⱼ, τᵢ, τⱼ)` — spatial + ecological + type-compatibility
+- **Dynamics** — `dxᵢ/dt = uᵢ(t)` (motion) and `dsᵢ/dt = gᵢ(sᵢ, Nᵢ(t), Ω, t)` (ecological state)
+
+### Entity types
+
+🛸 UFO · 👽 Alien · 🌴 Plant · 🐎 Animal · 🏟️ Human · 🗿 Landmark · 🎶 Sound · 🦋 Spirit
+
+### Run it
+
+```bash
+npx tsx angel_island.ts
+```
+
+Source: [`angel_island.ts`](angel_island.ts)
+
+---
+
 ## 🙏 Acknowledgments
 
 Built with inspiration from real-world trading systems and the best practices of each language ecosystem.
