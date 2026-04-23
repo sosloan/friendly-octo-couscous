@@ -189,21 +189,24 @@ export function edgeWeight(
   // dᵢⱼ — spatial closeness ∈ (0, 1] (approaches 1 as d → 0)
   const spatial = 1 - d / radius;
 
-  // sᵢ — sender's ecological capacity to project a connection:
-  //   vitality (energy × health) × signal boost × fear dampening
+  // sᵢ — sender's ecological capacity to project a connection.
+  // All EcoState fields are normalised to [0, 1] (see EcoState interface).
   const si = ei.state;
-  const senderCapacity =
-    ((si.energy + si.health) / 2) * // vitality: must be alive to emit
-    (0.5 + 0.5 * si.signal)       * // signal: baseline 0.5, boosted by active signaling
-    (1 - 0.5 * si.fear);            // fear closes off outgoing links
+  const senderVitality  = (si.energy + si.health) / 2;  // alive-ness
+  const senderFearDamp  = Math.max(0, 1 - 0.5 * si.fear); // fear ∈ [0,1] → damp ∈ [0.5,1]
+  const senderCapacity  =
+    senderVitality              * // must be alive to emit
+    (0.5 + 0.5 * si.signal)    * // signal ∈ [0,1]: baseline 0.5, boosted by active signaling
+    senderFearDamp;               // fear closes off outgoing links
 
-  // sⱼ — receiver's ecological receptivity:
-  //   attention × vitality × fear dampening
+  // sⱼ — receiver's ecological receptivity.
   const sj = ej.state;
+  const receiverVitality    = (sj.energy + sj.health) / 2; // alive-ness
+  const receiverFearDamp    = Math.max(0, 1 - 0.5 * sj.fear); // fear ∈ [0,1] → damp ∈ [0.5,1]
   const receiverReceptivity =
-    sj.attention                  * // openness to incoming interaction
-    ((sj.energy + sj.health) / 2) * // must be alive to receive
-    (1 - 0.5 * sj.fear);            // fear reduces incoming receptivity
+    sj.attention       * // attention ∈ [0,1]: openness to incoming interaction
+    receiverVitality   * // must be alive to receive
+    receiverFearDamp;    // fear reduces incoming receptivity
 
   // geometric mean: both sides must be ecologically engaged
   const ecological = Math.sqrt(senderCapacity * receiverReceptivity);
