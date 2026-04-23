@@ -6,10 +6,13 @@ project HFT is
                  "compliance_example.adb", "hft_integration_test.adb",
                  "hft_benchmark.adb", "hft_spark_ravenscar_test.adb");
    
+                 "hft_benchmark.adb", "hft_spark_test.adb",
+                 "hft_ravenscar_test.adb");
+
    package Compiler is
       for Default_Switches ("Ada") use ("-gnatwa", "-O2", "-gnat2022");
    end Compiler;
-   
+
    package Binder is
       for Default_Switches ("Ada") use ("-Es");
    end Binder;
