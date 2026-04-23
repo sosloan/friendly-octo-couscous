@@ -488,7 +488,257 @@ export function printWorld(world: AngelIslandWorld): void {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 10.  DEMO  —  populate the island and run a short simulation
+// 10.  SIGNAL & PROFILE SPHERE
+//
+//   Physical (emission sphere):   ‖x − sᵢ‖ = c·Δtᵢ
+//   Ecological (profile sphere):  ‖profile − aᵢ‖ = rᵢ(βᵢ)
+//
+//   An entity at position sᵢ emits a signal at wave-speed c.  After time Δt
+//   the wavefront is a sphere of radius c·Δt centred on sᵢ.  In ecological
+//   profile space the same entity's zone of influence is a sphere of radius
+//   rᵢ(βᵢ) centred on its profile vector aᵢ.
+//
+//   🐎  (U+1F40E)  Animal entities are the primary emitters in this model.
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Emission-sphere radius: ‖x − sᵢ‖ = c·Δtᵢ
+ * @param c  signal propagation speed (world units / time step)
+ * @param dt elapsed time Δtᵢ since emission
+ */
+export function emissionRadius(c: number, dt: number): number {
+  return c * dt;
+}
+
+/**
+ * Extract the ecological profile vector aᵢ from an entity's EcoState.
+ * aᵢ = [energy, health, hunger, fear, attention, fertility, signal]
+ */
+export function ecoProfile(state: EcoState): number[] {
+  return [
+    state.energy,
+    state.health,
+    state.hunger,
+    state.fear,
+    state.attention,
+    state.fertility,
+    state.signal,
+  ];
+}
+
+/**
+ * Distance in ecological profile space: ‖aᵢ − aⱼ‖₂
+ * Used in the profile-sphere condition ‖profile − aᵢ‖ = rᵢ(βᵢ).
+ */
+export function profileDistance(si: EcoState, sj: EcoState): number {
+  const ai = ecoProfile(si);
+  const aj = ecoProfile(sj);
+  let sum = 0;
+  for (let k = 0; k < ai.length; k++) sum += (ai[k] - aj[k]) ** 2;
+  return Math.sqrt(sum);
+}
+
+/**
+ * Profile-sphere radius for entity i:
+ *   rᵢ(βᵢ) = βᵢ · √(energy · health · (1 − fear))
+ *
+ * βᵢ is a base-scale parameter (e.g. the entity's PROXIMITY_RADIUS).
+ * The radius shrinks under starvation, injury, or fear and grows when the
+ * animal is vigorous and calm — matching ecological intuition for 🐎 animals.
+ */
+export function profileRadius(state: EcoState, beta: number): number {
+  return beta * Math.sqrt(state.energy * state.health * (1 - state.fear));
+}
+
+/**
+ * Check whether entity j lies inside the profile sphere of entity i.
+ *   ‖profile(j) − profile(i)‖ ≤ rᵢ(βᵢ)
+ */
+export function inProfileSphere(
+  si: EcoState,
+  sj: EcoState,
+  beta: number
+): boolean {
+  return profileDistance(si, sj) <= profileRadius(si, beta);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 11.  LANDSCAPE ANALYSIS  —  fitness landscape of an entity path
+//
+//   Given an array f of n fitness values (one per node on a linear path),
+//   compute structural descriptors that characterise how rugged, symmetric,
+//   and bottlenecked the landscape is.
+//
+//   Metric definitions
+//   ──────────────────
+//   σ(f)           Standard deviation of fitness values.
+//   Ruggedness R   R = 1 − |r₁|  where r₁ is the lag-1 autocorrelation of f.
+//                  R → 0 : perfectly smooth;  R → 1 : maximally rugged.
+//   Feet           Boundary nodes {1, n}.
+//   Head           Interior local maxima: f[i] > f[i−1] and f[i] > f[i+1].
+//   Neck           Interior local minima: f[i] < f[i−1] and f[i] < f[i+1].
+//   Wings          Interior nodes where |f[i−1] − f[i+1]| < σ · 0.3
+//                  (locally symmetric axes), excluding Head/Neck.
+//   Body           All remaining interior nodes.
+//   Bottleneck(s)  The Neck node s* with the lowest normalised fitness
+//                  f[s*] / max(f) — the tightest passage.
+//   Branching(s)   For the deepest Neck node, the number of strictly uphill
+//                  neighbours minus 1 (= 1 for every interior node on a
+//                  linear path, reflecting a single decision fork).
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface LandscapeMetrics {
+  /** σ(f): standard deviation of fitness values. */
+  sigma: number;
+  /** R = 1 − |r₁|: ruggedness (0 = smooth, 1 = maximally rugged). */
+  ruggedness: number;
+  /** Boundary / foot nodes (1-indexed). */
+  feet: number[];
+  /** Optima / head nodes (1-indexed): interior local maxima. */
+  head: number[];
+  /** Saddle / neck nodes (1-indexed): interior local minima. */
+  neck: number[];
+  /** Symmetric / wing nodes (1-indexed): locally symmetric axes. */
+  wings: number[];
+  /** Rugged / body nodes (1-indexed): remaining interior nodes. */
+  body: number[];
+  /** Tightest bottleneck saddle: 1-indexed label and f[s]/max(f). */
+  bottleneck: { node: number; value: number } | null;
+  /** Deepest saddle and its local branching factor (uphill neighbours − 1). */
+  branching: { node: number; degree: number } | null;
+}
+
+/**
+ * Analyse the fitness landscape of a linear path of n nodes.
+ *
+ * @param f  Array of n fitness values (node 1 = f[0], node n = f[n-1]).
+ * @returns  LandscapeMetrics descriptor.
+ */
+export function analyzeLandscape(f: number[]): LandscapeMetrics {
+  const n = f.length;
+
+  // Edge cases: no nodes or a single node yield trivial metrics.
+  if (n === 0) {
+    return {
+      sigma: 0, ruggedness: 0, feet: [], head: [], neck: [],
+      wings: [], body: [], bottleneck: null, branching: null,
+    };
+  }
+  if (n === 1) {
+    return {
+      sigma: 0, ruggedness: 0, feet: [1], head: [], neck: [],
+      wings: [], body: [], bottleneck: null, branching: null,
+    };
+  }
+
+  // ── σ(f) ──────────────────────────────────────────────────────────────────
+  const mean = f.reduce((a, b) => a + b, 0) / n;
+  const sigma = Math.sqrt(f.reduce((acc, v) => acc + (v - mean) ** 2, 0) / n);
+
+  // ── Ruggedness R = 1 − |r₁| ───────────────────────────────────────────────
+  let rNum = 0, rDen = 0;
+  for (let i = 0; i < n - 1; i++) rNum += (f[i] - mean) * (f[i + 1] - mean);
+  for (let i = 0; i < n; i++) rDen += (f[i] - mean) ** 2;
+  const r1 = rDen === 0 ? 0 : rNum / rDen;
+  const ruggedness = 1 - Math.abs(r1);
+
+  // ── Feet (boundaries) ─────────────────────────────────────────────────────
+  const feet: number[] = [1, n];
+
+  // ── Head (local maxima) & Neck (local minima) ─────────────────────────────
+  const head: number[] = [];
+  const neck: number[] = [];
+  for (let i = 1; i < n - 1; i++) {
+    if (f[i] > f[i - 1] && f[i] > f[i + 1]) head.push(i + 1); // 1-indexed
+    if (f[i] < f[i - 1] && f[i] < f[i + 1]) neck.push(i + 1);
+  }
+
+  // ── Wings (locally symmetric axes): |f[i−1] − f[i+1]| < σ · 0.3 ──────────
+  const symThreshold = sigma * 0.3;
+  const specialSet = new Set([...head, ...neck, ...feet]);
+  const wings: number[] = [];
+  for (let i = 1; i < n - 1; i++) {
+    const node = i + 1; // 1-indexed
+    if (!specialSet.has(node) && Math.abs(f[i - 1] - f[i + 1]) < symThreshold) {
+      wings.push(node);
+    }
+  }
+
+  // ── Body: remaining interior nodes ────────────────────────────────────────
+  const allSpecial = new Set([...head, ...neck, ...wings, ...feet]);
+  const body: number[] = [];
+  for (let i = 1; i <= n; i++) {
+    if (!allSpecial.has(i)) body.push(i);
+  }
+
+  // ── Bottleneck: saddle with lowest normalised fitness ─────────────────────
+  const maxF = n > 0 ? Math.max(...f) : 0;
+  let bottleneck: { node: number; value: number } | null = null;
+  for (const s of neck) {
+    const val = maxF === 0 ? 0 : f[s - 1] / maxF;
+    if (bottleneck === null || val < bottleneck.value) {
+      bottleneck = { node: s, value: parseFloat(val.toFixed(4)) };
+    }
+  }
+
+  // ── Branching: uphill neighbours − 1 at the deepest saddle ───────────────
+  // Neck nodes are interior local minima (f[i] < f[i−1] AND f[i] < f[i+1]),
+  // so both neighbours are always strictly uphill → uphill = 2 → degree = 1.
+  // The clamp guards against degenerate inputs.
+  let branching: { node: number; degree: number } | null = null;
+  if (neck.length > 0) {
+    // Deepest saddle (lowest f value among neck nodes)
+    const deepest = neck.reduce(
+      (best, s) => (f[s - 1] < f[best - 1] ? s : best),
+      neck[0]
+    );
+    const idx = deepest - 1; // 0-indexed
+    let uphill = 0;
+    if (idx > 0 && f[idx - 1] > f[idx]) uphill++;
+    if (idx < n - 1 && f[idx + 1] > f[idx]) uphill++;
+    branching = { node: deepest, degree: Math.max(0, uphill - 1) };
+  }
+
+  return {
+    sigma: parseFloat(sigma.toFixed(4)),
+    ruggedness: parseFloat(ruggedness.toFixed(4)),
+    feet,
+    head,
+    neck,
+    wings,
+    body,
+    bottleneck,
+    branching,
+  };
+}
+
+/**
+ * Pretty-print a LandscapeMetrics report to the console.
+ * The trailing 🐎 marks this as the Animal entity's landscape profile.
+ */
+export function printLandscape(metrics: LandscapeMetrics): void {
+  console.log("\n" + "─".repeat(50));
+  console.log("🐎  Fitness Landscape Analysis  (U+1F40E · animal)");
+  console.log("─".repeat(50));
+  console.log(`Landscape σ(f)     : ${metrics.sigma}`);
+  console.log(`Ruggedness (R)     : ${metrics.ruggedness}`);
+  console.log(`Feet (Boundaries)  : { ${metrics.feet.join(" ")} }`);
+  console.log(`Head (Optima)      : { ${metrics.head.join(" ")} }`);
+  if (metrics.bottleneck) {
+    console.log(
+      `Bottleneck (s=${metrics.bottleneck.node})   : ${metrics.bottleneck.value}`
+    );
+  }
+  console.log(`Neck (Saddles)     : { ${metrics.neck.join(" ")} }`);
+  console.log(`Wings (Symmetric)  : { ${metrics.wings.join(" ")} }`);
+  console.log(`Body (Rugged)      : { ${metrics.body.join(" ")} }`);
+  if (metrics.branching) {
+    console.log(`Branching (s=${metrics.branching.node})    : ${metrics.branching.degree}`);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 12.  DEMO  —  populate the island and run a short simulation
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function runDemo(): void {
@@ -562,6 +812,42 @@ export function runDemo(): void {
   }
 
   console.log("\n🎶 𝔄 = (Ω, 𝕋, V, G(t), X(t), Φ)  — AÑGEL | ISLÃND lives. 🌴\n");
+
+  // ── 🐎 Signal & Profile Sphere demo ────────────────────────────────────────
+  const thunder = world.entities.get("animal-1")!;
+  const ribbit  = world.entities.get("animal-2")!;
+
+  // Emission sphere: Thunder emits at wave-speed 5, checked after 3 time steps
+  const physRadius = emissionRadius(5, 3);
+  const physDist   = dist3(thunder.position, ribbit.position);
+  console.log("\n" + "─".repeat(50));
+  console.log("🐎  Signal Sphere  ‖x − sᵢ‖ = c·Δtᵢ");
+  console.log("─".repeat(50));
+  console.log(`  c = 5, Δt = 3  →  emission radius = ${physRadius}`);
+  console.log(`  ‖Thunder − Ribbit‖ = ${physDist.toFixed(3)}`);
+  console.log(`  Ribbit inside emission sphere: ${physDist <= physRadius}`);
+
+  // Profile sphere: Thunder's ecological influence in profile space
+  const beta = PROXIMITY_RADIUS["animal"];
+  const pRadius = profileRadius(thunder.state, beta);
+  const pDist   = profileDistance(thunder.state, ribbit.state);
+  console.log("\n🐎  Profile Sphere  ‖profile − aᵢ‖ = rᵢ(βᵢ)");
+  console.log(`  β = ${beta} (animal proximity radius)`);
+  console.log(`  rᵢ(βᵢ) = ${pRadius.toFixed(4)}`);
+  console.log(`  ‖profile(Thunder) − profile(Ribbit)‖ = ${pDist.toFixed(4)}`);
+  console.log(`  Ribbit inside profile sphere: ${pDist <= pRadius}`);
+
+  // ── 🐎 Landscape Analysis demo ─────────────────────────────────────────────
+  // A 20-node fitness landscape sampled along Thunder's trajectory.
+  // Values derived from the entity's ecological state evolving over the path.
+  const fitnessPath: number[] = [
+    4.2, 3.8, 3.5, 3.1, 2.0,   //  1– 5 : approach to first saddle
+    4.5, 5.1, 4.8, 4.3, 3.2,   //  6–10 : rise, second saddle
+    7.8, 7.9, 6.5, 3.0, 3.9,   // 11–15 : twin optima, third saddle
+    4.7, 5.0, 4.6, 4.1, 3.7,   // 16–20 : descent to boundary
+  ];
+  const metrics = analyzeLandscape(fitnessPath);
+  printLandscape(metrics);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
