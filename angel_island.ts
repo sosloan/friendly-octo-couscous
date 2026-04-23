@@ -79,6 +79,31 @@ export const PROXIMITY_RADIUS: Record<EntityType, number> = {
   spirit:   25,
 };
 
+/**
+ * Signal propagation speed c — distance units per time step.
+ *
+ *   ‖x − sᵢ‖ = c · Δtᵢ
+ *
+ * A signal emitted at position sᵢ reaches point x after Δtᵢ = dᵢⱼ / c steps.
+ * Set to 20 so even a 100-unit crossing takes only 5 steps.
+ */
+export const PROPAGATION_SPEED = 20;
+
+/**
+ * Base interaction radius in ecological profile space, per entity type.
+ * Scaled by fertility βᵢ ∈ [0,1] to yield rᵢ(βᵢ) — see profileInteractionRadius().
+ */
+export const PROFILE_RADIUS_BASE: Record<EntityType, number> = {
+  UFO:      1.5,
+  alien:    1.2,
+  plant:    0.7,
+  animal:   0.9,
+  human:    1.0,
+  landmark: 0.8,
+  sound:    1.4,
+  spirit:   1.3,
+};
+
 /** Ecological domain — where an entity naturally lives. */
 export type Domain = "land" | "air" | "water" | "underground" | "meta";
 
@@ -153,6 +178,7 @@ export interface Edge {
   to:       string; // entity id
   relation: RelationType;
   weight:   number; // wᵢⱼ(t) ∈ [0, 1]
+  delay:    number; // Δtᵢⱼ = dᵢⱼ / c  (propagation delay in time steps)
   active:   boolean;
 }
 
@@ -160,26 +186,102 @@ export interface Edge {
 // 4.  EDGE WEIGHT FUNCTION  —  wᵢⱼ(t) = f(dᵢⱼ, sᵢ, sⱼ, τᵢ, τⱼ)
 // ─────────────────────────────────────────────────────────────────────────────
 
+/** Ecological profile vector aᵢ = [energy, health, attention, signal, fertility] ∈ [0,1]⁵. */
+function ecoProfile(s: EcoState): [number, number, number, number, number] {
+  return [s.energy, s.health, s.attention, s.signal, s.fertility];
+}
+
+/**
+ * Profile-space interaction radius rᵢ(βᵢ).
+ *
+ *   rᵢ(βᵢ) = base[τᵢ] · (0.5 + 0.5 · βᵢ)
+ *
+ * βᵢ = fertility ∈ [0,1]: a fertile entity has a larger ecological reach.
+ */
+function profileInteractionRadius(type: EntityType, fertility: number): number {
+  return PROFILE_RADIUS_BASE[type] * (0.5 + 0.5 * fertility);
+}
+
 /**
  * Compute the ecological edge weight between two entities.
  *
- * The weight combines:
- *   • spatial closeness  (higher = closer)
- *   • sender's signal intensity
- *   • receiver's attention
- *   • ecological compatibility of their types
+ *   wᵢⱼ(t) = f(dᵢⱼ, sᵢ, sⱼ, τᵢ, τⱼ)
+ *
+ * Components:
+ *   dᵢⱼ       → spatial closeness: how near the two entities are relative to their
+ *                interaction radius.
+ *   Δtᵢⱼ=dᵢⱼ/c → propagation delay: a signal from eᵢ travels at speed c and
+ *                arrives at eⱼ after Δtᵢⱼ time steps (‖x − sᵢ‖ = c·Δtᵢ).
+ *                Strength decays exponentially with delay: timeFactor = e^(−Δtᵢⱼ).
+ *   sᵢ        → sender capacity: a healthy, energetic, signaling, non-fearful entity
+ *                projects a stronger outgoing connection.
+ *   sⱼ        → receiver receptivity: an attentive, healthy, non-fearful entity
+ *                picks up incoming signals more strongly.
+ *   profile   → ‖profileⱼ − aᵢ‖ = rᵢ(βᵢ): the Gaussian compatibility of the two
+ *                entities in the 5D ecological profile space, within mutual radii
+ *                rᵢ and rⱼ scaled by fertility βᵢ, βⱼ.
+ *   τᵢ,τⱼ     → type compatibility: domain-knowledge multiplier for the pair of
+ *                entity kinds (e.g. alien↔UFO, sound↔spirit).
+ *
+ * The geometric mean of sender and receiver ecological scores ensures both
+ * parties must be ecologically "live" for a strong edge to exist.
  */
 export function edgeWeight(
   ei: Entity,
   ej: Entity,
   d: number,
-  radius: number
+  radius: number,
+  propagationSpeed = PROPAGATION_SPEED
 ): number {
   if (d > radius) return 0;
-  const spatial    = 1 - d / radius;                       // ∈ (0,1]
-  const ecological = (ei.state.signal + ej.state.attention) / 2;
+
+  // dᵢⱼ — spatial closeness ∈ (0, 1] (approaches 1 as d → 0)
+  const spatial = 1 - d / radius;
+
+  // ‖x − sᵢ‖ = c·Δtᵢ — propagation delay and its temporal attenuation.
+  // A signal emitted at eᵢ takes Δtᵢⱼ = dᵢⱼ/c time steps to reach eⱼ.
+  // timeFactor = e^(−Δtᵢⱼ): interactions arrive at full strength when d→0,
+  // and decay toward zero for very distant or slowly propagating signals.
+  const propagationDelay = d / propagationSpeed; // Δtᵢⱼ in time steps
+  const timeFactor = Math.exp(-propagationDelay);
+
+  // sᵢ — sender's ecological capacity to project a connection.
+  // All EcoState fields are normalised to [0, 1] (see EcoState interface).
+  const si = ei.state;
+  const senderVitality  = (si.energy + si.health) / 2;  // alive-ness
+  const senderFearDamp  = Math.max(0, 1 - 0.5 * si.fear); // fear ∈ [0,1] → damp ∈ [0.5,1]
+  const senderCapacity  =
+    senderVitality              * // must be alive to emit
+    (0.5 + 0.5 * si.signal)    * // signal ∈ [0,1]: baseline 0.5, boosted by active signaling
+    senderFearDamp;               // fear closes off outgoing links
+
+  // sⱼ — receiver's ecological receptivity.
+  const sj = ej.state;
+  const receiverVitality    = (sj.energy + sj.health) / 2; // alive-ness
+  const receiverFearDamp    = Math.max(0, 1 - 0.5 * sj.fear); // fear ∈ [0,1] → damp ∈ [0.5,1]
+  const receiverReceptivity =
+    sj.attention       * // attention ∈ [0,1]: openness to incoming interaction
+    receiverVitality   * // must be alive to receive
+    receiverFearDamp;    // fear reduces incoming receptivity
+
+  // geometric mean: both sides must be ecologically engaged
+  const ecological = Math.sqrt(senderCapacity * receiverReceptivity);
+
+  // ‖profileⱼ − aᵢ‖ = rᵢ(βᵢ) — profile-space Gaussian compatibility.
+  // The 5D ecological profile aᵢ = [energy, health, attention, signal, fertility].
+  // Interaction falls off as a Gaussian with the mutual profile radius as σ.
+  const pi = ecoProfile(si);
+  const pj = ecoProfile(sj);
+  const profileDistSq = pi.reduce((sum, v, idx) => sum + (v - pj[idx]) ** 2, 0);
+  const ri = profileInteractionRadius(ei.type, si.fertility);
+  const rj = profileInteractionRadius(ej.type, sj.fertility);
+  const effectiveProfileRadius = (ri + rj) / 2;
+  const profileFactor = Math.exp(-profileDistSq / (effectiveProfileRadius ** 2));
+
+  // τᵢ, τⱼ — type-pair compatibility multiplier ∈ [1.0, 2.0]
   const typeFactor = typeCompatibility(ei.type, ej.type);
-  return Math.min(1, spatial * ecological * typeFactor);
+
+  return Math.min(1, spatial * timeFactor * ecological * profileFactor * typeFactor);
 }
 
 /**
@@ -228,6 +330,7 @@ export function buildGraph(
         PROXIMITY_RADIUS[ei.type],
         PROXIMITY_RADIUS[ej.type]
       );
+      const propagationDelay = d / PROPAGATION_SPEED;
       const w = edgeWeight(ei, ej, d, r);
       if (w > 0) {
         edgeList.push({
@@ -235,6 +338,7 @@ export function buildGraph(
           to:       ej.id,
           relation: inferRelation(ei, ej),
           weight:   w,
+          delay:    propagationDelay,
           active:   true,
         });
       }
@@ -463,7 +567,7 @@ export function printWorld(world: AngelIslandWorld): void {
     const ei = entities.get(edge.from)!;
     const ej = entities.get(edge.to)!;
     console.log(
-      `  ${TYPE_EMOJI[ei.type]}${ei.name} ──[${edge.relation}, w=${edge.weight.toFixed(3)}]──` +
+      `  ${TYPE_EMOJI[ei.type]}${ei.name} ──[${edge.relation}, w=${edge.weight.toFixed(3)}, Δt=${edge.delay.toFixed(2)}]──` +
       ` ${TYPE_EMOJI[ej.type]}${ej.name}`
     );
   }
