@@ -258,6 +258,119 @@ gnatprove -P hft.gpr --level=4 --report=all 2>&1 | tee proof_report.txt
 
 ---
 
+## SPARK Formal Verification
+
+The `HFT_Spark` package (`hft_spark.ads` / `hft_spark.adb`) provides a
+formally-verifiable view of all compliance rules.  Every function carries:
+
+- `pragma SPARK_Mode (On)` — marks the unit for GNATprove analysis
+- `Global => null` — proves each function has no side effects
+- A complete Boolean postcondition GNATprove can discharge as a theorem
+
+### Available SPARK predicates
+
+```ada
+with HFT_Spark;
+
+-- Type safety
+HFT_Spark.Spark_Price_In_Range (Order.Price_Val)
+HFT_Spark.Spark_Quantity_In_Range (Order.Qty)
+HFT_Spark.Spark_Price_Nonzero (Order.Price_Val)
+HFT_Spark.Spark_Timestamp_Initialized (Order.Time_Stamp)
+
+-- Symbol
+HFT_Spark.Spark_Symbol_Valid (Order.Symbol)   -- uppercase + non-empty
+
+-- Arithmetic safety
+HFT_Spark.Spark_Mul_Safe (Order.Price_Val, Order.Qty)
+HFT_Spark.Spark_Add_Safe (P1, P2)
+HFT_Spark.Spark_Value_Under_Limit (P, Q, 100_000_000.0)
+
+-- Order invariant and matching
+HFT_Spark.Spark_Order_Invariant (Order)
+HFT_Spark.Spark_Orders_Match (Buy_Order, Sell_Order)
+
+-- Full pipeline (returns Spark_Result record)
+Result : HFT_Spark.Spark_Result := HFT_Spark.Spark_Full_Check (Order);
+if Result.Passed then ... end if;
+```
+
+### Running GNATprove (if installed)
+
+```bash
+gnatprove -P hft.gpr --level=2 --report=all
+```
+
+Even without GNATprove, the contracts compile and execute as runtime
+assertions, providing defence-in-depth checking.
+
+---
+
+## Ravenscar Real-Time Profile
+
+The `HFT_Ravenscar` package implements the compliance engine as a hard
+real-time system under `pragma Profile (Ravenscar)`.
+
+### Architecture
+
+```
+Main task                    Compliance_Monitor (priority 7, 50 ms period)
+    │                                │
+    │  Enqueue (Order)               │  loop
+    ├──────────────────────────────► │    delay until Next_Wake;
+    │  Protected_Order_Queue         │    Dequeue (Order, Got);
+    │  (priority 10, circular/32)    │    if Got then
+    │                                │       Result := Spark_Full_Check (Order);
+    │  Read statistics               │       Record_Pass / Record_Fail;
+    ◄───────────────────────────────►│    end if;
+       Protected_Compliance_Stats    └────────────────────
+       (priority 9)
+```
+
+### Usage
+
+```ada
+with HFT_Ravenscar;
+with HFT_Engine;    use HFT_Engine;
+with Ada.Real_Time; use Ada.Real_Time;
+
+-- Enqueue orders (thread-safe, O(1), no blocking)
+HFT_Ravenscar.Order_Queue.Enqueue (My_Order, Success);
+
+-- Wait for the monitor task to process them
+delay until Clock + Seconds (1);
+
+-- Read results (atomic, no locking needed from caller)
+Put_Line (Natural'Image (HFT_Ravenscar.Compliance_Stats.Passed)
+          & " orders passed compliance.");
+```
+
+### Ravenscar Restrictions Satisfied
+
+| Restriction | Satisfied by |
+|---|---|
+| No heap allocation | Fixed-size 32-slot circular buffer |
+| Library-level protected objects | `Order_Queue`, `Compliance_Stats` in package |
+| Library-level tasks | `Compliance_Monitor` in package |
+| No task termination | Infinite `loop … delay until … end loop` |
+| Absolute delay only | `delay until Next_Wake` |
+| No select statements | None used |
+| Max 1 protected entry | Only procedures/functions (no entries) |
+
+---
+
+## Future Enhancements
+
+Potential additions to the compliance system:
+
+- [ ] Market-specific compliance rules (NYSE, NASDAQ, etc.)
+- [ ] Regulatory compliance checks (Reg NMS, MiFID II, etc.)
+- [ ] Real-time compliance monitoring
+- [ ] Compliance audit trail generation
+- [ ] Integration with formal verification tools
+- [ ] Custom compliance rule definitions
+- [ ] Compliance metrics dashboard
+
 ## References
 
 - [Ada Reference Manual 2022](http://www.ada-auth.org/standards/rm22/html/RM-TOC.html)

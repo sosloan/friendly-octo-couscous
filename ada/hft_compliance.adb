@@ -54,9 +54,9 @@ package body HFT_Compliance is
       P1 : HFT_Engine.Price;
       P2 : HFT_Engine.Price
    ) return Boolean is
-      Max_Price : constant Float := Float (HFT_Engine.Price'Last);
+      Max_Compliance_Price : constant HFT_Engine.Price := 999_999_999.99;
    begin
-      return Float (P1) + Float (P2) <= Max_Price;
+      return P1 + P2 <= Max_Compliance_Price;
    end Check_Price_Addition_Safe;
 
    -- Coding Standards Checks

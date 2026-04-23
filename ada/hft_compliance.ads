@@ -57,7 +57,7 @@ package HFT_Compliance is
       P2 : HFT_Engine.Price
    ) return Boolean
       with Post => (if Check_Price_Addition_Safe'Result then
-                     Float (P1) + Float (P2) <= Float (HFT_Engine.Price'Last));
+                     P1 + P2 <= 999_999_999.99);
 
    -- Coding Standards Checks
    function Check_Symbol_Format (Symbol : String) return Boolean
