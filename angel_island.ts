@@ -519,7 +519,7 @@ export function runDemo(): void {
         { energy: 0.9, fear: 0.1 }),
       velocity: { x: 1.0, y: 0.8, z: 0 },
     },
-    // ── 🐸 Frog near the lagoon (low altitude water-edge)
+    // ── 🐸/🐎 Ribbit — frog near the lagoon (water-edge animal)
     {
       ...createEntity("animal-2", "Ribbit", "animal", { x: 70, y: 80, z: 0 },
         { domain: "water", signal: 0.4 }),
