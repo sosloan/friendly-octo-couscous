@@ -1,10 +1,10 @@
 # Multi-Language HFT System Build Script
 # Supports Linux, macOS (including MacBook Air), iOS, and Android
 
-.PHONY: all clean ada lean akka java erlang swift docs help
-.PHONY: all clean ada lean akka java erlang docs help test-aka test-aka-smoke test-aka-integration test-aka-performance test-aka-e2e test-e2e e2e
+.PHONY: all clean ada lean akka java erlang swift rust docs help
+.PHONY: all clean ada lean akka java erlang rust docs help test-aka test-aka-smoke test-aka-integration test-aka-performance test-aka-e2e test-e2e e2e test-rust
 
-all: ada java akka erlang swift
+all: ada java akka erlang swift rust
 	@echo "==================================="
 	@echo "✓ Full HFT System Build Complete"
 	@echo "==================================="
@@ -18,9 +18,11 @@ help:
 	@echo "  make java     - Build Java powerhouse"
 	@echo "  make erlang   - Build Erlang supervisor"
 	@echo "  make swift    - Build Swift/SwiftUI app"
+	@echo "  make rust     - Build Rust IUT landscape crate"
 	@echo "  make docs     - Generate documentation"
 	@echo "  make clean    - Clean all build artifacts"
 	@echo "  make test     - Run all tests"
+	@echo "  make test-rust - Run Rust tests"
 	@echo "  make test-aka - Run AKA comprehensive test suite"
 	@echo "  make e2e      - Run end-to-end AKA integration tests"
 
@@ -60,6 +62,12 @@ swift:
 	cd swift && swift build
 	@echo "✓ Swift application built"
 
+# Rust IUT Landscape
+rust:
+	@echo "Building Rust IUT Landscape crate..."
+	cd rust && cargo build
+	@echo "✓ Rust IUT landscape built"
+
 # Documentation
 docs:
 	@echo "Generating documentation..."
@@ -67,7 +75,7 @@ docs:
 	@echo "Documentation generated in docs/"
 
 # Testing
-test: test-ada test-java test-erlang test-swift
+test: test-ada test-java test-erlang test-swift test-rust
 	@echo "✓ All tests passed"
 
 test-ada:
@@ -85,6 +93,10 @@ test-erlang:
 test-swift:
 	@echo "Testing Swift components..."
 	cd swift && swift test
+
+test-rust:
+	@echo "Testing Rust components..."
+	cd rust && cargo test
 
 # Audit compliance
 audit: audit-swift
@@ -129,6 +141,7 @@ clean:
 	cd erlang && rebar3 clean || true
 	cd lean && lake clean || true
 	cd swift && swift package clean || true
+	cd rust && cargo clean || true
 	cd aka && rm -rf reports/* || true
 	@echo "✓ Clean complete"
 

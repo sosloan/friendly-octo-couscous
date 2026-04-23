@@ -1,0 +1,13 @@
+[package]
+name = "iut_landscape"
+version = "0.1.0"
+edition = "2021"
+description = "IUT Landscape topological invariants for the AÑGEL | ISLÃND world model"
+
+[[bin]]
+name = "iut_landscape"
+path = "src/main.rs"
+
+[lib]
+name = "iut_landscape"
+path = "src/lib.rs"
