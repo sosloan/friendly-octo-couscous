@@ -80,7 +80,7 @@ test: test-ada test-java test-erlang test-swift test-rust
 
 test-ada:
 	@echo "Testing Ada components..."
-	cd ada && gprbuild -P hft.gpr && ./hft_test && ./hft_compliance_test && ./hft_integration_test && ./hft_main
+	cd ada && gprbuild -P hft.gpr && obj/hft_test && obj/hft_compliance_test && obj/hft_integration_test && obj/hft_spark_ravenscar_test && obj/hft_main
 
 test-java:
 	@echo "Testing Java components..."

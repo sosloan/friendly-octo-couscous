@@ -4,6 +4,8 @@ project HFT is
    for Object_Dir use "obj";
    for Main use ("hft_main.adb", "hft_test.adb", "hft_compliance_test.adb",
                  "compliance_example.adb", "hft_integration_test.adb",
+                 "hft_benchmark.adb", "hft_spark_ravenscar_test.adb");
+   
                  "hft_benchmark.adb", "hft_spark_test.adb",
                  "hft_ravenscar_test.adb");
 
