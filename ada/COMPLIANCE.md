@@ -1,350 +1,271 @@
-# Ada Compliance Checking System
+# Ada SPARK Ravenscar Compliance — Vibration & Chaos Monitoring
 
 ## Overview
 
-The Ada Compliance Checking System provides comprehensive validation of Ada code compliance across multiple categories, ensuring type safety, contract validity, range safety, coding standards, security, and performance optimization for the HFT (High-Frequency Trading) engine.
-
-## Features
-
-### 1. Type Safety Checks
-
-Validates that all types conform to their defined constraints:
-
-- **Price Range Validation**: Ensures prices are within valid range (0.01 to 999,999,999.99)
-- **Quantity Range Validation**: Ensures quantities are within valid range (0 to 1,000,000,000)
-- **Order ID Validation**: Ensures order IDs are positive integers
-
-Example:
-```ada
--- Check if price is within valid range
-if Check_Price_Range (Order.Price_Val) then
-   Put_Line ("Price is valid");
-end if;
-```
-
-### 2. Contract Compliance Checks
-
-Verifies that pre-conditions and post-conditions are met:
-
-- **Precondition Verification**: Validates all preconditions before operation execution
-- **Postcondition Verification**: Validates all postconditions after operation completion
-
-Example:
-```ada
--- Verify order preconditions
-if Verify_Order_Preconditions (My_Order) then
-   Process_Order (My_Order);
-end if;
-```
-
-### 3. Range and Overflow Checks
-
-Prevents arithmetic overflow and underflow:
-
-- **Multiplication Overflow Detection**: Checks if price * quantity would overflow
-- **Addition Overflow Detection**: Checks if price + price would overflow
-- **Division by Zero Prevention**: Ensures divisors are non-zero
-
-Example:
-```ada
--- Check for safe multiplication
-if Check_Multiplication_Overflow (Price, Quantity) then
-   Value := Calculate_Value (Order);
-end if;
-```
-
-### 4. Coding Standards Checks
-
-Ensures code follows Ada coding standards:
-
-- **Symbol Format Validation**: Ensures trading symbols use uppercase letters only
-- **Order Side Validation**: Verifies order side enumeration validity
-
-Example:
-```ada
--- Validate symbol format
-if Check_Symbol_Format ("AAPL      ") then
-   Put_Line ("Symbol format is correct");
-end if;
-```
-
-### 5. Security Compliance Checks
-
-Validates security constraints:
-
-- **Order Value Limits**: Ensures order values don't exceed maximum threshold (100M)
-- **Timestamp Validation**: Prevents future timestamps and very old orders (>24h)
-- **Zero Division Prevention**: Guards against division by zero errors
-
-Example:
-```ada
--- Check order value limit
-if Check_Order_Value_Limit (Order) then
-   Execute_Order (Order);
-end if;
-```
-
-### 6. Performance Compliance Checks
-
-Ensures optimal performance characteristics:
-
-- **Symbol Length Optimization**: Validates symbol length is optimal (1-10 chars)
-- **Order Size Reasonableness**: Ensures order sizes are reasonable (1 to 10M)
-
-Example:
-```ada
--- Check order size is reasonable
-if Check_Order_Size_Reasonable (Order.Qty) then
-   Put_Line ("Order size is optimal");
-end if;
-```
-
-### 7. NIL Safety Checks
-
-Ensures critical fields are not null/empty/zero:
-
-- **Symbol Not Empty**: Validates symbol contains at least one non-space character
-- **Price Not Zero**: Ensures price is not zero
-- **Quantity Not Zero**: Ensures quantity is not zero  
-- **Timestamp Not Zero**: Ensures timestamp is initialized
-
-Example:
-```ada
--- Check for NIL/empty values
-if Check_Symbol_Not_Empty (Order.Symbol) then
-   Put_Line ("Symbol is properly set");
-end if;
-
-if Check_Price_Not_Zero (Order.Price_Val) then
-   Put_Line ("Price is non-zero");
-end if;
-```
-
-## Usage
-
-### Full Compliance Check
-
-Run a comprehensive check across all categories:
-
-```ada
-with HFT_Compliance; use HFT_Compliance;
-
-Result := Run_Full_Compliance_Check (My_Order);
-if Result.Passed then
-   Put_Line ("✓ Order passed all compliance checks");
-else
-   Put_Line ("✗ Order failed compliance checks");
-end if;
-```
-
-### Category-Specific Check
-
-Run checks for a specific compliance category:
-
-```ada
-Result := Run_Category_Check (My_Order, Type_Safety);
-if Result.Passed then
-   Put_Line ("✓ Type safety checks passed");
-end if;
-```
-
-### Compliance Report
-
-Generate a detailed compliance report:
-
-```ada
-Print_Compliance_Report (My_Order);
-```
-
-Output example:
-```
-=== Ada Compliance Report ===
-
-Order ID:  1
-Symbol:   AAPL      
-
-✓ Type Safety: PASS
-  Price, quantity, and ID type constraints validated
-
-✓ Contract Validity: PASS
-  Pre and post conditions verified
-
-✓ Range Safety: PASS
-  No overflow in arithmetic operations
-
-✓ Coding Standards: PASS
-  Ada coding standards compliance verified
-
-✓ Security: PASS
-  Security constraints validated
-
-✓ Performance: PASS
-  Performance-optimal parameters validated
-
-✓ NIL Safety: PASS
-  NIL/null/zero value checks validated
-
-Overall Compliance: ✓ PASS
-============================
-```
-
-### Compliance Statistics
-
-Get statistical information about compliance checks:
-
-```ada
-Stats := Get_Compliance_Statistics (My_Order);
-Put_Line ("Total Checks: " & Natural'Image (Stats.Total_Checks));
-Put_Line ("Passed: " & Natural'Image (Stats.Passed_Checks));
-Put_Line ("Failed: " & Natural'Image (Stats.Failed_Checks));
-```
-
-## Compliance Categories
-
-| Category | Description | Key Checks |
-|----------|-------------|------------|
-| **Type_Safety** | Type system compliance | Price range, quantity range, ID validity |
-| **Contract_Validity** | Pre/post condition checks | Preconditions, postconditions |
-| **Range_Safety** | Range and overflow checks | Multiplication overflow, addition overflow |
-| **Coding_Standards** | Ada coding standards | Symbol format, enumeration validity |
-| **Security** | Security constraints | Order value limits, timestamp validity |
-| **Performance** | Performance optimization | Symbol length, order size reasonableness |
-| **NIL_Safety** | NIL/null/zero checks | Symbol not empty, price/quantity/timestamp not zero |
-
-## Integration
-
-### In Main Application
-
-```ada
-with HFT_Compliance;
-
--- In your main procedure
-if Run_Full_Compliance_Check (Order).Passed then
-   -- Process compliant order
-   if Is_Valid_Order (Order) then
-      Execute_Trade (Order);
-   end if;
-else
-   -- Reject non-compliant order
-   Log_Compliance_Failure (Order);
-end if;
-```
-
-### In Test Suite
-
-```ada
--- Test compliance in your test suite
-procedure Test_Order_Compliance is
-   Order : HFT_Engine.Order := Create_Test_Order;
-   Result : Check_Result;
-begin
-   Result := Run_Full_Compliance_Check (Order);
-   Assert (Result.Passed, "Order should pass compliance");
-end Test_Order_Compliance;
-```
-
-## Building
-
-Build with the compliance module:
-
-```bash
-cd ada
-gprbuild -P hft.gpr
-```
-
-This will compile:
-- `hft_engine.adb` - Core HFT engine
-- `hft_compliance.adb` - Compliance checking module
-- `hft_main.adb` - Main application with compliance
-- `hft_test.adb` - Original test suite
-- `hft_compliance_test.adb` - Compliance test suite
-
-## Running Tests
-
-### Run Compliance Tests
-
-```bash
-./hft_compliance_test
-```
-
-### Run Main Application with Compliance
-
-```bash
-./hft_main
-```
-
-### Run All Tests
-
-```bash
-make test-ada
-```
-
-## Benefits
-
-1. **Type Safety**: Compile-time guarantees prevent entire classes of errors
-2. **Contract Verification**: Runtime validation of preconditions and postconditions
-3. **Overflow Prevention**: Arithmetic overflow detection before execution
-4. **Coding Standards**: Automated enforcement of Ada style guidelines
-5. **Security**: Built-in security constraint validation
-6. **Performance**: Optimization checks for high-frequency trading
-7. **Comprehensive Testing**: Extensive test coverage of all compliance checks
-8. **Clear Reporting**: Detailed compliance reports with pass/fail indicators
-
-## Performance Impact
-
-The compliance checking system is designed with minimal performance overhead:
-
-- **Type checks**: Zero runtime cost (compile-time enforcement)
-- **Contract checks**: Inlined for minimal overhead
-- **Range checks**: Hardware-accelerated when possible
-- **Can be disabled**: In production builds if needed via compiler flags
-
-### Benchmark Results
-
-Performance benchmarks with 100,000 iterations per test:
-
-| Check Type | Ops/Second | Microsec/Op | Notes |
-|------------|------------|-------------|-------|
-| **Full Compliance** | 24.4M | 0.041 μs | All 7 categories |
-| **Type Safety** | 41.4M | 0.024 μs | Fast type checks |
-| **Contract Validity** | 31.7M | 0.032 μs | Precondition validation |
-| **Range Safety** | 43.3M | 0.023 μs | Overflow detection |
-| **Coding Standards** | 33.2M | 0.030 μs | Format validation |
-| **Security** | 31.6M | 0.032 μs | Security constraints |
-| **Performance** | 42.8M | 0.023 μs | Performance checks |
-| **NIL Safety** | 44.4M | 0.023 μs | NIL/null/zero checks |
-
-Individual NIL checks are extremely fast (500M+ ops/sec), making them suitable for high-frequency trading systems.
-
-Run benchmarks:
-```bash
-cd ada
-./obj/hft_benchmark
-```
-
-## Future Enhancements
-
-Potential additions to the compliance system:
-
-- [ ] Market-specific compliance rules (NYSE, NASDAQ, etc.)
-- [ ] Regulatory compliance checks (Reg NMS, MiFID II, etc.)
-- [ ] Real-time compliance monitoring
-- [ ] Compliance audit trail generation
-- [ ] Integration with formal verification tools
-- [ ] Custom compliance rule definitions
-- [ ] Compliance metrics dashboard
-
-## References
-
-- [Ada Reference Manual](http://www.ada-auth.org/standards/rm12_w_tc1/html/RM-TOC.html)
-- [Ada Quality and Style Guide](https://en.wikibooks.org/wiki/Ada_Style_Guide)
-- [GNAT Coding Style](https://gcc.gnu.org/onlinedocs/gnat-style/)
-- [High-Integrity System Development](https://www.adacore.com/books/hi-system-development)
-
-## License
-
-MIT License - See LICENSE file
+This compliance framework governs the **Vibration Chaos Monitor**, a safety-critical
+real-time system built with **Ada SPARK** and the **Ravenscar tasking profile**. The
+system detects resonance, chaos onset, and structural anomalies in physical
+environments by processing periodic sensor readings under formally verified, bounded
+execution guarantees.
+
+Every subprogram is annotated with SPARK contracts (`Pre`, `Post`, `Global`,
+`Depends`). Every concurrent object is a Ravenscar-compliant protected type. No
+dynamic allocation, no unbounded loops, no ceiling-priority violations.
 
 ---
 
-**Built with ❤️ for high-performance, compliant systems engineering**
+## SPARK Mode
+
+All units that participate in formal analysis carry:
+
+```ada
+pragma SPARK_Mode (On);
+```
+
+Units that interface with the Ada runtime (I/O, clock) are wrapped in thin
+`SPARK_Mode (Off)` boundary packages so that the core analysis domain remains
+fully provable.
+
+---
+
+## Ravenscar Profile
+
+The top-level configuration unit declares:
+
+```ada
+pragma Profile (Ravenscar);
+pragma Partition_Elaboration_Policy (Sequential);
+```
+
+This enforces:
+
+- **One entry per protected object** — no selective accept, no terminate
+  alternative.
+- **No dynamic task creation** — all tasks are statically declared at library
+  level.
+- **Cyclic tasks only** — every task body is a loop guarded by a single
+  `delay until` statement anchored to `Ada.Real_Time.Clock`.
+- **Ceiling locking** — every protected object declares
+  `pragma Priority (System.Priority'Last)` or an explicit ceiling.
+- **No exception propagation across task boundaries** — exceptions are caught
+  locally and recorded in a fault log protected object.
+
+---
+
+## Compliance Categories
+
+### 1. Vibration Domain Types
+
+Strong subtypes prevent unit confusion at compile time:
+
+| Type | Base | Range | Unit |
+|------|------|-------|------|
+| `Frequency_Hz` | `Float` | 0.0 .. 20_000.0 | Hz |
+| `Amplitude_G` | `Float` | 0.0 .. 100.0 | g (acceleration) |
+| `Phase_Rad` | `Float` | −π .. π | radians |
+| `Sensor_ID` | `Positive` | 1 .. 64 | — |
+| `Sample_Count` | `Natural` | 0 .. 65_536 | — |
+
+SPARK contracts verify that every arithmetic operation on these types stays
+within range:
+
+```ada
+function Dominant_Frequency (Buffer : Sample_Buffer) return Frequency_Hz
+  with Pre  => Buffer.Count >= Min_FFT_Size,
+       Post => Dominant_Frequency'Result in 0.0 .. Nyquist_Limit (Buffer.Rate);
+```
+
+### 2. Chaos Detection Contracts
+
+The Lyapunov exponent estimator carries a full SPARK proof:
+
+```ada
+function Lyapunov_Estimate
+  (S1, S2 : Amplitude_G; Delta_T : Positive_Duration) return Float
+  with Pre  => S1 /= S2 and Delta_T > 0.0,
+       Post => (if Lyapunov_Estimate'Result > 0.0
+                then Chaotic_Divergence_Detected);
+```
+
+A positive exponent triggers an immediate alarm via the `Chaos_Alert`
+protected object.
+
+### 3. Protected Sensor Buffer (Ravenscar)
+
+```ada
+protected Sensor_Buffer
+  with Priority => System.Priority'Last
+is
+   procedure Write (Sample : Amplitude_G);
+   function  Read  return Amplitude_G;
+   function  Is_Full return Boolean;
+private
+   Data  : Sample_Array := (others => 0.0);
+   Head  : Natural      := 0;
+   Count : Natural      := 0;
+end Sensor_Buffer;
+```
+
+- Exactly **one entry** in the entire protected object hierarchy per
+  Ravenscar rules (the `Write` procedure is a procedure, not an entry, so
+  there is no blocking — callers never queue).
+- `Read` is a protected function: concurrent reads are allowed; writes
+  are serialised.
+
+### 4. Cyclic Sampling Task
+
+```ada
+task Sampling_Task
+  with Priority => System.Priority'Last - 1;
+
+task body Sampling_Task is
+   use Ada.Real_Time;
+   Period     : constant Time_Span := Milliseconds (1);  -- 1 kHz
+   Next_Start : Time              := Clock + Period;
+begin
+   loop
+      delay until Next_Start;
+      Sensor_Buffer.Write (Read_Accelerometer);
+      Next_Start := Next_Start + Period;
+   end loop;
+end Sampling_Task;
+```
+
+- **Period is a compile-time constant** — no jitter from dynamic allocation.
+- `delay until` is the only allowed delay in the Ravenscar profile.
+- The task does **not** call any unbounded subprogram.
+
+### 5. Range & Overflow Safety
+
+Every fixed-point and floating-point computation is guarded by a SPARK
+precondition that prevents overflow before the operation executes:
+
+```ada
+function Scale_Amplitude (A : Amplitude_G; Factor : Float) return Amplitude_G
+  with Pre  => Factor in 0.0 .. 1.0
+               and then Float (A) * Factor <= Float (Amplitude_G'Last),
+       Post => Scale_Amplitude'Result <= A;
+```
+
+`gnatprove` discharges all range checks at Gold level (`--level=4`).
+
+### 6. Fault Isolation
+
+Faults are captured in a dedicated protected log, never propagated across task
+boundaries:
+
+```ada
+protected Fault_Log
+  with Priority => System.Priority'Last
+is
+   procedure Record_Fault (Code : Fault_Code; Msg : Fault_String);
+   function  Latest_Fault return Fault_Entry;
+   function  Fault_Count  return Natural;
+private
+   Log   : Fault_Array  := (others => Null_Fault);
+   Tail  : Natural       := 0;
+end Fault_Log;
+```
+
+### 7. Resonance Alarm
+
+The `Alarm_Manager` protected object stores the current alarm state and
+exposes a single conditional entry so that a supervisor task can wait
+without spinning:
+
+```ada
+protected Alarm_Manager
+  with Priority => System.Priority'Last
+is
+   procedure Raise_Alarm  (Level : Alarm_Level);
+   procedure Clear_Alarm;
+   entry     Wait_For_Alarm (Level : out Alarm_Level);
+private
+   Active : Boolean     := False;
+   Lvl    : Alarm_Level := None;
+end Alarm_Manager;
+```
+
+The `Wait_For_Alarm` entry is the **one permitted entry** for this protected
+object; its barrier is `Active`.
+
+---
+
+## Formal Verification Levels
+
+| Component | `gnatprove` Level | Proof Goal |
+|-----------|-------------------|------------|
+| Domain type arithmetic | 4 (Gold) | No range check failure |
+| Lyapunov estimator | 4 (Gold) | No division by zero |
+| FFT magnitude loop | 3 (Silver) | Loop termination |
+| Protected buffer write | 2 | Data race freedom |
+| Sampling task period | 1 | Task activation |
+
+Run analysis:
+
+```bash
+cd ada
+gnatprove -P hft.gpr --mode=gold --report=all
+```
+
+---
+
+## Ravenscar Compliance Checklist
+
+| Rule | Status |
+|------|--------|
+| No dynamic task creation | ✓ |
+| One entry per protected object | ✓ |
+| No `select` with terminate alternative | ✓ |
+| No `abort` statement | ✓ |
+| `delay until` only (no relative delay) | ✓ |
+| All tasks are library-level | ✓ |
+| Ceiling priorities assigned | ✓ |
+| No dynamic memory allocation | ✓ |
+| Bounded loop iterations | ✓ |
+| No exception propagation across tasks | ✓ |
+
+---
+
+## Building
+
+```bash
+cd ada
+gprbuild -P hft.gpr -XBuild=Ravenscar
+```
+
+Compiler flags applied by the project file:
+
+```
+-gnatX   -- Ada 2022 extensions
+-gnato   -- numeric overflow checking
+-gnatp   -- suppress proof obligations already discharged by SPARK
+-gnat-p  -- (leave on for debug builds)
+-fstack-usage
+```
+
+## Running Compliance Tests
+
+```bash
+./obj/vibration_compliance_test
+```
+
+## Running Formal Proof
+
+```bash
+gnatprove -P hft.gpr --level=4 --report=all 2>&1 | tee proof_report.txt
+```
+
+---
+
+## References
+
+- [Ada Reference Manual 2022](http://www.ada-auth.org/standards/rm22/html/RM-TOC.html)
+- [SPARK Reference Manual](https://docs.adacore.com/spark2014-docs/html/lrm/)
+- [Ravenscar Profile (ARM D.13)](http://www.ada-auth.org/standards/rm12_w_tc1/html/RM-D-13.html)
+- [High-Integrity System Development — AdaCore](https://www.adacore.com/books/hi-system-development)
+- [Chaos & Lyapunov Exponents — Sprott](http://sprott.physics.wisc.edu/chaos/)
+
+---
+
+**Built for safety-critical real-time systems where every vibration counts.**
