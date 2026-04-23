@@ -1,5 +1,6 @@
 -- Ada HFT Engine Implementation
 pragma Ada_2022;
+pragma SPARK_Mode (On);
 
 package body HFT_Engine is
 
