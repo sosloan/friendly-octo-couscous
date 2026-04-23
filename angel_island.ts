@@ -272,7 +272,7 @@ export function edgeWeight(
   // Interaction falls off as a Gaussian with the mutual profile radius as σ.
   const pi = ecoProfile(si);
   const pj = ecoProfile(sj);
-  const profileDistSq = pi.reduce((sum, v, k) => sum + (v - pj[k]) ** 2, 0);
+  const profileDistSq = pi.reduce((sum, v, idx) => sum + (v - pj[idx]) ** 2, 0);
   const ri = profileInteractionRadius(ei.type, si.fertility);
   const rj = profileInteractionRadius(ej.type, sj.fertility);
   const effectiveProfileRadius = (ri + rj) / 2;
