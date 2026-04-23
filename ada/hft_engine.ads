@@ -1,6 +1,7 @@
 -- Ada HFT Engine Specification
 -- Provides type-safe, formally verified high-frequency trading core
 pragma Ada_2022;
+pragma SPARK_Mode (On);
 
 package HFT_Engine is
    pragma Preelaborate;
