@@ -205,7 +205,7 @@ Run analysis:
 
 ```bash
 cd ada
-gnatprove -P hft.gpr --mode=gold --report=all
+gnatprove -P hft.gpr --level=4 --report=all
 ```
 
 ---

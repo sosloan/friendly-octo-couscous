@@ -19,6 +19,7 @@ pragma SPARK_Mode (On);
 
 with Ada.Text_IO;     use Ada.Text_IO;
 with Ada.Real_Time;   use Ada.Real_Time;
+with Ada.Numerics;
 with System;
 
 procedure Compliance_Example
@@ -31,7 +32,8 @@ is
 
    subtype Frequency_Hz  is Float range 0.0 .. 20_000.0;
    subtype Amplitude_G   is Float range 0.0 ..    100.0;
-   subtype Phase_Rad     is Float range -3.14159_26535 .. 3.14159_26535;
+   subtype Phase_Rad     is Float
+     range -Ada.Numerics.Pi .. Ada.Numerics.Pi;
 
    Max_Buffer : constant := 256;
 
@@ -148,27 +150,27 @@ is
          return Ratio - 1.0;   -- positive iff divergence > reference
       end Lyapunov_Sign;
 
-      A1 : constant Amplitude_G := 1.00;
-      A2 : constant Amplitude_G := 2.71;   -- strongly diverging — chaotic
-      A3 : constant Amplitude_G := 1.01;   -- nearly identical — stable
+      A1             : constant Amplitude_G := 1.00;
+      Chaotic_Sample : constant Amplitude_G := 2.71;   -- strongly diverging — chaotic
+      Stable_Sample  : constant Amplitude_G := 1.01;   -- nearly identical — stable
       L1 : Float;
       L2 : Float;
    begin
       Put_Line ("=== 2. Chaos Detection (Lyapunov Sign) ===");
       Put_Line ("");
 
-      L1 := Lyapunov_Sign (A1, A2);
+      L1 := Lyapunov_Sign (A1, Chaotic_Sample);
       Put ("  λ(" & Float'Image (Float (A1)) &
-           ", " & Float'Image (Float (A2)) & ") = " & Float'Image (L1) & "  → ");
+           ", " & Float'Image (Float (Chaotic_Sample)) & ") = " & Float'Image (L1) & "  → ");
       if L1 > 0.0 then
          Put_Line ("CHAOTIC divergence detected ⚠");
       else
          Put_Line ("Stable / periodic motion ✓");
       end if;
 
-      L2 := Lyapunov_Sign (A1, A3);
+      L2 := Lyapunov_Sign (A1, Stable_Sample);
       Put ("  λ(" & Float'Image (Float (A1)) &
-           ", " & Float'Image (Float (A3)) & ") = " & Float'Image (L2) & "  → ");
+           ", " & Float'Image (Float (Stable_Sample)) & ") = " & Float'Image (L2) & "  → ");
       if L2 > 0.0 then
          Put_Line ("CHAOTIC divergence detected ⚠");
       else
@@ -184,7 +186,8 @@ is
 
    procedure Demonstrate_Ravenscar_Protected_Buffer is
 
-      --  Ravenscar: protected object with NO entries (all procedures/functions).
+      --  Ravenscar: this protected object has no entries (all procedures/functions).
+      --  The one Ravenscar-permitted entry lives in Alarm_Manager (section 6).
       --  Ceiling priority = System.Priority'Last ensures no priority inversion.
       protected Buffer
         with Priority => System.Priority'Last
@@ -221,6 +224,9 @@ is
 
       end Buffer;
 
+      --  Readings represent an exponentially growing vibration burst
+      --  (ratio ≈ 1.62 per step, close to the golden ratio) that exercises
+      --  the buffer wrap-around and demonstrates chaos-onset amplitude growth.
       Readings : constant array (1 .. 8) of Amplitude_G :=
         (0.10, 0.33, 0.85, 1.61, 2.72, 4.40, 7.13, 11.53);
    begin
