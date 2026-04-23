@@ -163,11 +163,20 @@ export interface Edge {
 /**
  * Compute the ecological edge weight between two entities.
  *
- * The weight combines:
- *   • spatial closeness  (higher = closer)
- *   • sender's signal intensity
- *   • receiver's attention
- *   • ecological compatibility of their types
+ *   wᵢⱼ(t) = f(dᵢⱼ, sᵢ, sⱼ, τᵢ, τⱼ)
+ *
+ * Components:
+ *   dᵢⱼ  → spatial closeness: how near the two entities are relative to their
+ *            interaction radius.
+ *   sᵢ   → sender capacity: a healthy, energetic, signaling, non-fearful entity
+ *            projects a stronger outgoing connection.
+ *   sⱼ   → receiver receptivity: an attentive, healthy, non-fearful entity
+ *            picks up incoming signals more strongly.
+ *   τᵢ,τⱼ → type compatibility: domain-knowledge multiplier for the pair of
+ *            entity kinds (e.g. alien↔UFO, sound↔spirit).
+ *
+ * The geometric mean of sender and receiver ecological scores ensures both
+ * parties must be ecologically "live" for a strong edge to exist.
  */
 export function edgeWeight(
   ei: Entity,
@@ -176,9 +185,32 @@ export function edgeWeight(
   radius: number
 ): number {
   if (d > radius) return 0;
-  const spatial    = 1 - d / radius;                       // ∈ (0,1]
-  const ecological = (ei.state.signal + ej.state.attention) / 2;
+
+  // dᵢⱼ — spatial closeness ∈ (0, 1] (approaches 1 as d → 0)
+  const spatial = 1 - d / radius;
+
+  // sᵢ — sender's ecological capacity to project a connection:
+  //   vitality (energy × health) × signal boost × fear dampening
+  const si = ei.state;
+  const senderCapacity =
+    ((si.energy + si.health) / 2) * // vitality: must be alive to emit
+    (0.5 + 0.5 * si.signal)       * // signal: baseline 0.5, boosted by active signaling
+    (1 - 0.5 * si.fear);            // fear closes off outgoing links
+
+  // sⱼ — receiver's ecological receptivity:
+  //   attention × vitality × fear dampening
+  const sj = ej.state;
+  const receiverReceptivity =
+    sj.attention                  * // openness to incoming interaction
+    ((sj.energy + sj.health) / 2) * // must be alive to receive
+    (1 - 0.5 * sj.fear);            // fear reduces incoming receptivity
+
+  // geometric mean: both sides must be ecologically engaged
+  const ecological = Math.sqrt(senderCapacity * receiverReceptivity);
+
+  // τᵢ, τⱼ — type-pair compatibility multiplier ∈ [1.0, 2.0]
   const typeFactor = typeCompatibility(ei.type, ej.type);
+
   return Math.min(1, spatial * ecological * typeFactor);
 }
 
