@@ -24,7 +24,7 @@
 # Install dependencies
 brew install gnat
 brew install lean
-brew install openjdk@21
+brew install openjdk@25
 brew install erlang
 brew install gradle
 ```
@@ -47,7 +47,7 @@ All components compile natively for Apple Silicon:
 ```bash
 sudo apt update
 sudo apt install -y gnat gprbuild
-sudo apt install -y openjdk-21-jdk
+sudo apt install -y openjdk-25-jdk
 sudo apt install -y erlang
 
 # Lean
