@@ -1,5 +1,7 @@
 package com.hft.java;
 
+import com.hft.config.AppConfig;
+import com.hft.config.PklConfigLoader;
 import java.math.BigDecimal;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
@@ -20,6 +22,16 @@ public class HFTPowerhouse {
     public static void main(String[] args) {
         System.out.println("=== Java 21 HFT Powerhouse 💪 ===");
         System.out.println("🚀 Initializing high-performance trading engine");
+
+        // Load application configuration from PKL
+        AppConfig appConfig;
+        try (var loader = new PklConfigLoader()) {
+            appConfig = loader.load();
+        }
+        System.out.println("📋 Configuration loaded from PKL");
+        System.out.println("   Trading mode : " + appConfig.alpaca().mode());
+        System.out.println("   Broker URL   : " + appConfig.alpaca().baseUrl());
+        System.out.println("   Server port  : " + appConfig.server().port());
         
         // Demonstrate Virtual Threads (Java 21+)
         try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
@@ -74,11 +86,12 @@ public class HFTPowerhouse {
         }
         
         System.out.println("\n🌐 Starting Netty Network Server...");
-        
-        // Start Netty server in a separate virtual thread
+
+        // Start Netty server with port from PKL configuration
+        final int serverPort = appConfig.server().port();
         Thread.ofVirtual().start(() -> {
             try {
-                NettyHFTServer server = new NettyHFTServer(8080);
+                NettyHFTServer server = new NettyHFTServer(serverPort);
                 server.start();
             } catch (Exception e) {
                 logger.severe("Failed to start Netty server: " + e.getMessage());
@@ -94,7 +107,7 @@ public class HFTPowerhouse {
         
         System.out.println("=== Java Powerhouse Running ===");
         System.out.println("💪 Virtual Threads: Active");
-        System.out.println("⚡ Netty Server: Listening on port 8080");
+        System.out.println("⚡ Netty Server: Listening on port " + appConfig.server().port());
         System.out.println("🎯 Ultra-low latency mode: Enabled");
     }
 }

@@ -1,0 +1,39 @@
+/// HFT Application Configuration Schema
+///
+/// This module defines the schema for the HFT application configuration.
+/// Instantiate this module in app.pkl (or environment-specific files) to
+/// supply runtime values that are loaded at startup via pkl-config-java.
+module com.hft.config.AppConfig
+
+/// Alpaca brokerage API settings (non-sensitive; credentials come from env vars)
+alpaca: AlpacaSettings
+
+/// Netty network server settings
+server: ServerSettings
+
+/// Alpaca brokerage API connection settings
+class AlpacaSettings {
+  /// Alpaca trading (broker) API base URL
+  baseUrl: String(startsWith("https://")) = "https://paper-api.alpaca.markets"
+
+  /// Alpaca market data API base URL
+  dataUrl: String(startsWith("https://")) = "https://data.alpaca.markets"
+
+  /// HTTP request timeout in seconds
+  timeoutSeconds: Int(isPositive) = 30
+
+  /// Trading mode: "paper" for paper-trading sandbox, "live" for real money
+  mode: "paper"|"live" = "paper"
+}
+
+/// Netty HFT server settings
+class ServerSettings {
+  /// TCP port the server listens on
+  port: Int(isBetween(1024, 65535)) = 8080
+
+  /// Maximum number of pending connection requests (SO_BACKLOG)
+  backlog: Int(isPositive) = 1024
+
+  /// Number of Netty worker threads (0 = use Netty's default of 2×CPU cores)
+  workerThreads: Int(this >= 0) = 0
+}

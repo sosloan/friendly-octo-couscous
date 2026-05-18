@@ -1,5 +1,6 @@
 package com.hft.alpaca.client;
 
+import com.hft.config.AlpacaSettings;
 import java.util.Objects;
 
 /**
@@ -45,6 +46,31 @@ public record AlpacaConfig(
         return new AlpacaConfig(apiKey, secretKey, LIVE_TRADING_URL, DATA_URL);
     }
     
+    /**
+     * Create config from PKL-loaded settings plus credentials from environment variables.
+     * Reads ALPACA_API_KEY and ALPACA_SECRET_KEY from the environment; all other
+     * settings (URLs, mode) come from the supplied {@link AlpacaSettings}.
+     *
+     * @param settings non-sensitive settings loaded via pkl-config-java
+     * @return AlpacaConfig combining PKL settings with env-var credentials
+     * @throws IllegalStateException if required environment variables are not set
+     */
+    public static AlpacaConfig fromPklSettings(AlpacaSettings settings) {
+        Objects.requireNonNull(settings, "AlpacaSettings cannot be null");
+
+        String apiKey = System.getenv("ALPACA_API_KEY");
+        String secretKey = System.getenv("ALPACA_SECRET_KEY");
+
+        if (apiKey == null || apiKey.isBlank()) {
+            throw new IllegalStateException("ALPACA_API_KEY environment variable is not set");
+        }
+        if (secretKey == null || secretKey.isBlank()) {
+            throw new IllegalStateException("ALPACA_SECRET_KEY environment variable is not set");
+        }
+
+        return new AlpacaConfig(apiKey, secretKey, settings.baseUrl(), settings.dataUrl());
+    }
+
     /**
      * Create config from environment variables.
      * Reads ALPACA_API_KEY, ALPACA_SECRET_KEY, and ALPACA_MODE.

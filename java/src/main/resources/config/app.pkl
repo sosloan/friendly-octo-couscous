@@ -1,0 +1,18 @@
+/// HFT Application Configuration — default (paper-trading) instance
+///
+/// Override individual properties for production or environment-specific
+/// deployments by creating additional .pkl files that amend this one.
+amends "AppConfig.pkl"
+
+alpaca {
+  baseUrl = "https://paper-api.alpaca.markets"
+  dataUrl = "https://data.alpaca.markets"
+  timeoutSeconds = 30
+  mode = "paper"
+}
+
+server {
+  port = 8080
+  backlog = 1024
+  workerThreads = 0
+}
