@@ -303,6 +303,12 @@ public struct HospitalWorld: Sendable {
         defer { _lock.unlock() }
         return _storage.taskStore
     }
+
+    public var resourceStore: FHIRResourceStore {
+        _lock.lock()
+        defer { _lock.unlock() }
+        return _storage.resourceStore
+    }
     
     public var annotationStore: AnnotationStore {
         _lock.lock()
