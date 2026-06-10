@@ -27,6 +27,24 @@
 [![Swift](https://img.shields.io/badge/Swift-5.9-FA7343.svg)](https://swift.org/)
 [![Erlang](https://img.shields.io/badge/Erlang-OTP26-green.svg)](https://www.erlang.org/)
 
+## 📑 Table of Contents
+
+- [Features](#-features)
+- [Quick Start](#-quick-start)
+- [Documentation](#-documentation)
+- [Architecture](#️-architecture)
+- [Components](#-components)
+- [Why This Stack?](#-why-this-stack)
+- [Ada Compliance Checking](#-ada-compliance-checking)
+- [Ada Audit System](#-ada-audit-system)
+- [Integration Testing](#-integration-testing)
+- [Prerequisites](#-prerequisites)
+- [Cross-Platform Support](#-cross-platform-support)
+- [Testing](#-testing)
+- [Performance](#-performance)
+- [Contributing](#-contributing)
+- [License](#-license)
+
 ## 🌟 Features
 
 - **🏆 GuaranteedCorrectness** - Mathematically proven correctness + Goldman Sachs quality standards ([See Proof](GuaranteedCorrectness.md))
