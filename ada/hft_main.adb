@@ -9,7 +9,7 @@ with HFT_Time_Util;
 procedure HFT_Main is
    Buy_Ord  : Order;
    Sell_Ord : Order;
-   Current_Time : constant Timestamp := Timestamp (HFT_Time_Util.Get_Unix_Timestamp); -- Unix timestamp (Nov 24, 2025)
+   Current_Time : constant Timestamp := HFT_Time_Util.Get_UTC_Timestamp_NS;
    Compliance_Result : Check_Result;
    Stats : Compliance_Stats;
 begin

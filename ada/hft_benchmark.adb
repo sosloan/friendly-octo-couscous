@@ -51,7 +51,7 @@ begin
       Price_Val  => 850.75,
       Qty        => 500,
       Order_Side => Buy,
-      Time_Stamp => Timestamp (HFT_Time_Util.Get_Unix_Timestamp)
+      Time_Stamp => HFT_Time_Util.Get_UTC_Timestamp_NS
    );
    
    -- Benchmark 1: Full Compliance Check

@@ -18,8 +18,12 @@ package HFT_Engine is
    -- Order side enumeration
    type Side is (Buy, Sell);
    
-   -- Timestamp as seconds since epoch (Unix timestamp)
-   type Timestamp is range 0 .. 9_999_999_999;
+   -- Regulatory UTC timestamp as nanoseconds since 1970-01-01T00:00:00Z.
+   -- Monotonic timestamps are deliberately a distinct type so elapsed-time
+   -- values cannot be mistaken for reportable UTC event times.
+   type UTC_Timestamp_NS is range 0 .. 9_000_000_000_000_000_000;
+   type Monotonic_Timestamp_NS is range 0 .. 9_000_000_000_000_000_000;
+   subtype Timestamp is UTC_Timestamp_NS;
    
    -- Order type definition
    type Order is record

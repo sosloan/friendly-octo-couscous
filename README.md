@@ -29,7 +29,7 @@
 
 ## 🌟 Features
 
-- **🏆 GuaranteedCorrectness** - Mathematically proven correctness + Goldman Sachs quality standards ([See Proof](GuaranteedCorrectness.md))
+- **🏆 Correctness artifacts** - Lean proof examples and Ada contracts ([See Scope](GuaranteedCorrectness.md))
 - **🛡️ Ada Engine** - Type-safe, formally verified order processing with comprehensive compliance checks
 - **✅ Ada Compliance System** - Multi-category validation (type safety, contracts, security, performance)
 - **📊 Ada Audit System** - Complete audit trails, history tracking, and trend analysis
@@ -38,7 +38,7 @@
 - **🌉 Akka Reactive Bridge** - Actor-based reactive architecture
 - **💪 Java 25 Powerhouse** - Virtual threads + Netty ultra-low latency
 - **🍎 Swift/SwiftUI + Combine** - Modern reactive UI with visionOS support
-- **🧠 Erlang/OTP Supervisor** - Immortal fault-tolerant supervision (99.999% uptime)
+- **🧠 Erlang/OTP Supervisor** - Fault-tolerant supervision demonstration
 - **📱 Cross-Platform** - Native support for tablets, mobile, and MacBook Air
 - **🤖 Kiro Agent** - Autonomous coding agent module with multi-day memory persistence
 
@@ -62,18 +62,17 @@ make test
 
 ## 🏆 GuaranteedCorrectness - Why We're Friendly AND Fast
 
-**TL;DR**: Our system isn't just fast—it's **provably correct** at Goldman Sachs institutional-grade quality.
+**TL;DR**: The repository demonstrates proof, type-safety, and performance
+techniques. Deployment guarantees require evidence from the exact reviewed build.
 
 ### Why "Friendly" (Safe & Reliable)
 ✅ **Mathematical Proofs** - Lean 4 theorem prover verifies correctness (not just testing)  
 ✅ **Type Safety** - Ada eliminates entire error classes at compile-time  
-✅ **99.999% Uptime** - Erlang supervision provides automatic fault recovery  
+✅ **Fault recovery design** - Erlang supervision demonstrates automatic recovery
 ✅ **Zero Memory Errors** - Buffer overflow, null pointers, type confusion impossible  
 
 ### Why "Fast" (High-Performance)
-✅ **Sub-Microsecond** - Order validation in < 1 μs (Ada real-time engine)  
-✅ **Ultra-Low Latency** - End-to-end processing < 126 μs median  
-✅ **Massive Scale** - 1M+ orders/second per node, linear scaling  
+✅ **Benchmark harnesses** - Validate latency and throughput on target infrastructure
 ✅ **Zero-Copy** - Netty eliminates unnecessary data movement  
 
 ### Formal Guarantees
@@ -90,9 +89,8 @@ theorem price_improvement : better price → better value
 This system earns the "**Hyper-UIRobot-S1TIer**" designation for combining bleeding-edge performance, automation, and user experience in a single platform:
 
 ### 🚀 HYPER (Ultra High Performance)
-- **Sub-Microsecond Latency** - Order validation in < 1 μs with Ada's real-time engine
-- **126 μs End-to-End** - Complete order processing faster than a camera flash
-- **1M+ Orders/Second** - Massive throughput that scales linearly across nodes
+- **Latency instrumentation** - Measures validation and end-to-end paths
+- **Throughput instrumentation** - Measures target-host capacity
 - **Virtual Threads** - Java 25's Project Loom enables millions of concurrent operations
 - **Zero-Copy Architecture** - Netty eliminates unnecessary data movement for maximum speed
 - **GPU-Ready Architecture** - Designed for NVIDIA CUDA acceleration in compute-intensive workflows
@@ -114,22 +112,22 @@ This system earns the "**Hyper-UIRobot-S1TIer**" designation for combining bleed
 - **77 Audit Tests** - Comprehensive automated compliance across 20 categories
 - **Self-Healing** - Erlang/OTP supervision automatically restarts failed processes
 - **Mathematical Proofs** - Lean 4 theorem prover verifies correctness (not just testing)
-- **Auto-Compliance** - Real-time validation against SEC, FINRA, MiFID II regulations
-- **Merkle Trees** - Cryptographic verification with tamper-evident audit trails
+- **MiFID evidence checks** - Best-execution and RTS 25 evidence validation; not regulatory certification
+- **Integrity tooling** - SHA-256 chaining for Ada records and separate Swift Merkle demonstrations
 
 ### 🏆 S1-TIER (First-Class Quality)
-- **Goldman Sachs Standards** - Institutional-grade quality and correctness guarantees
-- **99.999% Uptime** - Five nines reliability with Erlang supervision
+- **Institutional design goals** - No firm endorsement or production attestation implied
+- **Reliability architecture** - Erlang supervision without an asserted uptime SLA
 - **Formally Verified** - Mathematical proofs ensure correctness at compile-time
 - **Zero Memory Errors** - Ada eliminates buffer overflows, null pointers, type confusion
-- **Production Ready** - 8 comprehensive integration test scenarios, 30+ test cases
+- **Validation suites** - Integration scenarios and focused MiFID evidence tests
 - **Multi-Language Excellence** - Best-in-class components: Ada (safety), Lean (proofs), Akka (reactive), Swift (UI), Java (performance), Erlang (reliability)
 
 **Bottom Line**: This isn't just another trading system—it's a *hyper-fast*, *beautifully-interfaced*, *intelligently-automated*, *S1-tier* platform that combines the best of functional programming, formal verification, and modern UI/UX design. It's friendly *and* fierce.
 
 ## 📚 Documentation
 
-- **[GuaranteedCorrectness](GuaranteedCorrectness.md)** - Mathematical proof of why we're friendly and fast (Goldman Sachs quality)
+- **[Correctness Artifacts](GuaranteedCorrectness.md)** - Scope and mathematical proof examples
 - **[Security Audit Report](SECURITY_AUDIT_REPORT.md)** - Comprehensive security analysis and findings
 - **[Security Best Practices](SECURITY_BEST_PRACTICES.md)** - Security guidelines and deployment checklist
 - [Complete Guide](docs/README.md) - Full system documentation
@@ -137,6 +135,7 @@ This system earns the "**Hyper-UIRobot-S1TIer**" designation for combining bleed
 - [Deployment](docs/DEPLOYMENT.md) - Cross-platform deployment guide
 - [Ada Compliance](ada/COMPLIANCE.md) - Comprehensive Ada compliance checking system
 - [Ada Audit & Integration](ada/AUDIT_INTEGRATION.md) - Audit trails and integration testing
+- [MiFID Audit Evidence](ada/MIFID_AUDIT.md) - Best execution and RTS 25 controls and limitations
 
 ## 🏗️ Architecture
 
@@ -146,7 +145,7 @@ This system demonstrates a unique polyglot architecture where each language cont
 Ada (Type Safety) → Lean (Proofs) → Akka (Reactive) → Swift/Combine (UI) → Java (Performance) → Erlang (Fault Tolerance)
 ```
 
-Each component is production-ready and demonstrates best practices for that language ecosystem.
+Components are demonstrations and require deployment-specific assurance before production use.
 
 ## 📦 Components
 
@@ -167,7 +166,7 @@ Each component is production-ready and demonstrates best practices for that lang
 - **Akka**: Scales to millions of actors
 - **Swift/Combine**: Reactive UI with declarative SwiftUI
 - **Java 25**: Virtual threads enable massive concurrency
-- **Erlang**: Designed for 99.999% uptime
+- **Erlang**: Supervision and fault-recovery design
 
 ## ✅ Ada Compliance Checking
 
@@ -200,6 +199,8 @@ Complete audit trail and monitoring capabilities:
 - **Trend Analysis**: Identifies compliance trends (improving/stable/degrading)
 - **Reporting**: Detailed audit reports and violation analysis
 - **Export**: Audit log export for external analysis
+- **MiFID evidence**: Versioned NYSE/CME execution context and RTS 25 clock quality
+- **Integrity**: Durable SHA-256 record chaining with restart recovery
 
 Example usage:
 ```ada
@@ -270,7 +271,7 @@ A comprehensive advanced security audit has been completed. Key highlights:
 - 🔐 **Credential Protection** - Never commit secrets to Git
 - 🛡️ **Type Safety** - Ada compiler prevents buffer overflows, null pointers
 - 🔒 **HTTPS Only** - All API communication encrypted
-- 📊 **Audit Trails** - Complete compliance logging with Merkle trees
+- 📊 **Audit evidence** - Ada SHA-256 chaining and separate Swift Merkle demonstrations
 - 🧪 **Verified Correctness** - Lean proofs of critical algorithms
 - 🎯 **Thread Safety** - Proper locking and synchronization
 
@@ -317,7 +318,7 @@ For more information about the AKA testing suite, see [aka/README.md](aka/README
 - **Latency**: Sub-microsecond order processing
 - **Throughput**: Millions of orders/second
 - **UI Updates**: Real-time reactive updates via Combine
-- **Reliability**: 99.999% uptime (Erlang supervision)
+- **Reliability**: Erlang supervision demonstration; no uptime SLA asserted
 - **Correctness**: Mathematically proven (Lean)
 
 ## 🤝 Contributing

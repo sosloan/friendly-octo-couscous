@@ -23,7 +23,7 @@ procedure HFT_Compliance_Test is
       end if;
    end Assert;
    
-   Current_Time : constant Timestamp := Timestamp (HFT_Time_Util.Get_Unix_Timestamp);
+   Current_Time : constant Timestamp := HFT_Time_Util.Get_UTC_Timestamp_NS;
    Valid_Order : Order;
    
 begin
@@ -121,7 +121,7 @@ begin
    Assert (Check_Timestamp_Valid (Valid_Order), "Valid timestamp");
    declare
       Future_Order : Order := Valid_Order;
-      One_Hour : constant Timestamp := 60 * 60; -- 1 hour in seconds
+      One_Hour : constant Timestamp := 3_600_000_000_000;
    begin
       Future_Order.Time_Stamp := Current_Time + One_Hour;
       Assert (not Check_Timestamp_Valid (Future_Order),

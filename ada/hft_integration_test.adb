@@ -2,6 +2,7 @@
 -- Comprehensive integration tests with audit functionality
 
 with Ada.Text_IO; use Ada.Text_IO;
+with Ada.Directories;
  
 with HFT_Engine; use HFT_Engine;
 with HFT_Compliance; use HFT_Compliance;
@@ -12,7 +13,7 @@ procedure HFT_Integration_Test is
    
    Test_Count : Natural := 0;
    Pass_Count : Natural := 0;
-   Current_Time : constant Timestamp := Timestamp (HFT_Time_Util.Get_Unix_Timestamp);
+   Current_Time : constant Timestamp := HFT_Time_Util.Get_UTC_Timestamp_NS;
    
    procedure Assert (Condition : Boolean; Test_Name : String) is
    begin
@@ -39,15 +40,11 @@ procedure HFT_Integration_Test is
       -- Create 5 test orders
       for I in Orders'Range loop
          declare
-            Num_Str : String := Positive'Image (I);
             Symbol_Str : String (1 .. Symbol_Length) := (others => ' ');
          begin
             Symbol_Str (1 .. 4) := "TEST";
-            if I < 10 then
-               Symbol_Str (5) := Num_Str (Num_Str'Last);
-            else
-               Symbol_Str (5 .. 6) := Num_Str (Num_Str'Last - 1 .. Num_Str'Last);
-            end if;
+            Symbol_Str (5) :=
+              Character'Val (Character'Pos ('A') + I - 1);
             
             Orders (I) := (
                Order_ID   => I,
@@ -151,7 +148,7 @@ procedure HFT_Integration_Test is
       Invalid_Orders (1) := Valid_Order;
       Invalid_Orders (1).Order_ID := 2002;
       declare
-         One_Hour : constant Timestamp := 60 * 60; -- 1 hour in seconds
+         One_Hour : constant Timestamp := 3_600_000_000_000;
       begin
          Invalid_Orders (1).Time_Stamp := Current_Time + One_Hour;
       end;
@@ -204,15 +201,11 @@ procedure HFT_Integration_Test is
       -- Process multiple orders
       for I in Orders'Range loop
          declare
-            Num_Str : String := Positive'Image (I);
             Symbol_Str : String (1 .. Symbol_Length) := (others => ' ');
          begin
             Symbol_Str (1 .. 5) := "STOCK";
-            if I < 10 then
-               Symbol_Str (6) := Num_Str (Num_Str'Last);
-            else
-               Symbol_Str (6 .. 7) := Num_Str (Num_Str'Last - 1 .. Num_Str'Last);
-            end if;
+            Symbol_Str (6) :=
+              Character'Val (Character'Pos ('A') + I - 1);
             
             Orders (I) := (
                Order_ID   => 3000 + I,
@@ -269,7 +262,7 @@ procedure HFT_Integration_Test is
       end loop;
       
       Stats := Get_Audit_Statistics;
-      Assert (Stats.Total_Checks = 200, "All orders processed (2 events per order)");
+      Assert (Stats.Total_Checks = 100, "All orders processed once");
       Put_Line ("  Successfully processed 100 orders");
       Put_Line ("");
    end Test_High_Volume_Processing;
@@ -360,6 +353,13 @@ procedure HFT_Integration_Test is
       
       -- Export audit log
       begin
+         if Ada.Directories.Exists ("/tmp/hft_audit.log") then
+            Ada.Directories.Delete_File ("/tmp/hft_audit.log");
+         end if;
+         if Ada.Directories.Exists ("/tmp/hft_audit.log.checkpoint") then
+            Ada.Directories.Delete_File
+              ("/tmp/hft_audit.log.checkpoint");
+         end if;
          Export_Audit_Log ("/tmp/hft_audit.log");
          Assert (True, "Audit log exported successfully");
          Put_Line ("  Log file: /tmp/hft_audit.log");

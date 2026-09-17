@@ -101,9 +101,10 @@ package body HFT_Compliance is
    end Check_No_Zero_Division;
 
    function Check_Timestamp_Valid (O : HFT_Engine.Order) return Boolean is
-      Current_Time : constant HFT_Engine.Timestamp := 
-         HFT_Engine.Timestamp (HFT_Time_Util.Get_Unix_Timestamp);
-      One_Day : constant HFT_Engine.Timestamp := 24 * 60 * 60; -- 24 hours in seconds
+      Current_Time : constant HFT_Engine.Timestamp :=
+         HFT_Time_Util.Get_UTC_Timestamp_NS;
+      One_Day : constant HFT_Engine.Timestamp :=
+         86_400_000_000_000;
    begin
       -- Check that timestamp is not in the future
       if O.Time_Stamp > Current_Time then

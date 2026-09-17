@@ -2,27 +2,50 @@
 pragma Ada_2022;
 
 with Ada.Calendar;
+with Ada.Calendar.Formatting;
+with Ada.Real_Time;
 
 package body HFT_Time_Util is
-   
-   -- Unix epoch: January 1, 1970 00:00:00 UTC
-   -- Ada epoch: January 1, 1901 00:00:00 UTC (or implementation dependent)
-   
+
+   Unix_Epoch : constant Ada.Calendar.Time :=
+      Ada.Calendar.Formatting.Time_Of
+        (Year => 1970, Month => 1, Day => 1, Seconds => 0.0,
+         Time_Zone => 0);
+   Monotonic_Epoch : constant Ada.Real_Time.Time := Ada.Real_Time.Clock;
+
+   function Duration_To_NS (Value : Duration) return Long_Long_Integer is
+      Whole_Seconds : constant Long_Long_Integer :=
+        Long_Long_Integer (Value);
+      Fraction : constant Duration :=
+        Value - Duration (Whole_Seconds);
+   begin
+      return Whole_Seconds * 1_000_000_000
+        + Long_Long_Integer (Fraction * 1_000_000_000);
+   end Duration_To_NS;
+
    function Get_Unix_Timestamp return Long_Integer is
       use Ada.Calendar;
-      
-      -- Unix epoch as Ada time  
-      Unix_Epoch_Year : constant Year_Number := 1970;
-      Unix_Epoch_Month : constant Month_Number := 1;
-      Unix_Epoch_Day : constant Day_Number := 1;
-      Unix_Epoch : constant Time := Time_Of (Unix_Epoch_Year, Unix_Epoch_Month, Unix_Epoch_Day, 0.0);
-      
-      Current : constant Time := Clock;
-      Diff : Duration;
+      Diff : constant Duration := Clock - Unix_Epoch;
    begin
-      Diff := Current - Unix_Epoch;
-      -- Convert Duration to seconds, rounding to nearest integer
-      return Long_Integer (Float'Rounding (Float (Diff)));
+      return Long_Integer (Diff);
    end Get_Unix_Timestamp;
-   
+
+   function Get_UTC_Timestamp_NS return HFT_Engine.UTC_Timestamp_NS is
+      use Ada.Calendar;
+      Diff : constant Duration := Clock - Unix_Epoch;
+   begin
+      return HFT_Engine.UTC_Timestamp_NS
+       (Duration_To_NS (Diff));
+   end Get_UTC_Timestamp_NS;
+
+   function Get_Monotonic_Timestamp_NS
+      return HFT_Engine.Monotonic_Timestamp_NS
+   is
+      use Ada.Real_Time;
+      Diff : constant Duration := To_Duration (Clock - Monotonic_Epoch);
+   begin
+      return HFT_Engine.Monotonic_Timestamp_NS
+       (Long_Long_Integer'Max (1, Duration_To_NS (Diff)));
+   end Get_Monotonic_Timestamp_NS;
+
 end HFT_Time_Util;
