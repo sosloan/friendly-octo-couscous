@@ -4,6 +4,7 @@ pragma Ada_2022;
 
 with Ada.Real_Time;
 with HFT_Engine;
+with System;
 
 package HFT_Ravenscar_Runtime is
    pragma Elaborate_Body;
@@ -24,7 +25,7 @@ package HFT_Ravenscar_Runtime is
    type Order_Buffer is array (Buf_Index) of HFT_Engine.Order;
 
    protected Order_Queue is
-      pragma Priority (10);
+      pragma Priority (System.Priority'Last);
 
       procedure Enqueue (O : HFT_Engine.Order; Success : out Boolean);
       procedure Dequeue (O : out HFT_Engine.Order; Success : out Boolean);
@@ -39,7 +40,7 @@ package HFT_Ravenscar_Runtime is
    end Order_Queue;
 
    protected Compliance_Stats is
-      pragma Priority (9);
+      pragma Priority (System.Priority'Last);
 
       procedure Record_Pass;
       procedure Record_Fail;

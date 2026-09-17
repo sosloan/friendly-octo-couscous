@@ -320,12 +320,12 @@ Main task                    Compliance_Monitor (priority 7, 50 ms period)
     │  Enqueue (Order)               │  loop
     ├──────────────────────────────► │    delay until Next_Wake;
     │  Protected_Order_Queue         │    Dequeue (Order, Got);
-    │  (priority 10, circular/32)    │    if Got then
+    │  (max ceiling, circular/32)    │    if Got then
     │                                │       Result := Spark_Full_Check (Order);
     │  Read statistics               │       Record_Pass / Record_Fail;
     ◄───────────────────────────────►│    end if;
        Protected_Compliance_Stats    └────────────────────
-       (priority 9)
+       (max ceiling)
 ```
 
 ### Usage

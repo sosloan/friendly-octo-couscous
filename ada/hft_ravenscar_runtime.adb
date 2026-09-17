@@ -84,7 +84,8 @@ package body HFT_Ravenscar_Runtime is
          if T = 0 then
             return 0;
          end if;
-         return (Pass_Ct * 100) / T;
+         return Natural
+           ((Long_Long_Integer (Pass_Ct) * 100) / Long_Long_Integer (T));
       end Pass_Rate_Pct;
 
    end Compliance_Stats;
