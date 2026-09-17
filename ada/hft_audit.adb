@@ -4,12 +4,11 @@ with Ada.Directories;
 with Ada.Strings;
 with Ada.Strings.Fixed;
 with Ada.Text_IO;
-with Interfaces;
 with HFT_Time_Util;
+with HFT_SHA256;
 
 package body HFT_Audit is
    use Ada.Text_IO;
-   use type Interfaces.Unsigned_64;
 
    Max_Audit_Events : constant Positive := 10_000;
    type Event_Array is array (Positive range 1 .. Max_Audit_Events)
@@ -34,33 +33,6 @@ package body HFT_Audit is
    begin
       return (if Value then "TRUE" else "FALSE");
    end Boolean_Image;
-
-   function Hex (Value : Interfaces.Unsigned_64) return Hash_Text is
-      Digits : constant String := "0123456789ABCDEF";
-      Result : Hash_Text := (others => '0');
-      Work   : Interfaces.Unsigned_64 := Value;
-   begin
-      for I in reverse Result'Range loop
-         Result (I) := Digits (Natural (Work mod 16) + 1);
-         Work := Work / 16;
-      end loop;
-      return Result;
-   end Hex;
-
-   function Hash
-     (Value : String; Previous : Interfaces.Unsigned_64)
-      return Interfaces.Unsigned_64
-   is
-      Result : Interfaces.Unsigned_64 :=
-        16#CBF29CE484222325# xor Previous;
-      Prime  : constant Interfaces.Unsigned_64 := 16#100000001B3#;
-   begin
-      for C of Value loop
-         Result :=
-           (Result xor Interfaces.Unsigned_64 (Character'Pos (C))) * Prime;
-      end loop;
-      return Result;
-   end Hash;
 
    function Canonical (Event : Audit_Event) return String is
       E : HFT_MiFID.Execution_Evidence renames Event.MiFID_Evidence;
@@ -156,7 +128,62 @@ package body HFT_Audit is
          raise Audit_Persistence_Error;
    end Truncate_Log;
 
+   procedure Recover_Log_State
+     (Filename : String;
+      Head     : out Hash_Text;
+      Next_ID  : out Positive)
+   is
+      File      : File_Type;
+      Buffer    : String (1 .. 8_192);
+      Last      : Natural;
+      Separator : Natural;
+      Last_ID   : Natural := 0;
+   begin
+      Head := (others => '0');
+      Next_ID := 1;
+      if not Ada.Directories.Exists (Filename) then
+         Truncate_Log (Filename);
+         return;
+      end if;
+      Open (File, In_File, Filename);
+      while not End_Of_File (File) loop
+         Get_Line (File, Buffer, Last);
+         if Last >= 132
+           and then Buffer (65) = '|'
+           and then Buffer (130) = '|'
+         then
+            Head := Buffer (66 .. 129);
+            Separator := 131;
+            while Separator <= Last and then Buffer (Separator) /= '|' loop
+               Separator := Separator + 1;
+            end loop;
+            if Separator > 131 then
+               Last_ID := Positive'Value
+                 (Buffer (131 .. Separator - 1));
+            end if;
+         end if;
+      end loop;
+      Close (File);
+      if Last_ID = Positive'Last then
+         raise Audit_Capacity_Error;
+      elsif Last_ID > 0 then
+         Next_ID := Last_ID + 1;
+      end if;
+   exception
+      when Audit_Capacity_Error =>
+         if Is_Open (File) then
+            Close (File);
+         end if;
+         raise;
+      when others =>
+         if Is_Open (File) then
+            Close (File);
+         end if;
+         raise Audit_Persistence_Error;
+   end Recover_Log_State;
+
    protected Store is
+      procedure Initialize;
       procedure Reset;
       procedure Append (Candidate : Audit_Event; Stored : out Boolean);
       procedure Set_Config (Config : Audit_Config);
@@ -176,7 +203,8 @@ package body HFT_Audit is
       Next_ID      : Positive := 1;
       Current_Stats : Audit_Statistics;
       Current_Config : Audit_Config;
-      Chain_Head   : Interfaces.Unsigned_64 := 0;
+      Chain_Head   : Hash_Text := (others => '0');
+      Session_Base_Hash : Hash_Text := (others => '0');
       Durable_Log_Enabled : Boolean := True;
       Log_Path     : Path_Buffer :=
         "hft_audit_chain.log" & (1 .. 237 => ' ');
@@ -184,12 +212,27 @@ package body HFT_Audit is
    end Store;
 
    protected body Store is
+      procedure Initialize is
+      begin
+         Event_Count := 0;
+         Current_Stats := (others => 0);
+         if Durable_Log_Enabled then
+            Recover_Log_State
+              (Log_Path (1 .. Log_Path_Length), Chain_Head, Next_ID);
+         else
+            Chain_Head := (others => '0');
+            Next_ID := 1;
+         end if;
+         Session_Base_Hash := Chain_Head;
+      end Initialize;
+
       procedure Reset is
       begin
          Event_Count := 0;
          Next_ID := 1;
          Current_Stats := (others => 0);
-         Chain_Head := 0;
+         Chain_Head := (others => '0');
+         Session_Base_Hash := (others => '0');
          if Durable_Log_Enabled then
             Truncate_Log (Log_Path (1 .. Log_Path_Length));
          end if;
@@ -202,7 +245,7 @@ package body HFT_Audit is
            or else (Candidate.Passed and Current_Config.Log_Passed_Checks)
            or else ((not Candidate.Passed)
                     and Current_Config.Log_Failed_Checks);
-         New_Hash : Interfaces.Unsigned_64;
+         New_Hash : Hash_Text;
       begin
          Stored := False;
          if not Current_Config.Enable_Audit or else not Should_Log then
@@ -215,9 +258,9 @@ package body HFT_Audit is
          end if;
 
          Event.Event_ID := Next_ID;
-         Event.Previous_Hash := Hex (Chain_Head);
-         New_Hash := Hash (Canonical (Event), Chain_Head);
-         Event.Record_Hash := Hex (New_Hash);
+         Event.Previous_Hash := Chain_Head;
+         New_Hash := HFT_SHA256.Digest (Chain_Head & Canonical (Event));
+         Event.Record_Hash := New_Hash;
 
          if Durable_Log_Enabled then
             Append_Line
@@ -323,14 +366,17 @@ package body HFT_Audit is
          then
             raise Constraint_Error with "invalid audit log filename";
          end if;
+         if Enabled and then Event_Count > 0 then
+            raise Constraint_Error with
+              "configure durable log before recording audit events";
+         end if;
          Durable_Log_Enabled := Enabled;
          if Enabled then
             Log_Path := (others => ' ');
             Log_Path_Length := Filename'Length;
             Log_Path (1 .. Log_Path_Length) := Filename;
-            if not Ada.Directories.Exists (Filename) then
-               Truncate_Log (Filename);
-            end if;
+            Recover_Log_State (Filename, Chain_Head, Next_ID);
+            Session_Base_Hash := Chain_Head;
          end if;
       end Set_Log;
 
@@ -386,15 +432,16 @@ package body HFT_Audit is
       end Count_Severity;
 
       function Chain_Valid return Boolean is
-         Previous : Interfaces.Unsigned_64 := 0;
-         Expected : Interfaces.Unsigned_64;
+         Previous : Hash_Text := Session_Base_Hash;
+         Expected : Hash_Text;
       begin
          for I in 1 .. Event_Count loop
-            if Events (I).Previous_Hash /= Hex (Previous) then
+            if Events (I).Previous_Hash /= Previous then
                return False;
             end if;
-            Expected := Hash (Canonical (Events (I)), Previous);
-            if Events (I).Record_Hash /= Hex (Expected) then
+            Expected :=
+              HFT_SHA256.Digest (Previous & Canonical (Events (I)));
+            if Events (I).Record_Hash /= Expected then
                return False;
             end if;
             Previous := Expected;
@@ -404,7 +451,7 @@ package body HFT_Audit is
 
       function Chain_Head_Text return Hash_Text is
       begin
-         return Hex (Chain_Head);
+         return Chain_Head;
       end Chain_Head_Text;
    end Store;
 
@@ -453,7 +500,7 @@ package body HFT_Audit is
    procedure Initialize_Audit_System is
    begin
       Audit_Start_Time := HFT_Time_Util.Get_UTC_Timestamp_NS;
-      Store.Reset;
+      Store.Initialize;
    end Initialize_Audit_System;
 
    procedure Record_Audit_Event

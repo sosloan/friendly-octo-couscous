@@ -29,7 +29,7 @@ package HFT_MiFID is
    type RTS25_Tier is
      (High_Frequency_Electronic, Standard_Electronic, Non_Electronic);
    type Synchronization_State is
-     (Synchronized, Degraded, Unsynchronized);
+     (In_Sync, Degraded, Out_Of_Sync);
    type Clock_Source is
      (PTP_Primary, PTP_Secondary, NTP, Holdover, Unknown_Source);
    type Timestamp_Origin is
@@ -52,7 +52,7 @@ package HFT_MiFID is
       UTC_Time             : HFT_Engine.UTC_Timestamp_NS := 0;
       Monotonic_Time       : HFT_Engine.Monotonic_Timestamp_NS := 0;
       Tier                 : RTS25_Tier := High_Frequency_Electronic;
-      State                : Synchronization_State := Unsynchronized;
+      State                : Synchronization_State := Out_Of_Sync;
       Source               : Clock_Source := Unknown_Source;
       Origin               : Timestamp_Origin := Application;
       UTC_Offset_NS        : Signed_NS := 0;

@@ -48,7 +48,7 @@ package HFT_Audit is
    type Severity_Level is (Info, Warning, Error, Critical);
    type Regulatory_Domain is
      (Technical_Compliance, MiFID_II_Best_Execution, MiFIR_RTS_25);
-   subtype Hash_Text is String (1 .. 16);
+   subtype Hash_Text is String (1 .. 64);
 
    type Audit_Event is record
       Event_ID        : Positive := 1;

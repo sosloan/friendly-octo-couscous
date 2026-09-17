@@ -1,5 +1,9 @@
 # Final Implementation Summary: Ada Compliance, Audit, and Integration Testing
 
+> Historical implementation summary, not a production-readiness or regulatory
+> certification statement. See `MIFID_AUDIT.md` for current demonstrated scope
+> and deployment limitations.
+
 ## ✅ Complete Implementation Status
 
 This document provides a comprehensive summary of the Ada compliance checking system, audit trail functionality, and integration testing framework added to the friendly-octo-couscous HFT system.
@@ -714,5 +718,4 @@ make test-ada
 ---
 
 **SPARK + Ravenscar Status**: ✅ **COMPLETE — 143/143 tests passing**
-
 

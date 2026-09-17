@@ -1,4 +1,7 @@
-# GuaranteedCorrectness: Mathematical Proof of Friendly & Fast HFT System
+# Correctness Artifacts for the HFT Demonstration
+
+> These are repository proof examples, not an affiliation, production
+> attestation, whole-system proof, or regulatory certification.
 
 ---
 
@@ -7,7 +10,7 @@
 │  "In trading systems, correctness isn't negotiable—        │
 │   it must be mathematically proven, not hoped for."        │
 │                                                             │
-│         ++ FORMALLY VERIFIED + GOLDMAN SACHS QUALITY ++     │
+│            ++ FORMAL METHODS DEMONSTRATION ++               │
 │                                                             │
 │   Proving why we're both friendly (safe & reliable)        │
 │   and fast (high-performance & efficient)                  │

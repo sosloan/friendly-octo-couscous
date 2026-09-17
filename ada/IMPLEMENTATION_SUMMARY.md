@@ -1,5 +1,8 @@
 # Ada Compliance Implementation Summary
 
+> Historical summary. Generic validation does not establish MiFID II/MiFIR
+> compliance or production readiness; see `MIFID_AUDIT.md`.
+
 ## Overview
 
 This document summarizes the comprehensive Ada compliance checking system added to the friendly-octo-couscous HFT system.

@@ -39,15 +39,11 @@ procedure HFT_Integration_Test is
       -- Create 5 test orders
       for I in Orders'Range loop
          declare
-            Num_Str : String := Positive'Image (I);
             Symbol_Str : String (1 .. Symbol_Length) := (others => ' ');
          begin
             Symbol_Str (1 .. 4) := "TEST";
-            if I < 10 then
-               Symbol_Str (5) := Num_Str (Num_Str'Last);
-            else
-               Symbol_Str (5 .. 6) := Num_Str (Num_Str'Last - 1 .. Num_Str'Last);
-            end if;
+            Symbol_Str (5) :=
+              Character'Val (Character'Pos ('A') + I - 1);
             
             Orders (I) := (
                Order_ID   => I,
@@ -204,15 +200,11 @@ procedure HFT_Integration_Test is
       -- Process multiple orders
       for I in Orders'Range loop
          declare
-            Num_Str : String := Positive'Image (I);
             Symbol_Str : String (1 .. Symbol_Length) := (others => ' ');
          begin
             Symbol_Str (1 .. 5) := "STOCK";
-            if I < 10 then
-               Symbol_Str (6) := Num_Str (Num_Str'Last);
-            else
-               Symbol_Str (6 .. 7) := Num_Str (Num_Str'Last - 1 .. Num_Str'Last);
-            end if;
+            Symbol_Str (6) :=
+              Character'Val (Character'Pos ('A') + I - 1);
             
             Orders (I) := (
                Order_ID   => 3000 + I,
@@ -269,7 +261,7 @@ procedure HFT_Integration_Test is
       end loop;
       
       Stats := Get_Audit_Statistics;
-      Assert (Stats.Total_Checks = 200, "All orders processed (2 events per order)");
+      Assert (Stats.Total_Checks = 100, "All orders processed once");
       Put_Line ("  Successfully processed 100 orders");
       Put_Line ("");
    end Test_High_Volume_Processing;

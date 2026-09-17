@@ -1,5 +1,9 @@
 # Advanced Security Audit Report
 
+> This is a historical repository assessment, not a current certification or
+> production-readiness attestation. Ada MiFID evidence limitations are
+> documented in `ada/MIFID_AUDIT.md`.
+
 **Date:** 2026-01-23  
 **Repository:** sosloan/friendly-octo-couscous  
 **Audit Type:** Comprehensive Multi-Language Security Assessment
@@ -279,7 +283,7 @@ protected void channelRead0(ChannelHandlerContext ctx, String msg) {
 - **Data Protection:** Secure handling of customer data if applicable
 
 ### Current Status:
-- ✅ Ada audit system provides comprehensive audit trails
+- ✅ Ada audit framework captures ordered evidence; deployment controls remain required
 - ✅ Merkle trees for tamper-evident logging
 - ⚠️ Need to ensure all network communication is encrypted
 - ⚠️ Need to implement proper access controls

@@ -1,5 +1,10 @@
 # Ada Compliance Audit and Integration Testing
 
+> **Scope notice:** Generic order checks are not evidence of regulatory
+> compliance. MiFID II best-execution and MiFIR RTS 25 evidence is documented
+> in [MIFID_AUDIT.md](MIFID_AUDIT.md). The local audit file must be placed on
+> access-controlled immutable storage for production use.
+
 ## Overview
 
 The Ada Compliance Audit and Integration Testing system extends the compliance checking framework with comprehensive audit trails, history tracking, and integration tests that validate compliance across complex real-world scenarios.
@@ -298,13 +303,14 @@ gprbuild -P hft.gpr
 
 **Unit Tests:**
 ```bash
-./hft_test                # Original HFT unit tests
-./hft_compliance_test     # Compliance unit tests (50+ cases)
+./obj/hft_test
+./obj/hft_compliance_test
 ```
 
 **Integration Tests:**
 ```bash
-./hft_integration_test    # Integration tests with audit (8 scenarios)
+./obj/hft_integration_test
+./obj/hft_mifid_test
 ```
 
 **Examples:**

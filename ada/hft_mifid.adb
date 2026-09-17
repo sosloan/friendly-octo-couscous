@@ -1,6 +1,10 @@
 pragma Ada_2022;
 
 package body HFT_MiFID is
+   use type HFT_Engine.Price;
+   use type HFT_Engine.Quantity;
+   use type HFT_Engine.UTC_Timestamp_NS;
+   use type HFT_Engine.Monotonic_Timestamp_NS;
    function Copy_Short (Value : String; Length : Positive) return String is
       Result : String (1 .. Length) := (others => ' ');
       Count  : constant Natural := Natural'Min (Value'Length, Length);
@@ -69,7 +73,7 @@ package body HFT_MiFID is
         (if Evidence.UTC_Offset_NS < 0
          then -Evidence.UTC_Offset_NS
          else Evidence.UTC_Offset_NS);
-      return Evidence.State = Synchronized
+      return Evidence.State = In_Sync
         and Evidence.Source /= Unknown_Source
         and Evidence.UTC_Time > 0
         and Evidence.Monotonic_Time > 0
