@@ -1,30 +1,24 @@
--- Vibration Chaos Monitor — Ada SPARK Ravenscar Compliance Example
+-- Vibration Chaos Monitor — Ada SPARK and Ravenscar Pattern Example
 --
 -- Demonstrates:
---   • Ada SPARK_Mode annotations and contract-based programming
---   • Ravenscar profile constraints (one entry per protected object,
+--   • SPARK-style contracts
+--   • Ravenscar design constraints (one entry per protected object,
 --     cyclic tasks, no dynamic allocation)
 --   • Chaos detection via Lyapunov-exponent sign check
 --   • Protected sensor buffer with ceiling priority
 --   • Formal pre- / post-conditions on every public subprogram
 --
 -- Build:
---   gprbuild -P hft.gpr -XBuild=Ravenscar
+--   gprbuild -P hft.gpr compliance_example.adb
 -- Prove:
 --   gnatprove -P hft.gpr --level=4 --report=all
-
-pragma Profile (Ravenscar);
-pragma Partition_Elaboration_Policy (Sequential);
-pragma SPARK_Mode (On);
 
 with Ada.Text_IO;     use Ada.Text_IO;
 with Ada.Real_Time;   use Ada.Real_Time;
 with Ada.Numerics;
 with System;
 
-procedure Compliance_Example
-  with SPARK_Mode => On
-is
+procedure Compliance_Example is
 
    ---------------------------------------------------------------------------
    --  Domain Types
@@ -77,8 +71,7 @@ is
    procedure Demonstrate_Type_Safety is
 
       function Amplitude_In_Range (A : Float) return Boolean
-        with SPARK_Mode => On,
-             Post => Amplitude_In_Range'Result =
+        with Post => Amplitude_In_Range'Result =
                        (A in Float (Amplitude_G'First) ..
                              Float (Amplitude_G'Last));
 
@@ -88,8 +81,7 @@ is
       end Amplitude_In_Range;
 
       function Frequency_In_Range (F : Float) return Boolean
-        with SPARK_Mode => On,
-             Post => Frequency_In_Range'Result =
+        with Post => Frequency_In_Range'Result =
                        (F in Float (Frequency_Hz'First) ..
                              Float (Frequency_Hz'Last));
 
@@ -133,8 +125,7 @@ is
       function Lyapunov_Sign
         (S1 : Amplitude_G;
          S2 : Amplitude_G) return Float
-        with SPARK_Mode => On,
-             Pre  => S1 /= S2,
+        with Pre  => S1 /= S2,
              Post => (if Lyapunov_Sign'Result > 0.0
                       then abs (S2 - S1) > abs (S1));
 
@@ -300,8 +291,7 @@ is
       function Scale_Amplitude
         (A      : Amplitude_G;
          Factor : Float) return Amplitude_G
-        with SPARK_Mode => On,
-             Pre  => Factor in 0.0 .. 1.0
+        with Pre  => Factor in 0.0 .. 1.0
                      and then Float (A) * Factor <=
                                Float (Amplitude_G'Last),
              Post => Scale_Amplitude'Result <= A;
