@@ -36,7 +36,10 @@ and records:
 
 `Economically_Equivalent` requires the same asset class, instrument, currency,
 and quantity. A cash equity and a futures hedge therefore cannot be presented
-as interchangeable execution alternatives.
+as interchangeable execution alternatives. Validation also enforces coherent
+NYSE/CME sessions and order types, futures expiry, spread/roll evidence, linked
+hedge objectives, stage-specific fill quantities, and paired override identity
+and rationale.
 
 `Venue_Policy` provides approved-venue flags, a version, and factor weights for
 price, cost, speed, fill likelihood, and size/nature. The default policy allows
@@ -60,8 +63,11 @@ The configured RTS 25 tiers are:
 `Clock_Evidence` records tier, synchronization state, PTP/NTP/holdover source,
 hardware/kernel/application origin, UTC offset, uncertainty, granularity, and
 last synchronization time. Compliance requires `abs(offset) + uncertainty` to
-remain within the tier threshold. A deployment must classify each system from
-its actual activity and gateway-to-gateway latency before relying on a tier.
+remain within the tier threshold. Synchronization and market-data evidence must
+also be internally ordered and no more than one second old; reconciliation
+timestamps may differ by at most one millisecond. A deployment must classify
+each system from its actual activity and gateway-to-gateway latency before
+relying on a tier.
 
 Explicit events exist for loss of synchronization, excessive drift, rollback,
 source failover, stale market data, and reconciliation failure. The application
@@ -73,15 +79,32 @@ procedures.
 `HFT_Audit` serializes each complete evidence record to an append-only text log.
 Every record includes its predecessor and a SHA-256 digest of the predecessor
 plus canonical record. Event identifiers and the chain head are recovered when
-the process restarts. In-memory operations are serialized by a protected
-object, and capacity or persistence failures raise explicit exceptions rather
-than silently dropping records.
+the process restarts. Recovery verifies the header, schema, identifier
+sequence, predecessor continuity, hexadecimal encoding, and every SHA-256
+digest. A sidecar checkpoint detects tail truncation. In-memory operations are
+serialized by a protected object, while a sidecar lock descriptor prevents
+concurrent processes from forking the chain during validation and append. It uses a
+Linux advisory file lock whose descriptor is released by the operating system
+if a process exits. Log writes are synchronized before atomic checkpoint
+replacement, and the containing directory is synchronized after replacement.
+Capacity,
+content-validation, lock, and persistence failures raise explicit exceptions
+rather than silently dropping records. Pipe delimiters and control characters
+are rejected before serialization.
+
+Checkpoint replacement is atomic on the supported Linux deployment. Recovery
+accepts a valid log that is ahead of its last atomic checkpoint, verifies the
+additional chain, and advances the checkpoint. Clearing, recovery, append, and
+full durable-log export are coordinated with inter-process locks. Export
+atomically replaces its destination with the complete verified durable chain
+while rejecting source-sidecar aliases.
 
 This supplies cryptographic change detection, not immutable storage. Production
 deployments must place the log on access-controlled WORM or equivalent storage,
-protect independent signed checkpoints, manage retention and legal holds, and
-monitor persistence failures. `Clear_Audit_History` is intended only for tests
-or separately authorized maintenance.
+protect independent signed checkpoints beyond the local sidecar, manage
+retention and legal holds, and monitor persistence failures.
+`Clear_Audit_History` clears only the process-local query view and statistics;
+it never deletes durable evidence.
 
 The canonical record retains the inputs required for deterministic decision
 replay. Exchange acknowledgements, drop copies, clearing records, and native
@@ -139,5 +162,7 @@ NYSE/CME evidence, cash/futures non-equivalence, and chain recovery.
 - Policy and market inputs are trusted caller data until authenticated adapter
   boundaries are added.
 - The local file is not WORM storage and has no key-backed signature.
+- The local append implementation prioritizes verification over low-latency
+  throughput; production systems should use a single-writer durable sink.
 - Formal proof and performance claims require retained tool output from the
   exact reviewed build.

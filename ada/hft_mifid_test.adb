@@ -1,3 +1,4 @@
+with Ada.Directories;
 with Ada.Text_IO; use Ada.Text_IO;
 with HFT_Audit; use HFT_Audit;
 with HFT_Engine;
@@ -7,6 +8,7 @@ with HFT_Time_Util;
 
 procedure HFT_MiFID_Test is
    use type HFT_Engine.Monotonic_Timestamp_NS;
+   use type HFT_Engine.Quantity;
    use type HFT_Engine.UTC_Timestamp_NS;
    Tests  : Natural := 0;
    Passed : Natural := 0;
@@ -21,6 +23,21 @@ procedure HFT_MiFID_Test is
          Put_Line ("  FAIL " & Name);
       end if;
    end Assert;
+
+   procedure Assert_Digest_Changes
+     (Baseline : Hash_Text;
+      Mutant   : Execution_Evidence;
+      Name     : String) is
+   begin
+      Assert (Evidence_Digest (Mutant) /= Baseline, Name);
+   end Assert_Digest_Changes;
+
+   procedure Delete_If_Exists (Filename : String) is
+   begin
+      if Ada.Directories.Exists (Filename) then
+         Ada.Directories.Delete_File (Filename);
+      end if;
+   end Delete_If_Exists;
 
    function Valid_Clock return Clock_Evidence is
       Result : Clock_Evidence;
@@ -110,6 +127,13 @@ procedure HFT_MiFID_Test is
    Accepted : Boolean;
 begin
    Put_Line ("MiFID II best-execution and RTS 25 tests");
+   Delete_If_Exists ("/tmp/hft_mifid_audit.log");
+   Delete_If_Exists ("/tmp/hft_mifid_audit.log.checkpoint");
+   Delete_If_Exists ("/tmp/hft_mifid_export.log");
+   Delete_If_Exists ("/tmp/hft_mifid_export.log.checkpoint");
+   Delete_If_Exists ("/tmp/hft_mifid_tampered.log");
+   Delete_If_Exists ("/tmp/hft_mifid_missing.log");
+   Delete_If_Exists ("/tmp/hft_mifid_missing.log.checkpoint");
    Configure_Durable_Log ("/tmp/hft_mifid_audit.log");
    Clear_Audit_History;
 
@@ -140,6 +164,55 @@ begin
       "NYSE best-execution evidence complete");
    Assert (Is_Audit_Ready (Equity), "NYSE evidence audit ready");
 
+   declare
+      Baseline : constant Hash_Text := Evidence_Digest (Equity);
+      Mutant   : Execution_Evidence;
+   begin
+      Mutant := Equity;
+      Mutant.Policy.NYSE_Approved := False;
+      Assert_Digest_Changes
+        (Baseline, Mutant, "venue approvals protected by digest");
+      Mutant := Equity;
+      Mutant.Policy.Weights.Price := 3_999;
+      Assert_Digest_Changes
+        (Baseline, Mutant, "policy weights protected by digest");
+      Mutant := Equity;
+      Mutant.Market.Bid_Depth := Mutant.Market.Bid_Depth + 1;
+      Assert_Digest_Changes
+        (Baseline, Mutant, "market depth protected by digest");
+      Mutant := Equity;
+      Mutant.Market.Estimated_Fee_Micros :=
+        Mutant.Market.Estimated_Fee_Micros + 1;
+      Assert_Digest_Changes
+        (Baseline, Mutant, "estimated fees protected by digest");
+      Mutant := Equity;
+      Mutant.Market.Liquidity_Score_BPS :=
+        Mutant.Market.Liquidity_Score_BPS - 1;
+      Assert_Digest_Changes
+        (Baseline, Mutant, "liquidity protected by digest");
+      Mutant := Equity;
+      Mutant.Metrics.Benchmark_Price := 230.01;
+      Assert_Digest_Changes
+        (Baseline, Mutant, "benchmark protected by digest");
+      Mutant := Equity;
+      Mutant.Metrics.Implementation_Shortfall_BPS := 2;
+      Assert_Digest_Changes
+        (Baseline, Mutant, "transaction costs protected by digest");
+      Mutant := Equity;
+      Mutant.Clock.Origin := Kernel;
+      Assert_Digest_Changes
+        (Baseline, Mutant, "clock origin protected by digest");
+      Mutant := Equity;
+      Mutant.Clock.Last_Synchronized_At :=
+        Mutant.Clock.Last_Synchronized_At - 1;
+      Assert_Digest_Changes
+        (Baseline, Mutant, "clock synchronization time protected by digest");
+      Mutant := Equity;
+      Mutant.Reconciliation.Timestamp_Delta_NS := 20_001;
+      Assert_Digest_Changes
+        (Baseline, Mutant, "reconciliation delta protected by digest");
+   end;
+
    Future_Order := Equity;
    Future_Order.Parent_Order_ID := 20_001;
    Future_Order.Child_Order_ID := 20_002;
@@ -165,6 +238,24 @@ begin
       "cash equity and futures are not equivalent alternatives");
 
    declare
+       Wrong_Session : Execution_Evidence := Future_Order;
+   begin
+       Wrong_Session.Session := NYSE_Continuous;
+       Assert
+         (not Is_Audit_Ready (Wrong_Session),
+          "CME futures with NYSE session rejected");
+   end;
+
+   declare
+       Incomplete_Spread : Execution_Evidence := Future_Order;
+   begin
+       Incomplete_Spread.Related_Instrument := To_Instrument ("");
+       Assert
+         (not Is_Audit_Ready (Incomplete_Spread),
+          "spread without related instrument rejected");
+   end;
+
+   declare
       Stale : Execution_Evidence := Equity;
    begin
       Stale.Market.Is_Stale := True;
@@ -182,17 +273,126 @@ begin
          "exchange reconciliation mismatch rejected");
    end;
 
+   declare
+      Bad_Fill : Execution_Evidence := Equity;
+   begin
+      Bad_Fill.Metrics.Filled_Quantity := 0;
+      Assert
+        (not Is_Audit_Ready (Bad_Fill),
+         "zero-quantity full fill rejected");
+   end;
+
+   declare
+      Old_Sync : Execution_Evidence := Equity;
+   begin
+      Old_Sync.Clock.Last_Synchronized_At :=
+        Old_Sync.Clock.UTC_Time -
+          HFT_Engine.UTC_Timestamp_NS (Maximum_Synchronization_Age_NS) - 1;
+      Assert
+        (not Is_Audit_Ready (Old_Sync),
+         "stale synchronization evidence rejected");
+   end;
+
+   declare
+      Unsafe : Execution_Evidence := Equity;
+      Before : constant Natural := Audit_Event_Count;
+   begin
+      Unsafe.Routing_Rationale (1) := ASCII.LF;
+      begin
+         Record_Execution_Evidence (Unsafe, Accepted);
+         Assert (False, "control character rejected");
+      exception
+         when Constraint_Error =>
+            Assert
+              (Audit_Event_Count = Before,
+               "control character rejected before persistence");
+      end;
+   end;
+
+   declare
+      Config : Audit_Config := Get_Audit_Config;
+   begin
+      Config.Max_History_Size := 1;
+      Config.Enable_Audit := False;
+      Configure_Audit (Config);
+      Record_Execution_Evidence (NYSE_Evidence, Accepted);
+      Assert
+        (Audit_Event_Count = 0,
+         "disabled audit does not consume batch capacity");
+      Config.Enable_Audit := True;
+      Configure_Audit (Config);
+      begin
+         Record_Execution_Evidence (NYSE_Evidence, Accepted);
+         Assert (False, "multi-event capacity reserved atomically");
+      exception
+         when Audit_Capacity_Error =>
+            Assert
+              (Audit_Event_Count = 0,
+               "multi-event capacity reserved atomically");
+      end;
+      Config.Max_History_Size := 10_000;
+      Configure_Audit (Config);
+   end;
+
    for Stage in Lifecycle_Stage loop
-      Equity.Stage := Stage;
-      Record_Execution_Evidence (Equity, Accepted);
-      Assert (Accepted, Lifecycle_Stage'Image (Stage) & " recorded");
+      declare
+         Stage_Evidence : Execution_Evidence := NYSE_Evidence;
+      begin
+         Stage_Evidence.Stage := Stage;
+         case Stage is
+            when Market_Data_Receipt | Strategy_Decision |
+                 Risk_Approval | Gateway_Send =>
+               Stage_Evidence.Metrics.Filled_Quantity := 0;
+               Stage_Evidence.Metrics.Execution_Price := 0.0;
+               Stage_Evidence.Reconciliation := (others => <>);
+            when Venue_Acknowledgement =>
+               Stage_Evidence.Metrics.Filled_Quantity := 0;
+               Stage_Evidence.Metrics.Execution_Price := 0.0;
+               Stage_Evidence.Reconciliation := (others => <>);
+               Stage_Evidence.Reconciliation.Exchange_Order_ID :=
+                 To_Short_Text ("NYSE-ORDER-1");
+            when Partial_Fill =>
+               Stage_Evidence.Metrics.Filled_Quantity := 50;
+            when Full_Fill | Correction =>
+               Stage_Evidence.Metrics.Filled_Quantity := 100;
+            when Cancellation =>
+               Stage_Evidence.Metrics.Filled_Quantity := 0;
+               Stage_Evidence.Metrics.Execution_Price := 0.0;
+               Stage_Evidence.Reconciliation := (others => <>);
+               Stage_Evidence.Reconciliation.Exchange_Order_ID :=
+                 To_Short_Text ("NYSE-ORDER-1");
+         end case;
+         Record_Execution_Evidence (Stage_Evidence, Accepted);
+         Assert (Accepted, Lifecycle_Stage'Image (Stage) & " recorded");
+      end;
    end loop;
 
+   Future_Order.Clock := Valid_Clock;
+   Future_Order.Market.Exchange_Timestamp :=
+     Future_Order.Clock.UTC_Time - 10_000;
+   Future_Order.Market.Local_Receipt_Timestamp :=
+     Future_Order.Clock.UTC_Time;
    Record_Execution_Evidence (Future_Order, Accepted);
    Assert (Accepted, "CME evidence recorded");
    Assert
      (Get_Audit_Events_By_Type (Best_Execution_Assessed) = 10,
       "best-execution assessments counted");
+
+   declare
+      Replay : Execution_Evidence := NYSE_Evidence;
+      Two_Seconds : constant HFT_Engine.UTC_Timestamp_NS :=
+        2_000_000_000;
+   begin
+      Replay.Clock.UTC_Time := Replay.Clock.UTC_Time - Two_Seconds;
+      Replay.Clock.Last_Synchronized_At :=
+        Replay.Clock.Last_Synchronized_At - Two_Seconds;
+      Replay.Market.Exchange_Timestamp :=
+        Replay.Market.Exchange_Timestamp - Two_Seconds;
+      Replay.Market.Local_Receipt_Timestamp :=
+        Replay.Market.Local_Receipt_Timestamp - Two_Seconds;
+      Record_Execution_Evidence (Replay, Accepted);
+      Assert (not Accepted, "replayed stale evidence rejected at recording");
+   end;
    Assert (Verify_Audit_Chain, "in-memory SHA-256 chain verifies");
    Assert
      (Get_Chain_Head /= (Hash_Text'(others => '0')),
@@ -231,9 +431,93 @@ begin
         (Get_Audit_Event (1).Event_ID = Previous_ID + 1,
          "durable event sequence continues after reinitialization");
       Assert (Verify_Audit_Chain, "continued durable chain verifies");
+      declare
+         Current_Head : constant Hash_Text := Get_Chain_Head;
+         Stale_Checkpoint : File_Type;
+      begin
+         Create
+           (Stale_Checkpoint, Out_File,
+            "/tmp/hft_mifid_audit.log.checkpoint");
+         Put_Line
+           (Stale_Checkpoint,
+            Previous_Head & "|" & Positive'Image (Previous_ID + 1));
+         Close (Stale_Checkpoint);
+         Initialize_Audit_System;
+         Assert
+           (Get_Chain_Head = Current_Head,
+            "valid log ahead of crash-stale checkpoint recovered");
+      end;
+   end;
+
+   begin
+      Export_Audit_Log ("/tmp/../tmp/hft_mifid_audit.log");
+      Assert (False, "canonical source alias export rejected");
+   exception
+      when Constraint_Error =>
+         Assert (True, "canonical source alias export rejected");
    end;
 
    Export_Audit_Log ("/tmp/hft_mifid_export.log");
+   Configure_Durable_Log ("/tmp/hft_mifid_export.log");
+   Assert
+     (Get_Chain_Head /= (Hash_Text'(others => '0')),
+      "export contains complete recoverable durable chain");
+   Configure_Durable_Log ("/tmp/hft_mifid_audit.log");
+
+   declare
+      Truncated : File_Type;
+   begin
+      Create (Truncated, Out_File, "/tmp/hft_mifid_audit.log");
+      Put_Line
+        (Truncated,
+         "PREVIOUS_HASH|RECORD_HASH|CANONICAL_MIFID_AUDIT_RECORD");
+      Close (Truncated);
+      begin
+         Initialize_Audit_System;
+         Assert (False, "truncated durable history rejected");
+      exception
+         when Audit_Persistence_Error =>
+            Assert (True, "truncated durable history rejected");
+      end;
+   end;
+
+   Clear_Audit_History;
+   declare
+      Forged : File_Type;
+   begin
+      Create (Forged, Out_File, "/tmp/hft_mifid_tampered.log");
+      Put_Line
+        (Forged,
+         "PREVIOUS_HASH|RECORD_HASH|CANONICAL_MIFID_AUDIT_RECORD");
+      Put_Line (Forged, "forged");
+      Close (Forged);
+      begin
+         Configure_Durable_Log ("/tmp/hft_mifid_tampered.log");
+         Assert (False, "forged durable history rejected");
+      exception
+         when Audit_Persistence_Error =>
+            Assert (True, "forged durable history rejected");
+      end;
+   end;
+
+   declare
+      Orphaned_Checkpoint : File_Type;
+   begin
+      Create
+        (Orphaned_Checkpoint, Out_File,
+         "/tmp/hft_mifid_missing.log.checkpoint");
+      Put_Line
+        (Orphaned_Checkpoint,
+         (Hash_Text'(others => 'A')) & "|2");
+      Close (Orphaned_Checkpoint);
+      begin
+         Configure_Durable_Log ("/tmp/hft_mifid_missing.log");
+         Assert (False, "missing log with checkpoint rejected");
+      exception
+         when Audit_Persistence_Error =>
+            Assert (True, "missing log with checkpoint rejected");
+      end;
+   end;
    Put_Line
      ("Results:" & Natural'Image (Passed) & "/" & Natural'Image (Tests));
    if Passed /= Tests then

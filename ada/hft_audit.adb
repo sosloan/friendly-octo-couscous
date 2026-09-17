@@ -4,15 +4,94 @@ with Ada.Directories;
 with Ada.Strings;
 with Ada.Strings.Fixed;
 with Ada.Text_IO;
+with GNAT.OS_Lib;
+with Interfaces.C;
 with HFT_Time_Util;
 with HFT_SHA256;
 
 package body HFT_Audit is
    use Ada.Text_IO;
+   use type GNAT.OS_Lib.File_Descriptor;
+   use type Interfaces.C.int;
+
+   function C_Flock
+     (FD : Interfaces.C.int; Operation : Interfaces.C.int)
+      return Interfaces.C.int
+      with Import, Convention => C, External_Name => "flock";
+
+   function C_Fsync (FD : Interfaces.C.int) return Interfaces.C.int
+      with Import, Convention => C, External_Name => "fsync";
+
+   function Acquire_Lock (Filename : String)
+      return GNAT.OS_Lib.File_Descriptor
+   is
+      FD : GNAT.OS_Lib.File_Descriptor :=
+        GNAT.OS_Lib.Open_Read_Write (Filename, GNAT.OS_Lib.Binary);
+   begin
+      if FD = GNAT.OS_Lib.Invalid_FD then
+         FD := GNAT.OS_Lib.Create_New_File
+           (Filename, GNAT.OS_Lib.Binary);
+         if FD = GNAT.OS_Lib.Invalid_FD then
+            FD := GNAT.OS_Lib.Open_Read_Write
+              (Filename, GNAT.OS_Lib.Binary);
+         end if;
+      end if;
+      if FD = GNAT.OS_Lib.Invalid_FD
+        or else C_Flock (Interfaces.C.int (FD), 2) /= 0
+      then
+         if FD /= GNAT.OS_Lib.Invalid_FD then
+            GNAT.OS_Lib.Close (FD);
+         end if;
+         raise Audit_Persistence_Error;
+      end if;
+      return FD;
+   end Acquire_Lock;
+
+   procedure Release_Lock
+     (FD : in out GNAT.OS_Lib.File_Descriptor) is
+   begin
+      if FD /= GNAT.OS_Lib.Invalid_FD then
+         GNAT.OS_Lib.Close (FD);
+         FD := GNAT.OS_Lib.Invalid_FD;
+      end if;
+   end Release_Lock;
+
+   procedure Sync_File (Filename : String) is
+      FD : constant GNAT.OS_Lib.File_Descriptor :=
+        GNAT.OS_Lib.Open_Read_Write (Filename, GNAT.OS_Lib.Binary);
+   begin
+      if FD = GNAT.OS_Lib.Invalid_FD
+        or else C_Fsync (Interfaces.C.int (FD)) /= 0
+      then
+         if FD /= GNAT.OS_Lib.Invalid_FD then
+            GNAT.OS_Lib.Close (FD);
+         end if;
+         raise Audit_Persistence_Error;
+      end if;
+      GNAT.OS_Lib.Close (FD);
+   end Sync_File;
+
+   procedure Sync_Parent_Directory (Filename : String) is
+      Directory : constant String :=
+        Ada.Directories.Containing_Directory (Filename);
+      FD : constant GNAT.OS_Lib.File_Descriptor :=
+        GNAT.OS_Lib.Open_Read (Directory, GNAT.OS_Lib.Binary);
+   begin
+      if FD = GNAT.OS_Lib.Invalid_FD
+        or else C_Fsync (Interfaces.C.int (FD)) /= 0
+      then
+         if FD /= GNAT.OS_Lib.Invalid_FD then
+            GNAT.OS_Lib.Close (FD);
+         end if;
+         raise Audit_Persistence_Error;
+      end if;
+      GNAT.OS_Lib.Close (FD);
+   end Sync_Parent_Directory;
 
    Max_Audit_Events : constant Positive := 10_000;
    type Event_Array is array (Positive range 1 .. Max_Audit_Events)
       of Audit_Event;
+   type Pending_Event_Array is array (Positive range <>) of Audit_Event;
    subtype Path_Buffer is String (1 .. 256);
 
    Audit_Start_Time : HFT_Engine.UTC_Timestamp_NS :=
@@ -38,6 +117,7 @@ package body HFT_Audit is
       E : HFT_MiFID.Execution_Evidence renames Event.MiFID_Evidence;
    begin
       return
+        Image (Event.Schema_Version) & "|" &
         Image (Event.Event_ID) & "|" &
         Image (Long_Long_Integer (Event.Time_Stamp)) & "|" &
         Image (Long_Long_Integer (Event.Monotonic_Time)) & "|" &
@@ -62,28 +142,56 @@ package body HFT_Audit is
         E.Roll_Decision & "|" & E.Routing_Rationale & "|" &
         E.Override_Identity & "|" & E.Override_Reason & "|" &
         E.Policy.Version & "|" & E.Build_ID & "|" &
+        Boolean_Image (E.Policy.NYSE_Approved) & "|" &
+        Boolean_Image (E.Policy.CME_Approved) & "|" &
+        Boolean_Image (E.Policy.Other_Approved) & "|" &
+        Image (E.Policy.Weights.Price) & "|" &
+        Image (E.Policy.Weights.Cost) & "|" &
+        Image (E.Policy.Weights.Speed) & "|" &
+        Image (E.Policy.Weights.Fill) & "|" &
+        Image (E.Policy.Weights.Size_Nature) & "|" &
         HFT_Engine.Price'Image (E.Market.Best_Bid) & "|" &
         HFT_Engine.Price'Image (E.Market.Best_Ask) & "|" &
+        Image (Natural (E.Market.Bid_Depth)) & "|" &
+        Image (Natural (E.Market.Ask_Depth)) & "|" &
+        Image (E.Market.Estimated_Fee_Micros) & "|" &
+        Image (Long_Long_Integer (E.Market.Estimated_Latency_NS)) & "|" &
+        Image (E.Market.Expected_Fill_BPS) & "|" &
+        Image (E.Market.Liquidity_Score_BPS) & "|" &
         Image (Long_Long_Integer (E.Market.Exchange_Timestamp)) & "|" &
         Image (Long_Long_Integer (E.Market.Local_Receipt_Timestamp)) & "|" &
         Image (E.Market.Feed_Sequence) & "|" &
         Boolean_Image (E.Market.Is_Stale) & "|" &
         HFT_Engine.Price'Image (E.Metrics.Arrival_Price) & "|" &
         HFT_Engine.Price'Image (E.Metrics.Execution_Price) & "|" &
+        HFT_Engine.Price'Image (E.Metrics.Benchmark_Price) & "|" &
         Image (Natural (E.Metrics.Ordered_Quantity)) & "|" &
         Image (Natural (E.Metrics.Filled_Quantity)) & "|" &
+        Image (E.Metrics.Fees_Micros) & "|" &
+        Image (Long_Long_Integer
+          (E.Metrics.Implementation_Shortfall_BPS)) & "|" &
+        Image (Long_Long_Integer (E.Metrics.Spread_Capture_BPS)) & "|" &
+        Image (Long_Long_Integer (E.Metrics.Slippage_BPS)) & "|" &
+        Image (Long_Long_Integer (E.Metrics.Market_Impact_BPS)) & "|" &
+        Image (Long_Long_Integer (E.Metrics.Opportunity_Cost_BPS)) & "|" &
         Image (Long_Long_Integer (E.Metrics.Execution_Latency_NS)) & "|" &
+        Image (Long_Long_Integer (E.Clock.UTC_Time)) & "|" &
+        Image (Long_Long_Integer (E.Clock.Monotonic_Time)) & "|" &
         Image (Long_Long_Integer (E.Clock.UTC_Offset_NS)) & "|" &
         Image (Long_Long_Integer (E.Clock.Uncertainty_NS)) & "|" &
         Image (Long_Long_Integer (E.Clock.Granularity_NS)) & "|" &
         HFT_MiFID.RTS25_Tier'Image (E.Clock.Tier) & "|" &
         HFT_MiFID.Synchronization_State'Image (E.Clock.State) & "|" &
         HFT_MiFID.Clock_Source'Image (E.Clock.Source) & "|" &
+        HFT_MiFID.Timestamp_Origin'Image (E.Clock.Origin) & "|" &
+        Image (Long_Long_Integer (E.Clock.Last_Synchronized_At)) & "|" &
         E.Reconciliation.Exchange_Order_ID & "|" &
         E.Reconciliation.Drop_Copy_ID & "|" &
         E.Reconciliation.Clearing_ID & "|" &
         Boolean_Image (E.Reconciliation.Quantity_Matches) & "|" &
-        Boolean_Image (E.Reconciliation.Price_Matches);
+        Boolean_Image (E.Reconciliation.Price_Matches) & "|" &
+        Image (Long_Long_Integer
+          (E.Reconciliation.Timestamp_Delta_NS));
    end Canonical;
 
    function Serialized (Event : Audit_Event) return String is
@@ -92,34 +200,79 @@ package body HFT_Audit is
         Canonical (Event);
    end Serialized;
 
-   procedure Append_Line (Filename, Value : String) is
+   Log_Header : constant String :=
+     "PREVIOUS_HASH|RECORD_HASH|CANONICAL_MIFID_AUDIT_RECORD";
+
+   function Is_Upper_Hex (Value : String) return Boolean;
+
+   procedure Write_Checkpoint
+     (Filename : String; Head : Hash_Text; Next_ID : Positive)
+   is
       File : File_Type;
+      Renamed : Boolean;
+      Temporary : constant String := Filename & ".checkpoint.tmp";
    begin
-      if Ada.Directories.Exists (Filename) then
-         Open (File, Append_File, Filename);
-      else
-         Create (File, Out_File, Filename);
-         Put_Line
-           (File,
-            "PREVIOUS_HASH|RECORD_HASH|CANONICAL_MIFID_AUDIT_RECORD");
-      end if;
-      Put_Line (File, Value);
+      Create (File, Out_File, Temporary);
+      Put_Line (File, Head & "|" & Image (Natural (Next_ID)));
       Close (File);
+      Sync_File (Temporary);
+      GNAT.OS_Lib.Rename_File
+        (Temporary, Filename & ".checkpoint", Renamed);
+      if not Renamed then
+         raise Audit_Persistence_Error;
+      end if;
+      Sync_File (Filename & ".checkpoint");
+      Sync_Parent_Directory (Filename);
    exception
       when others =>
          if Is_Open (File) then
             Close (File);
          end if;
          raise Audit_Persistence_Error;
-   end Append_Line;
+   end Write_Checkpoint;
+
+   procedure Read_Checkpoint
+     (Filename : String;
+      Exists   : out Boolean;
+      Head     : out Hash_Text;
+      Next_ID  : out Positive)
+   is
+      File   : File_Type;
+      Buffer : String (1 .. 128);
+      Last   : Natural;
+   begin
+      Exists := Ada.Directories.Exists (Filename & ".checkpoint");
+      Head := (others => '0');
+      Next_ID := 1;
+      if not Exists then
+         return;
+      end if;
+      Open (File, In_File, Filename & ".checkpoint");
+      Get_Line (File, Buffer, Last);
+      Close (File);
+      if Last < 66 or else Buffer (65) /= '|'
+        or else not Is_Upper_Hex (Buffer (1 .. 64))
+      then
+         raise Audit_Persistence_Error;
+      end if;
+      Head := Buffer (1 .. 64);
+      Next_ID := Positive'Value (Buffer (66 .. Last));
+   exception
+      when others =>
+         if Is_Open (File) then
+            Close (File);
+         end if;
+         raise Audit_Persistence_Error;
+   end Read_Checkpoint;
 
    procedure Truncate_Log (Filename : String) is
       File : File_Type;
    begin
       Create (File, Out_File, Filename);
-      Put_Line
-        (File, "PREVIOUS_HASH|RECORD_HASH|CANONICAL_MIFID_AUDIT_RECORD");
+      Put_Line (File, Log_Header);
       Close (File);
+      Sync_File (Filename);
+      Write_Checkpoint (Filename, (others => '0'), 1);
    exception
       when others =>
          if Is_Open (File) then
@@ -127,6 +280,16 @@ package body HFT_Audit is
          end if;
          raise Audit_Persistence_Error;
    end Truncate_Log;
+
+   function Is_Upper_Hex (Value : String) return Boolean is
+   begin
+      for C of Value loop
+         if not (C in '0' .. '9' or else C in 'A' .. 'F') then
+            return False;
+         end if;
+      end loop;
+      return True;
+   end Is_Upper_Hex;
 
    procedure Recover_Log_State
      (Filename : String;
@@ -138,36 +301,112 @@ package body HFT_Audit is
       Last      : Natural;
       Separator : Natural;
       Last_ID   : Natural := 0;
+      Line_Number : Natural := 0;
+      Expected_Head : Hash_Text := (others => '0');
+      Previous_Head : Hash_Text;
+      Record_Hash   : Hash_Text;
+      Expected_Hash : Hash_Text;
+      Current_ID    : Positive;
+      Checkpoint_Exists : Boolean;
+      Checkpoint_Head   : Hash_Text;
+      Checkpoint_ID     : Positive;
+      Checkpoint_Matched : Boolean := False;
    begin
       Head := (others => '0');
       Next_ID := 1;
       if not Ada.Directories.Exists (Filename) then
+         if Ada.Directories.Exists (Filename & ".checkpoint") then
+            raise Audit_Persistence_Error;
+         end if;
          Truncate_Log (Filename);
          return;
       end if;
+      Read_Checkpoint
+        (Filename, Checkpoint_Exists, Checkpoint_Head, Checkpoint_ID);
+      Checkpoint_Matched :=
+        not Checkpoint_Exists
+        or else (Checkpoint_Head = (Hash_Text'(others => '0'))
+                 and then Checkpoint_ID = 1);
       Open (File, In_File, Filename);
       while not End_Of_File (File) loop
          Get_Line (File, Buffer, Last);
-         if Last >= 132
-           and then Buffer (65) = '|'
-           and then Buffer (130) = '|'
-         then
-            Head := Buffer (66 .. 129);
-            Separator := 131;
-            while Separator <= Last and then Buffer (Separator) /= '|' loop
+         Line_Number := Line_Number + 1;
+         if Line_Number = 1 then
+            if Buffer (1 .. Last) /= Log_Header then
+               raise Audit_Persistence_Error;
+            end if;
+         else
+            if Last < 134 or else Last = Buffer'Last
+              or else Buffer (65) /= '|'
+              or else Buffer (130) /= '|'
+              or else Buffer (131) /= '1'
+              or else Buffer (132) /= '|'
+            then
+               raise Audit_Persistence_Error;
+            end if;
+            Previous_Head := Buffer (1 .. 64);
+            Record_Hash := Buffer (66 .. 129);
+            if not Is_Upper_Hex (Previous_Head)
+              or else not Is_Upper_Hex (Record_Hash)
+              or else Previous_Head /= Expected_Head
+            then
+               raise Audit_Persistence_Error;
+            end if;
+            Expected_Hash :=
+              HFT_SHA256.Digest
+                (Expected_Head & Buffer (131 .. Last));
+            if Record_Hash /= Expected_Hash then
+               raise Audit_Persistence_Error;
+            end if;
+
+            Separator := 133;
+            while Separator <= Last
+              and then Buffer (Separator) /= '|'
+            loop
                Separator := Separator + 1;
             end loop;
-            if Separator > 131 then
-               Last_ID := Positive'Value
-                 (Buffer (131 .. Separator - 1));
+            if Separator = 133 or else Separator > Last then
+               raise Audit_Persistence_Error;
+            end if;
+            Current_ID :=
+              Positive'Value (Buffer (133 .. Separator - 1));
+            if Last_ID = Positive'Last then
+               raise Audit_Capacity_Error;
+            end if;
+            if (Last_ID = 0 and then Current_ID /= 1)
+              or else (Last_ID > 0 and then Current_ID /= Last_ID + 1)
+            then
+               raise Audit_Persistence_Error;
+            end if;
+            Last_ID := Current_ID;
+            Expected_Head := Record_Hash;
+            if Checkpoint_Exists
+              and then Checkpoint_Head = Expected_Head
+              and then Last_ID < Positive'Last
+              and then Checkpoint_ID = Last_ID + 1
+            then
+               Checkpoint_Matched := True;
             end if;
          end if;
       end loop;
       Close (File);
+      if Line_Number = 0 then
+         raise Audit_Persistence_Error;
+      end if;
+      Head := Expected_Head;
       if Last_ID = Positive'Last then
          raise Audit_Capacity_Error;
       elsif Last_ID > 0 then
          Next_ID := Last_ID + 1;
+      end if;
+      if not Checkpoint_Matched then
+         raise Audit_Persistence_Error;
+      end if;
+      if not Checkpoint_Exists
+        or else Checkpoint_Head /= Head
+        or else Checkpoint_ID /= Next_ID
+      then
+         Write_Checkpoint (Filename, Head, Next_ID);
       end if;
    exception
       when Audit_Capacity_Error =>
@@ -182,13 +421,153 @@ package body HFT_Audit is
          raise Audit_Persistence_Error;
    end Recover_Log_State;
 
+   procedure Recover_Log_State_Locked
+     (Filename : String;
+      Head     : out Hash_Text;
+      Next_ID  : out Positive)
+   is
+      Handle : GNAT.OS_Lib.File_Descriptor := GNAT.OS_Lib.Invalid_FD;
+   begin
+      Handle := Acquire_Lock (Filename & ".lock");
+      Recover_Log_State (Filename, Head, Next_ID);
+      Release_Lock (Handle);
+   exception
+      when others =>
+         Release_Lock (Handle);
+         raise Audit_Persistence_Error;
+   end Recover_Log_State_Locked;
+
+   procedure Copy_Verified_Log
+     (Source, Destination : String)
+   is
+      Source_Path    : constant String := Ada.Directories.Full_Name (Source);
+      Destination_Path : constant String :=
+        Ada.Directories.Full_Name (Destination);
+      Input, Output : File_Type;
+      Buffer        : String (1 .. 8_192);
+      Last          : Natural;
+      Head          : Hash_Text;
+      Next_ID       : Positive;
+      Source_Lock   : constant String := Source_Path & ".lock";
+      Destination_Lock : constant String := Destination_Path & ".lock";
+      Source_Handle : GNAT.OS_Lib.File_Descriptor :=
+        GNAT.OS_Lib.Invalid_FD;
+      Destination_Handle : GNAT.OS_Lib.File_Descriptor :=
+        GNAT.OS_Lib.Invalid_FD;
+      Temporary : constant String := Destination_Path & ".export.tmp";
+      Renamed   : Boolean;
+   begin
+      if Source_Path = Destination_Path
+        or else Destination_Path = Source_Path & ".checkpoint"
+        or else Destination_Path = Source_Path & ".checkpoint.tmp"
+        or else Destination_Path = Source_Path & ".lock"
+        or else Destination_Path = Source_Path & ".export.tmp"
+      then
+         raise Constraint_Error with "audit export destination is source";
+      end if;
+      if Source_Lock < Destination_Lock then
+         Source_Handle := Acquire_Lock (Source_Lock);
+         Destination_Handle := Acquire_Lock (Destination_Lock);
+      else
+         Destination_Handle := Acquire_Lock (Destination_Lock);
+         Source_Handle := Acquire_Lock (Source_Lock);
+      end if;
+      if Ada.Directories.Exists (Destination_Path)
+        or else Ada.Directories.Exists (Destination_Path & ".checkpoint")
+      then
+         raise Constraint_Error with
+           "audit export destination already exists";
+      end if;
+      Recover_Log_State (Source_Path, Head, Next_ID);
+      Open (Input, In_File, Source_Path);
+      Create (Output, Out_File, Temporary);
+      while not End_Of_File (Input) loop
+         Get_Line (Input, Buffer, Last);
+         Put_Line (Output, Buffer (1 .. Last));
+      end loop;
+      Close (Input);
+      Close (Output);
+      Sync_File (Temporary);
+      GNAT.OS_Lib.Rename_File (Temporary, Destination_Path, Renamed);
+      if not Renamed then
+         raise Audit_Persistence_Error;
+      end if;
+      Sync_Parent_Directory (Destination_Path);
+      Write_Checkpoint (Destination_Path, Head, Next_ID);
+      Release_Lock (Destination_Handle);
+      Release_Lock (Source_Handle);
+   exception
+      when Constraint_Error =>
+         if Is_Open (Input) then
+            Close (Input);
+         end if;
+         if Is_Open (Output) then
+            Close (Output);
+         end if;
+         Release_Lock (Destination_Handle);
+         Release_Lock (Source_Handle);
+         raise;
+      when others =>
+         if Is_Open (Input) then
+            Close (Input);
+         end if;
+         if Is_Open (Output) then
+            Close (Output);
+         end if;
+         Release_Lock (Destination_Handle);
+         Release_Lock (Source_Handle);
+         raise Audit_Persistence_Error;
+   end Copy_Verified_Log;
+
+   procedure Append_Line
+     (Filename      : String;
+      Value         : String;
+      Expected_Head : Hash_Text;
+      Expected_ID   : Positive)
+   is
+      File      : File_Type;
+      Disk_Head : Hash_Text;
+      Disk_ID   : Positive;
+      Handle    : GNAT.OS_Lib.File_Descriptor := GNAT.OS_Lib.Invalid_FD;
+   begin
+      Handle := Acquire_Lock (Filename & ".lock");
+      Recover_Log_State (Filename, Disk_Head, Disk_ID);
+      if Disk_Head /= Expected_Head or else Disk_ID /= Expected_ID then
+         raise Audit_Persistence_Error;
+      end if;
+      Open (File, Append_File, Filename);
+      Put_Line (File, Value);
+      Close (File);
+      Sync_File (Filename);
+      Write_Checkpoint
+        (Filename,
+         Value (Value'First + 65 .. Value'First + 128),
+         Expected_ID + 1);
+      Release_Lock (Handle);
+   exception
+      when others =>
+         if Is_Open (File) then
+            Close (File);
+         end if;
+         Release_Lock (Handle);
+         raise Audit_Persistence_Error;
+   end Append_Line;
+
    protected Store is
       procedure Initialize;
       procedure Reset;
-      procedure Append (Candidate : Audit_Event; Stored : out Boolean);
+      procedure Reserve (Slots : Positive);
+      procedure Append
+        (Candidate : Audit_Event;
+         Stored    : out Boolean;
+         Reserved  : Boolean := False);
+      procedure Append_Batch
+        (Candidates   : Pending_Event_Array;
+         Stored_Count : out Natural);
       procedure Set_Config (Config : Audit_Config);
       function Config return Audit_Config;
       procedure Set_Log (Filename : String; Enabled : Boolean);
+      procedure Export_Log (Filename : String);
       function Count return Natural;
       function Element (Index : Positive) return Audit_Event;
       function Statistics return Audit_Statistics;
@@ -205,6 +584,7 @@ package body HFT_Audit is
       Current_Config : Audit_Config;
       Chain_Head   : Hash_Text := (others => '0');
       Session_Base_Hash : Hash_Text := (others => '0');
+      Reserved_Slots : Natural := 0;
       Durable_Log_Enabled : Boolean := True;
       Log_Path     : Path_Buffer :=
         "hft_audit_chain.log" & (1 .. 237 => ' ');
@@ -213,32 +593,54 @@ package body HFT_Audit is
 
    protected body Store is
       procedure Initialize is
+         Recovered_Head : Hash_Text := (others => '0');
+         Recovered_ID   : Positive := 1;
       begin
-         Event_Count := 0;
-         Current_Stats := (others => 0);
          if Durable_Log_Enabled then
-            Recover_Log_State
-              (Log_Path (1 .. Log_Path_Length), Chain_Head, Next_ID);
-         else
-            Chain_Head := (others => '0');
-            Next_ID := 1;
+            Recover_Log_State_Locked
+              (Log_Path (1 .. Log_Path_Length),
+               Recovered_Head, Recovered_ID);
          end if;
-         Session_Base_Hash := Chain_Head;
+         Event_Count := 0;
+         Reserved_Slots := 0;
+         Current_Stats := (others => 0);
+         Chain_Head := Recovered_Head;
+         Next_ID := Recovered_ID;
+         Session_Base_Hash := Recovered_Head;
       end Initialize;
 
       procedure Reset is
       begin
          Event_Count := 0;
-         Next_ID := 1;
+         Reserved_Slots := 0;
          Current_Stats := (others => 0);
-         Chain_Head := (others => '0');
-         Session_Base_Hash := (others => '0');
          if Durable_Log_Enabled then
-            Truncate_Log (Log_Path (1 .. Log_Path_Length));
+            Session_Base_Hash := Chain_Head;
+         else
+            Next_ID := 1;
+            Chain_Head := (others => '0');
+            Session_Base_Hash := (others => '0');
          end if;
       end Reset;
 
-      procedure Append (Candidate : Audit_Event; Stored : out Boolean) is
+      procedure Reserve (Slots : Positive) is
+      begin
+         if Event_Count + Reserved_Slots + Slots >
+           Current_Config.Max_History_Size
+           or else Event_Count + Reserved_Slots + Slots >
+             Max_Audit_Events
+           or else Next_ID > Positive'Last - Slots
+         then
+            raise Audit_Capacity_Error;
+         end if;
+         Reserved_Slots := Reserved_Slots + Slots;
+      end Reserve;
+
+      procedure Append
+        (Candidate : Audit_Event;
+         Stored    : out Boolean;
+         Reserved  : Boolean := False)
+      is
          Event : Audit_Event := Candidate;
          Should_Log : constant Boolean :=
            Current_Config.Log_All_Events
@@ -248,13 +650,23 @@ package body HFT_Audit is
          New_Hash : Hash_Text;
       begin
          Stored := False;
+         if Reserved and then Reserved_Slots = 0 then
+            raise Program_Error with "missing audit reservation";
+         end if;
          if not Current_Config.Enable_Audit or else not Should_Log then
+            if Reserved then
+               Reserved_Slots := Reserved_Slots - 1;
+            end if;
             return;
          end if;
-         if Event_Count >= Current_Config.Max_History_Size
-           or else Event_Count = Max_Audit_Events
-         then
-            raise Audit_Capacity_Error;
+         if not Reserved then
+            if Event_Count + Reserved_Slots >=
+              Current_Config.Max_History_Size
+              or else Event_Count + Reserved_Slots = Max_Audit_Events
+              or else Next_ID = Positive'Last
+            then
+               raise Audit_Capacity_Error;
+            end if;
          end if;
 
          Event.Event_ID := Next_ID;
@@ -264,14 +676,15 @@ package body HFT_Audit is
 
          if Durable_Log_Enabled then
             Append_Line
-              (Log_Path (1 .. Log_Path_Length), Serialized (Event));
+              (Log_Path (1 .. Log_Path_Length), Serialized (Event),
+               Chain_Head, Next_ID);
          end if;
 
          Event_Count := Event_Count + 1;
          Events (Event_Count) := Event;
          Chain_Head := New_Hash;
-         if Next_ID = Positive'Last then
-            raise Audit_Capacity_Error;
+         if Reserved then
+            Reserved_Slots := Reserved_Slots - 1;
          end if;
          Next_ID := Next_ID + 1;
          Current_Stats.Total_Events := Current_Stats.Total_Events + 1;
@@ -348,6 +761,51 @@ package body HFT_Audit is
          Stored := True;
       end Append;
 
+      procedure Append_Batch
+        (Candidates   : Pending_Event_Array;
+         Stored_Count : out Natural)
+      is
+         Stored : Boolean;
+         Storable : Natural := 0;
+
+         function Will_Log (Candidate : Audit_Event) return Boolean is
+         begin
+            return Current_Config.Enable_Audit
+              and then
+                (Current_Config.Log_All_Events
+                 or else
+                   (Candidate.Passed
+                    and Current_Config.Log_Passed_Checks)
+                 or else
+                   ((not Candidate.Passed)
+                    and Current_Config.Log_Failed_Checks));
+         end Will_Log;
+      begin
+         Stored_Count := 0;
+         for Candidate of Candidates loop
+            if Will_Log (Candidate) then
+               Storable := Storable + 1;
+            end if;
+         end loop;
+         if Storable > 0 then
+            Reserve (Storable);
+         end if;
+         begin
+            for Candidate of Candidates loop
+               Append
+                 (Candidate, Stored,
+                  Reserved => Will_Log (Candidate));
+               if Stored then
+                  Stored_Count := Stored_Count + 1;
+               end if;
+            end loop;
+         exception
+            when others =>
+               Reserved_Slots := 0;
+               raise;
+         end;
+      end Append_Batch;
+
       procedure Set_Config (Config : Audit_Config) is
       begin
          Current_Config := Config;
@@ -359,6 +817,9 @@ package body HFT_Audit is
       end Config;
 
       procedure Set_Log (Filename : String; Enabled : Boolean) is
+         Recovered_Head : Hash_Text;
+         Recovered_ID   : Positive;
+         New_Path       : Path_Buffer := (others => ' ');
       begin
          if Enabled
            and then (Filename'Length = 0
@@ -370,15 +831,27 @@ package body HFT_Audit is
             raise Constraint_Error with
               "configure durable log before recording audit events";
          end if;
-         Durable_Log_Enabled := Enabled;
          if Enabled then
-            Log_Path := (others => ' ');
+            New_Path (1 .. Filename'Length) := Filename;
+            Recover_Log_State_Locked
+              (Filename, Recovered_Head, Recovered_ID);
+            Log_Path := New_Path;
             Log_Path_Length := Filename'Length;
-            Log_Path (1 .. Log_Path_Length) := Filename;
-            Recover_Log_State (Filename, Chain_Head, Next_ID);
-            Session_Base_Hash := Chain_Head;
+            Chain_Head := Recovered_Head;
+            Next_ID := Recovered_ID;
+            Session_Base_Hash := Recovered_Head;
          end if;
+         Durable_Log_Enabled := Enabled;
       end Set_Log;
+
+      procedure Export_Log (Filename : String) is
+      begin
+         if not Durable_Log_Enabled then
+            raise Audit_Persistence_Error;
+         end if;
+         Copy_Verified_Log
+           (Log_Path (1 .. Log_Path_Length), Filename);
+      end Export_Log;
 
       function Count return Natural is
       begin
@@ -466,6 +939,77 @@ package body HFT_Audit is
       return Result;
    end Fixed_Description;
 
+   function Safe_Field (Value : String) return Boolean is
+   begin
+      for C of Value loop
+         if C = '|' or else Character'Pos (C) < 32
+           or else Character'Pos (C) = 127
+         then
+            return False;
+         end if;
+      end loop;
+      return True;
+   end Safe_Field;
+
+   function Evidence_Fields_Safe
+     (Evidence : HFT_MiFID.Execution_Evidence) return Boolean is
+   begin
+      return Safe_Field (Evidence.Instrument)
+        and then Safe_Field (Evidence.Related_Instrument)
+        and then Safe_Field (Evidence.Currency)
+        and then Safe_Field (Evidence.Futures_Expiry)
+        and then Safe_Field (Evidence.Signal_ID)
+        and then Safe_Field (Evidence.Client_Mandate)
+        and then Safe_Field (Evidence.Strategy_Constraints)
+        and then Safe_Field (Evidence.Hedge_Objective)
+        and then Safe_Field (Evidence.Roll_Decision)
+        and then Safe_Field (Evidence.Routing_Rationale)
+        and then Safe_Field (Evidence.Override_Identity)
+        and then Safe_Field (Evidence.Override_Reason)
+        and then Safe_Field (Evidence.Policy.Version)
+        and then Safe_Field (Evidence.Build_ID)
+        and then Safe_Field (Evidence.Reconciliation.Exchange_Order_ID)
+        and then Safe_Field (Evidence.Reconciliation.Drop_Copy_ID)
+        and then Safe_Field (Evidence.Reconciliation.Clearing_ID);
+   end Evidence_Fields_Safe;
+
+   function Make_Event
+     (Event_Type  : Audit_Event_Type;
+      Severity    : Severity_Level;
+      Domain      : Regulatory_Domain;
+      Order_ID    : Natural;
+      Correlation_ID : Natural;
+      Category    : HFT_Compliance.Compliance_Category;
+      Description : String;
+      Passed      : Boolean;
+      Has_Evidence : Boolean := False;
+      Evidence    : HFT_MiFID.Execution_Evidence :=
+                      (others => <>))
+      return Audit_Event
+   is
+      Event : Audit_Event;
+   begin
+      if not Safe_Field (Description)
+        or else (Has_Evidence and then not Evidence_Fields_Safe (Evidence))
+      then
+         raise Constraint_Error with
+           "audit text contains a reserved delimiter or control character";
+      end if;
+      Event.Time_Stamp := HFT_Time_Util.Get_UTC_Timestamp_NS;
+      Event.Monotonic_Time := HFT_Time_Util.Get_Monotonic_Timestamp_NS;
+      Event.Event_Type := Event_Type;
+      Event.Severity := Severity;
+      Event.Domain := Domain;
+      Event.Order_ID := Order_ID;
+      Event.Correlation_ID := Correlation_ID;
+      Event.Category := Category;
+      Event.Description := Fixed_Description (Description);
+      Event.Passed := Passed;
+      Event.Has_MiFID_Evidence := Has_Evidence;
+      Event.MiFID_Evidence := Evidence;
+      return Event;
+   end Make_Event;
+
    procedure Record_Internal
      (Event_Type  : Audit_Event_Type;
       Severity    : Severity_Level;
@@ -479,21 +1023,12 @@ package body HFT_Audit is
       Evidence    : HFT_MiFID.Execution_Evidence :=
                       (others => <>))
    is
-      Event  : Audit_Event;
+      Event : constant Audit_Event :=
+        Make_Event
+          (Event_Type, Severity, Domain, Order_ID, Correlation_ID,
+           Category, Description, Passed, Has_Evidence, Evidence);
       Stored : Boolean;
    begin
-      Event.Time_Stamp := HFT_Time_Util.Get_UTC_Timestamp_NS;
-      Event.Monotonic_Time := HFT_Time_Util.Get_Monotonic_Timestamp_NS;
-      Event.Event_Type := Event_Type;
-      Event.Severity := Severity;
-      Event.Domain := Domain;
-      Event.Order_ID := Order_ID;
-      Event.Correlation_ID := Correlation_ID;
-      Event.Category := Category;
-      Event.Description := Fixed_Description (Description);
-      Event.Passed := Passed;
-      Event.Has_MiFID_Evidence := Has_Evidence;
-      Event.MiFID_Evidence := Evidence;
       Store.Append (Event, Stored);
    end Record_Internal;
 
@@ -604,50 +1139,74 @@ package body HFT_Audit is
      (Evidence : HFT_MiFID.Execution_Evidence;
       Accepted : out Boolean)
    is
+      Recorded_At : constant HFT_Engine.UTC_Timestamp_NS :=
+        HFT_Time_Util.Get_UTC_Timestamp_NS;
       Order_ID : constant Natural :=
         (if Evidence.Child_Order_ID > 0
          then Evidence.Child_Order_ID else Evidence.Parent_Order_ID);
       Clock_OK : constant Boolean :=
-        HFT_MiFID.Is_Clock_Compliant (Evidence.Clock);
+        HFT_MiFID.Is_Clock_Compliant (Evidence.Clock)
+        and then HFT_MiFID.Is_Recording_Time_Valid
+          (Evidence, Recorded_At);
       Best_OK : constant Boolean :=
         HFT_MiFID.Is_Best_Execution_Evidence_Complete (Evidence);
       Reconciled : constant Boolean :=
-        HFT_MiFID.Is_Reconciled (Evidence.Reconciliation);
+        not HFT_MiFID.Requires_Reconciliation (Evidence)
+        or else HFT_MiFID.Is_Reconciled (Evidence.Reconciliation);
+      Pending : Pending_Event_Array (1 .. 5);
+      Pending_Count : Natural := 0;
+      Stored_Count : Natural;
+
+      procedure Add
+        (Event_Type  : Audit_Event_Type;
+         Severity    : Severity_Level;
+         Domain      : Regulatory_Domain;
+         Category    : HFT_Compliance.Compliance_Category;
+         Description : String;
+         Passed      : Boolean) is
+      begin
+         Pending_Count := Pending_Count + 1;
+         Pending (Pending_Count) :=
+           Make_Event
+             (Event_Type, Severity, Domain, Order_ID,
+              Evidence.Correlation_ID, Category, Description, Passed,
+              True, Evidence);
+      end Add;
    begin
-      Accepted := Best_OK and Clock_OK and Reconciled;
-      Record_Internal
+      Accepted := Best_OK and then Clock_OK and then Reconciled;
+      Add
         (Lifecycle_Event (Evidence.Stage),
          (if Accepted then Info else Error),
-         MiFID_II_Best_Execution, Order_ID, Evidence.Correlation_ID,
-         HFT_Compliance.Performance, "Execution lifecycle evidence",
-         Accepted, True, Evidence);
-      Record_Internal
+         MiFID_II_Best_Execution, HFT_Compliance.Performance,
+         "Execution lifecycle evidence", Accepted);
+      Add
         (Best_Execution_Assessed,
          (if Best_OK then Info else Error),
-         MiFID_II_Best_Execution, Order_ID, Evidence.Correlation_ID,
-         HFT_Compliance.Performance, "Best-execution evidence assessment",
-         Best_OK, True, Evidence);
+         MiFID_II_Best_Execution, HFT_Compliance.Performance,
+         "Best-execution evidence assessment", Best_OK);
 
       if Evidence.Market.Is_Stale then
-         Record_Internal
+         Add
            (Stale_Market_Data_Detected, Critical,
-            MiFID_II_Best_Execution, Order_ID, Evidence.Correlation_ID,
-            HFT_Compliance.Performance, "Stale market data", False,
-            True, Evidence);
+            MiFID_II_Best_Execution, HFT_Compliance.Performance,
+            "Stale market data", False);
       end if;
       if not Clock_OK then
-         Record_Internal
-           (Clock_Drift_Exceeded, Critical, MiFIR_RTS_25, Order_ID,
-            Evidence.Correlation_ID, HFT_Compliance.Security,
-            "RTS 25 clock evidence outside configured tier", False,
-            True, Evidence);
+         Add
+           (Clock_Drift_Exceeded, Critical, MiFIR_RTS_25,
+            HFT_Compliance.Security,
+            "RTS 25 clock evidence outside configured tier", False);
       end if;
       if not Reconciled then
-         Record_Internal
+         Add
            (Reconciliation_Failed, Error, MiFID_II_Best_Execution,
-            Order_ID, Evidence.Correlation_ID, HFT_Compliance.Security,
+            HFT_Compliance.Security,
             "Exchange, drop-copy, and clearing records do not reconcile",
-            False, True, Evidence);
+            False);
+      end if;
+      Store.Append_Batch (Pending (1 .. Pending_Count), Stored_Count);
+      if Stored_Count > Pending_Count then
+         raise Program_Error with "invalid audit batch result";
       end if;
    end Record_Execution_Evidence;
 
@@ -710,6 +1269,29 @@ package body HFT_Audit is
       return Store.Chain_Head_Text;
    end Get_Chain_Head;
 
+   function Evidence_Digest
+     (Evidence : HFT_MiFID.Execution_Evidence) return Hash_Text
+   is
+      Event : Audit_Event;
+      Zero_Head : constant Hash_Text := (others => '0');
+   begin
+      if not Evidence_Fields_Safe (Evidence) then
+         raise Constraint_Error with
+           "audit text contains a reserved delimiter or control character";
+      end if;
+      Event.Domain := MiFID_II_Best_Execution;
+      Event.Event_Type := Best_Execution_Assessed;
+      Event.Description :=
+        Fixed_Description ("Deterministic evidence digest");
+      Event.Has_MiFID_Evidence := True;
+      Event.MiFID_Evidence := Evidence;
+      Event.Correlation_ID := Evidence.Correlation_ID;
+      Event.Order_ID :=
+        (if Evidence.Child_Order_ID > 0
+         then Evidence.Child_Order_ID else Evidence.Parent_Order_ID);
+      return HFT_SHA256.Digest (Zero_Head & Canonical (Event));
+   end Evidence_Digest;
+
    function Generate_Audit_Summary return Audit_Summary is
       Summary : Audit_Summary;
    begin
@@ -767,21 +1349,8 @@ package body HFT_Audit is
    end Print_Audit_History;
 
    procedure Export_Audit_Log (Filename : String) is
-      File : File_Type;
    begin
-      Create (File, Out_File, Filename);
-      Put_Line
-        (File, "PREVIOUS_HASH|RECORD_HASH|CANONICAL_MIFID_AUDIT_RECORD");
-      for I in 1 .. Store.Count loop
-         Put_Line (File, Serialized (Store.Element (I)));
-      end loop;
-      Close (File);
-   exception
-      when others =>
-         if Is_Open (File) then
-            Close (File);
-         end if;
-         raise Audit_Persistence_Error;
+      Store.Export_Log (Filename);
    end Export_Audit_Log;
 
    procedure Clear_Audit_History is

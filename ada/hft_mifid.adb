@@ -68,21 +68,29 @@ package body HFT_MiFID is
 
    function Is_Clock_Compliant (Evidence : Clock_Evidence) return Boolean is
       Absolute_Offset : Nonnegative_NS;
+      Maximum_Offset  : constant Nonnegative_NS :=
+        Maximum_UTC_Divergence_NS (Evidence.Tier);
    begin
       Absolute_Offset :=
         (if Evidence.UTC_Offset_NS < 0
          then -Evidence.UTC_Offset_NS
          else Evidence.UTC_Offset_NS);
-      return Evidence.State = In_Sync
-        and Evidence.Source /= Unknown_Source
-        and Evidence.UTC_Time > 0
-        and Evidence.Monotonic_Time > 0
-        and Evidence.Last_Synchronized_At > 0
-        and Absolute_Offset <= Maximum_UTC_Divergence_NS (Evidence.Tier)
-        and Evidence.Uncertainty_NS <=
-          Maximum_UTC_Divergence_NS (Evidence.Tier) - Absolute_Offset
-        and Evidence.Granularity_NS <=
-          Maximum_Timestamp_Granularity_NS (Evidence.Tier);
+      if Evidence.State /= In_Sync
+        or else Evidence.Source = Unknown_Source
+        or else Evidence.UTC_Time = 0
+        or else Evidence.Monotonic_Time = 0
+        or else Evidence.Last_Synchronized_At = 0
+        or else Evidence.Last_Synchronized_At > Evidence.UTC_Time
+        or else Absolute_Offset > Maximum_Offset
+      then
+         return False;
+      end if;
+      return Evidence.Uncertainty_NS <= Maximum_Offset - Absolute_Offset
+        and then Evidence.Granularity_NS <=
+          Maximum_Timestamp_Granularity_NS (Evidence.Tier)
+        and then Long_Long_Integer
+          (Evidence.UTC_Time - Evidence.Last_Synchronized_At) <=
+            Maximum_Synchronization_Age_NS;
    end Is_Clock_Compliant;
 
    function Is_Policy_Valid (Policy : Venue_Policy) return Boolean is
@@ -117,52 +125,173 @@ package body HFT_MiFID is
 
    function Is_Reconciled
      (Evidence : Reconciliation_Evidence) return Boolean is
+      Absolute_Delta : constant Nonnegative_NS :=
+        (if Evidence.Timestamp_Delta_NS < 0
+         then -Evidence.Timestamp_Delta_NS
+         else Evidence.Timestamp_Delta_NS);
    begin
       return Has_Content (Evidence.Exchange_Order_ID)
-        and Has_Content (Evidence.Drop_Copy_ID)
-        and Has_Content (Evidence.Clearing_ID)
-        and Evidence.Quantity_Matches
-        and Evidence.Price_Matches;
+        and then Has_Content (Evidence.Drop_Copy_ID)
+        and then Has_Content (Evidence.Clearing_ID)
+        and then Evidence.Quantity_Matches
+        and then Evidence.Price_Matches
+        and then Absolute_Delta <= Maximum_Reconciliation_Delta_NS;
    end Is_Reconciled;
+
+   function Requires_Reconciliation
+     (Evidence : Execution_Evidence) return Boolean is
+   begin
+      return Evidence.Stage in Partial_Fill | Full_Fill | Correction
+        or else Evidence.Metrics.Filled_Quantity > 0;
+   end Requires_Reconciliation;
+
+   function Is_Recording_Time_Valid
+     (Evidence    : Execution_Evidence;
+      Recorded_At : HFT_Engine.UTC_Timestamp_NS) return Boolean
+   is
+      Clock_Difference    : HFT_Engine.UTC_Timestamp_NS;
+      Receipt_Difference  : HFT_Engine.UTC_Timestamp_NS;
+      Exchange_Difference : HFT_Engine.UTC_Timestamp_NS;
+   begin
+      Clock_Difference :=
+        (if Evidence.Clock.UTC_Time >= Recorded_At
+         then Evidence.Clock.UTC_Time - Recorded_At
+         else Recorded_At - Evidence.Clock.UTC_Time);
+      Receipt_Difference :=
+        (if Evidence.Market.Local_Receipt_Timestamp >= Recorded_At
+         then Evidence.Market.Local_Receipt_Timestamp - Recorded_At
+         else Recorded_At - Evidence.Market.Local_Receipt_Timestamp);
+      Exchange_Difference :=
+        (if Evidence.Market.Exchange_Timestamp >= Recorded_At
+         then Evidence.Market.Exchange_Timestamp - Recorded_At
+         else Recorded_At - Evidence.Market.Exchange_Timestamp);
+      return Long_Long_Integer (Clock_Difference) <=
+        Maximum_Market_Data_Age_NS
+        and then Long_Long_Integer (Receipt_Difference) <=
+          Maximum_Market_Data_Age_NS
+        and then Long_Long_Integer (Exchange_Difference) <=
+          Maximum_Market_Data_Age_NS;
+   end Is_Recording_Time_Valid;
 
    function Is_Best_Execution_Evidence_Complete
      (Evidence : Execution_Evidence) return Boolean is
+      Market_Age : Nonnegative_NS;
    begin
+      if Evidence.Market.Local_Receipt_Timestamp <
+        Evidence.Market.Exchange_Timestamp
+      then
+         return False;
+      end if;
+      Market_Age := Long_Long_Integer
+        (Evidence.Market.Local_Receipt_Timestamp -
+         Evidence.Market.Exchange_Timestamp);
       return Evidence.Parent_Order_ID > 0
-        and Evidence.Child_Order_ID > 0
-        and Evidence.Correlation_ID > 0
-        and Has_Content (Evidence.Instrument)
-        and Has_Content (Evidence.Signal_ID)
-        and Has_Content (Evidence.Client_Mandate)
-        and Has_Content (Evidence.Strategy_Constraints)
-        and Has_Content (Evidence.Routing_Rationale)
-        and Has_Content (Evidence.Build_ID)
-        and Is_Policy_Valid (Evidence.Policy)
-        and Is_Venue_Approved (Evidence.Policy, Evidence.Selected_Venue)
-        and Evidence.Metrics.Ordered_Quantity > 0
-        and Evidence.Metrics.Filled_Quantity <=
+        and then Evidence.Child_Order_ID > 0
+        and then Evidence.Correlation_ID > 0
+        and then Has_Content (Evidence.Instrument)
+        and then Has_Content (Evidence.Signal_ID)
+        and then Has_Content (Evidence.Client_Mandate)
+        and then Has_Content (Evidence.Strategy_Constraints)
+        and then Has_Content (Evidence.Routing_Rationale)
+        and then Has_Content (Evidence.Build_ID)
+        and then Is_Policy_Valid (Evidence.Policy)
+        and then Is_Venue_Approved (Evidence.Policy, Evidence.Selected_Venue)
+        and then Evidence.Metrics.Ordered_Quantity > 0
+        and then Evidence.Metrics.Arrival_Price > 0.0
+        and then Evidence.Metrics.Benchmark_Price > 0.0
+        and then Evidence.Metrics.Filled_Quantity <=
           Evidence.Metrics.Ordered_Quantity
-        and Evidence.Market.Best_Bid > 0.0
-        and Evidence.Market.Best_Ask >= Evidence.Market.Best_Bid
-        and Evidence.Market.Exchange_Timestamp > 0
-        and Evidence.Market.Local_Receipt_Timestamp >=
-          Evidence.Market.Exchange_Timestamp
-        and Evidence.Market.Feed_Sequence > 0
-        and not Evidence.Market.Is_Stale
-        and (if Evidence.Asset_Class = Futures
-             then Evidence.Selected_Venue = CME
-               and Has_Content (Evidence.Futures_Expiry)
-             else True)
-        and (if Evidence.Asset_Class = Cash_Equity
-             then Evidence.Selected_Venue = NYSE
-             else True);
+        and then
+          (if Evidence.Stage in
+             Market_Data_Receipt | Strategy_Decision |
+             Risk_Approval | Gateway_Send
+           then
+             Evidence.Metrics.Filled_Quantity = 0
+             and then Evidence.Metrics.Execution_Price = 0.0
+             and then not Has_Content
+               (Evidence.Reconciliation.Exchange_Order_ID)
+             and then not Has_Content
+               (Evidence.Reconciliation.Drop_Copy_ID)
+             and then not Has_Content
+               (Evidence.Reconciliation.Clearing_ID)
+           elsif Evidence.Stage = Venue_Acknowledgement then
+             Evidence.Metrics.Filled_Quantity = 0
+             and then Evidence.Metrics.Execution_Price = 0.0
+             and then Has_Content
+               (Evidence.Reconciliation.Exchange_Order_ID)
+             and then not Has_Content
+               (Evidence.Reconciliation.Drop_Copy_ID)
+             and then not Has_Content
+               (Evidence.Reconciliation.Clearing_ID)
+           elsif Evidence.Stage = Partial_Fill then
+             Evidence.Metrics.Filled_Quantity > 0
+             and then Evidence.Metrics.Filled_Quantity <
+               Evidence.Metrics.Ordered_Quantity
+             and then Evidence.Metrics.Execution_Price > 0.0
+           elsif Evidence.Stage = Full_Fill then
+             Evidence.Metrics.Filled_Quantity =
+               Evidence.Metrics.Ordered_Quantity
+             and then Evidence.Metrics.Execution_Price > 0.0
+           elsif Evidence.Stage = Cancellation
+             and then Evidence.Metrics.Filled_Quantity = 0
+           then
+             Evidence.Metrics.Execution_Price = 0.0
+             and then Has_Content
+               (Evidence.Reconciliation.Exchange_Order_ID)
+           elsif Evidence.Metrics.Filled_Quantity > 0 then
+             Evidence.Metrics.Execution_Price > 0.0
+           else True)
+        and then Evidence.Market.Best_Bid > 0.0
+        and then Evidence.Market.Best_Ask >= Evidence.Market.Best_Bid
+        and then Evidence.Market.Exchange_Timestamp > 0
+        and then Market_Age <= Maximum_Market_Data_Age_NS
+        and then Evidence.Clock.UTC_Time >=
+          Evidence.Market.Local_Receipt_Timestamp
+        and then Long_Long_Integer
+          (Evidence.Clock.UTC_Time -
+           Evidence.Market.Local_Receipt_Timestamp) <=
+             Maximum_Market_Data_Age_NS
+        and then Evidence.Market.Feed_Sequence > 0
+        and then not Evidence.Market.Is_Stale
+        and then
+          (if Evidence.Asset_Class = Futures then
+             Evidence.Selected_Venue = CME
+             and then Evidence.Session = CME_Globex
+             and then Has_Content (Evidence.Futures_Expiry)
+             and then Evidence.Order_Type /= Auction
+           elsif Evidence.Asset_Class = Cash_Equity then
+             Evidence.Selected_Venue = NYSE
+             and then Evidence.Session in
+               NYSE_Continuous | NYSE_Auction
+             and then
+               ((Evidence.Session = NYSE_Auction
+                  and then Evidence.Order_Type = Auction)
+                or else
+                (Evidence.Session = NYSE_Continuous
+                  and then Evidence.Order_Type /= Auction))
+           else True)
+        and then
+          (if Evidence.Order_Type = Spread then
+             Evidence.Asset_Class = Futures
+             and then Has_Content (Evidence.Related_Instrument)
+             and then Has_Content (Evidence.Roll_Decision)
+           else True)
+        and then
+          (if Has_Content (Evidence.Related_Instrument) then
+             Has_Content (Evidence.Hedge_Objective)
+           else True)
+        and then
+          (Has_Content (Evidence.Override_Identity) =
+           Has_Content (Evidence.Override_Reason));
    end Is_Best_Execution_Evidence_Complete;
 
    function Is_Audit_Ready
      (Evidence : Execution_Evidence) return Boolean is
    begin
       return Is_Best_Execution_Evidence_Complete (Evidence)
-        and Is_Clock_Compliant (Evidence.Clock)
-        and Is_Reconciled (Evidence.Reconciliation);
+        and then Is_Clock_Compliant (Evidence.Clock)
+        and then
+          (not Requires_Reconciliation (Evidence)
+           or else Is_Reconciled (Evidence.Reconciliation));
    end Is_Audit_Ready;
 end HFT_MiFID;

@@ -2,12 +2,15 @@
 pragma Ada_2022;
 
 with Ada.Calendar;
+with Ada.Calendar.Formatting;
 with Ada.Real_Time;
 
 package body HFT_Time_Util is
 
    Unix_Epoch : constant Ada.Calendar.Time :=
-      Ada.Calendar.Time_Of (1970, 1, 1, 0.0);
+      Ada.Calendar.Formatting.Time_Of
+        (Year => 1970, Month => 1, Day => 1, Seconds => 0.0,
+         Time_Zone => 0);
    Monotonic_Epoch : constant Ada.Real_Time.Time := Ada.Real_Time.Clock;
 
    function Duration_To_NS (Value : Duration) return Long_Long_Integer is

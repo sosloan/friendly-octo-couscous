@@ -2,6 +2,7 @@
 -- Comprehensive integration tests with audit functionality
 
 with Ada.Text_IO; use Ada.Text_IO;
+with Ada.Directories;
  
 with HFT_Engine; use HFT_Engine;
 with HFT_Compliance; use HFT_Compliance;
@@ -352,6 +353,13 @@ procedure HFT_Integration_Test is
       
       -- Export audit log
       begin
+         if Ada.Directories.Exists ("/tmp/hft_audit.log") then
+            Ada.Directories.Delete_File ("/tmp/hft_audit.log");
+         end if;
+         if Ada.Directories.Exists ("/tmp/hft_audit.log.checkpoint") then
+            Ada.Directories.Delete_File
+              ("/tmp/hft_audit.log.checkpoint");
+         end if;
          Export_Audit_Log ("/tmp/hft_audit.log");
          Assert (True, "Audit log exported successfully");
          Put_Line ("  Log file: /tmp/hft_audit.log");

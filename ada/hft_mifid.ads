@@ -43,6 +43,13 @@ package HFT_MiFID is
    subtype Basis_Points is Integer range -1_000_000 .. 1_000_000;
    subtype Probability_BPS is Natural range 0 .. 10_000;
 
+   Maximum_Market_Data_Age_NS : constant Nonnegative_NS :=
+      1_000_000_000;
+   Maximum_Synchronization_Age_NS : constant Nonnegative_NS :=
+      1_000_000_000;
+   Maximum_Reconciliation_Delta_NS : constant Nonnegative_NS :=
+      1_000_000;
+
    function Maximum_UTC_Divergence_NS
      (Tier : RTS25_Tier) return Nonnegative_NS;
    function Maximum_Timestamp_Granularity_NS
@@ -155,6 +162,11 @@ package HFT_MiFID is
      (Left, Right : Execution_Evidence) return Boolean;
    function Is_Reconciled
      (Evidence : Reconciliation_Evidence) return Boolean;
+   function Requires_Reconciliation
+     (Evidence : Execution_Evidence) return Boolean;
+   function Is_Recording_Time_Valid
+     (Evidence    : Execution_Evidence;
+      Recorded_At : HFT_Engine.UTC_Timestamp_NS) return Boolean;
    function Is_Best_Execution_Evidence_Complete
      (Evidence : Execution_Evidence) return Boolean;
    function Is_Audit_Ready

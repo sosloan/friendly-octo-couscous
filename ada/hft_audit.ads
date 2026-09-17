@@ -51,6 +51,7 @@ package HFT_Audit is
    subtype Hash_Text is String (1 .. 64);
 
    type Audit_Event is record
+      Schema_Version  : Positive := 1;
       Event_ID        : Positive := 1;
       Time_Stamp      : HFT_Engine.UTC_Timestamp_NS := 0;
       Monotonic_Time  : HFT_Engine.Monotonic_Timestamp_NS := 0;
@@ -145,6 +146,8 @@ package HFT_Audit is
    function Get_Audit_Event (Index : Positive) return Audit_Event;
    function Verify_Audit_Chain return Boolean;
    function Get_Chain_Head return Hash_Text;
+   function Evidence_Digest
+     (Evidence : HFT_MiFID.Execution_Evidence) return Hash_Text;
 
    procedure Print_Audit_Report;
    procedure Print_Audit_History (Max_Events : Positive := 100);
