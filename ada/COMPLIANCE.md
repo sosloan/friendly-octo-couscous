@@ -308,8 +308,9 @@ assertions, providing defence-in-depth checking.
 
 ## Ravenscar Real-Time Profile
 
-The `HFT_Ravenscar` package implements the compliance engine as a hard
-real-time system under `pragma Profile (Ravenscar)`.
+`HFT_Ravenscar` provides reusable protected types. The
+`HFT_Ravenscar_Runtime` package owns the shared queue, statistics, and
+periodic compliance task used in a Ravenscar partition.
 
 ### Architecture
 
@@ -330,18 +331,18 @@ Main task                    Compliance_Monitor (priority 7, 50 ms period)
 ### Usage
 
 ```ada
-with HFT_Ravenscar;
+with HFT_Ravenscar_Runtime;
 with HFT_Engine;    use HFT_Engine;
 with Ada.Real_Time; use Ada.Real_Time;
 
 -- Enqueue orders (thread-safe, O(1), no blocking)
-HFT_Ravenscar.Order_Queue.Enqueue (My_Order, Success);
+HFT_Ravenscar_Runtime.Order_Queue.Enqueue (My_Order, Success);
 
 -- Wait for the monitor task to process them
 delay until Clock + Seconds (1);
 
 -- Read results (atomic, no locking needed from caller)
-Put_Line (Natural'Image (HFT_Ravenscar.Compliance_Stats.Passed)
+Put_Line (Natural'Image (HFT_Ravenscar_Runtime.Compliance_Stats.Passed)
           & " orders passed compliance.");
 ```
 

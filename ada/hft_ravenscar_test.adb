@@ -17,10 +17,12 @@ pragma Profile (Ravenscar);
 with Ada.Text_IO;    use Ada.Text_IO;
 with Ada.Real_Time;  use Ada.Real_Time;
 with HFT_Engine;     use HFT_Engine;
-with HFT_Ravenscar;
+with HFT_Ravenscar_Runtime;
 with GNAT.OS_Lib;
 
 procedure HFT_Ravenscar_Test is
+
+   package HFT_Ravenscar renames HFT_Ravenscar_Runtime;
 
    Test_Count : Natural := 0;
    Pass_Count : Natural := 0;

@@ -7,6 +7,7 @@ with HFT_Engine; use HFT_Engine;
 package HFT_SPARK
    with SPARK_Mode => On
 is
+   pragma Preelaborate;
 
    -- -----------------------------------------------------------------------
    -- Boundary constants used in contracts and implementations
@@ -143,22 +144,8 @@ is
                             and Verified_Symbol_Format (O.Symbol)
                             and Verified_Order_Size_Reasonable (O.Qty));
 
-end HFT_SPARK;
--- Ada SPARK Formally-Verified HFT Compliance Interfaces
--- Provides GNATprove-provable contracts for the HFT engine
--- SPARK 2014 / 2022 subset: no side effects, full postconditions,
--- loop invariants, and Global => null on every subprogram.
-pragma Ada_2022;
-pragma SPARK_Mode (On);
-
-with HFT_Engine; use HFT_Engine;
-
-package HFT_Spark is
-
-   pragma Preelaborate;
-
    -- ====================================================================
-   -- Type-Safety Predicates
+   -- Additional type-safety predicates used by the periodic runtime
    -- Each function has a complete Boolean postcondition that GNATprove
    -- can discharge without additional assumptions.
    -- ====================================================================

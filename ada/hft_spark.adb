@@ -53,11 +53,51 @@ is
    end Verified_Can_Match;
 
    function Verified_Symbol_Format (Symbol : String) return Boolean is
--- Ada SPARK Formally-Verified HFT Compliance Implementation
-pragma Ada_2022;
-pragma SPARK_Mode (On);
+   begin
+      for C of Symbol loop
+         if not (C in 'A' .. 'Z' | ' ') then
+            return False;
+         end if;
+      end loop;
 
-package body HFT_Spark is
+      for C of Symbol loop
+         if C /= ' ' then
+            return True;
+         end if;
+      end loop;
+
+      return False;
+   end Verified_Symbol_Format;
+
+   function Verified_Order_Value_Within_Limit (O : HFT_Engine.Order) return Boolean is
+      Val : constant HFT_Engine.Price := Verified_Calculate_Value (O);
+   begin
+      return Val <= Max_Order_Value;
+   end Verified_Order_Value_Within_Limit;
+
+   function Verified_Order_Size_Reasonable (Q : HFT_Engine.Quantity) return Boolean is
+   begin
+      return Q >= 1 and Q <= Max_Reasonable_Qty;
+   end Verified_Order_Size_Reasonable;
+
+   function Verified_No_Zero_Division (Divisor : HFT_Engine.Price) return Boolean is
+   begin
+      return Divisor /= 0.0;
+   end Verified_No_Zero_Division;
+
+   function Verified_Full_Compliance (O : HFT_Engine.Order) return Boolean is
+      Safe_Multiply : constant Boolean :=
+         Verified_Multiply_Safe (O.Price_Val, O.Qty);
+   begin
+      if not Verified_Is_Valid_Order (O)           then return False; end if;
+      if not Verified_Price_In_Range (O.Price_Val) then return False; end if;
+      if not Verified_Quantity_In_Range (O.Qty)    then return False; end if;
+      if not Verified_Symbol_Format (O.Symbol)     then return False; end if;
+      if not Safe_Multiply                         then return False; end if;
+      if not Verified_Order_Value_Within_Limit (O) then return False; end if;
+      if not Verified_Order_Size_Reasonable (O.Qty) then return False; end if;
+      return True;
+   end Verified_Full_Compliance;
 
    function Spark_Price_In_Range (P : HFT_Engine.Price) return Boolean is
    begin
@@ -100,7 +140,6 @@ package body HFT_Spark is
             return False;
          end if;
       end loop;
-      -- At least one non-space character
       return True;
    end Spark_Symbol_Uppercase;
 
@@ -112,39 +151,6 @@ package body HFT_Spark is
          end if;
       end loop;
       return False;
-   end Verified_Symbol_Format;
-
-   function Verified_Order_Value_Within_Limit (O : HFT_Engine.Order) return Boolean is
-      Val : constant HFT_Engine.Price := Verified_Calculate_Value (O);
-   begin
-      return Val <= Max_Order_Value;
-   end Verified_Order_Value_Within_Limit;
-
-   function Verified_Order_Size_Reasonable (Q : HFT_Engine.Quantity) return Boolean is
-   begin
-      return Q >= 1 and Q <= Max_Reasonable_Qty;
-   end Verified_Order_Size_Reasonable;
-
-   function Verified_No_Zero_Division (Divisor : HFT_Engine.Price) return Boolean is
-   begin
-      return Divisor /= 0.0;
-   end Verified_No_Zero_Division;
-
-   function Verified_Full_Compliance (O : HFT_Engine.Order) return Boolean is
-      Safe_Multiply : constant Boolean :=
-         Verified_Multiply_Safe (O.Price_Val, O.Qty);
-   begin
-      if not Verified_Is_Valid_Order (O)           then return False; end if;
-      if not Verified_Price_In_Range (O.Price_Val) then return False; end if;
-      if not Verified_Quantity_In_Range (O.Qty)    then return False; end if;
-      if not Verified_Symbol_Format (O.Symbol)     then return False; end if;
-      if not Safe_Multiply                         then return False; end if;
-      if not Verified_Order_Value_Within_Limit (O) then return False; end if;
-      if not Verified_Order_Size_Reasonable (O.Qty) then return False; end if;
-      return True;
-   end Verified_Full_Compliance;
-
-end HFT_SPARK;
    end Spark_Symbol_Has_Content;
 
    function Spark_Symbol_Valid (Symbol : String) return Boolean is
