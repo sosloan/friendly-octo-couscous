@@ -23,8 +23,7 @@ procedure HFT_Spark_Test is
       end if;
    end Assert;
 
-   Now : constant Timestamp :=
-           Timestamp (HFT_Time_Util.Get_Unix_Timestamp);
+   Now : constant Timestamp := HFT_Time_Util.Get_UTC_Timestamp_NS;
 
    -- Helpers for building test orders quickly
    function Make_Order

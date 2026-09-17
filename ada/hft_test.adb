@@ -20,7 +20,7 @@ procedure HFT_Test is
       end if;
    end Assert;
    
-   Current_Time : constant Timestamp := Timestamp (HFT_Time_Util.Get_Unix_Timestamp);
+   Current_Time : constant Timestamp := HFT_Time_Util.Get_UTC_Timestamp_NS;
    Valid_Buy : Order;
    Valid_Sell : Order;
    Invalid_Order : Order;

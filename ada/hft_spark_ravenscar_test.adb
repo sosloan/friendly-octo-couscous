@@ -16,8 +16,7 @@ procedure HFT_Spark_Ravenscar_Test is
 
    Test_Count   : Natural := 0;
    Pass_Count   : Natural := 0;
-   Current_Time : constant Timestamp :=
-      Timestamp (HFT_Time_Util.Get_Unix_Timestamp);
+   Current_Time : constant Timestamp := HFT_Time_Util.Get_UTC_Timestamp_NS;
 
    procedure Assert (Condition : Boolean; Test_Name : String) is
    begin

@@ -38,7 +38,7 @@ procedure HFT_Ravenscar_Test is
 
    -- Fixed Unix-style timestamp (avoids Ada.Calendar in Ravenscar)
    -- Value corresponds to a representative epoch point.
-   Test_TS : constant Timestamp := 1_716_000_000;
+   Test_TS : constant Timestamp := 1_716_000_000_000_000_000;
 
    -- Build a test order inline
    function Make

@@ -12,7 +12,7 @@ procedure HFT_Integration_Test is
    
    Test_Count : Natural := 0;
    Pass_Count : Natural := 0;
-   Current_Time : constant Timestamp := Timestamp (HFT_Time_Util.Get_Unix_Timestamp);
+   Current_Time : constant Timestamp := HFT_Time_Util.Get_UTC_Timestamp_NS;
    
    procedure Assert (Condition : Boolean; Test_Name : String) is
    begin
@@ -151,7 +151,7 @@ procedure HFT_Integration_Test is
       Invalid_Orders (1) := Valid_Order;
       Invalid_Orders (1).Order_ID := 2002;
       declare
-         One_Hour : constant Timestamp := 60 * 60; -- 1 hour in seconds
+         One_Hour : constant Timestamp := 3_600_000_000_000;
       begin
          Invalid_Orders (1).Time_Stamp := Current_Time + One_Hour;
       end;
